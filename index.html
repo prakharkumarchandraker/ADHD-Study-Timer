@@ -745,6 +745,9 @@ body.focus-mode .hero-cd{font-size:96px!important;letter-spacing:-4px;}
 /* Add slot button */
 .tt-add-slot-btn{width:100%;background:rgba(123,111,255,.07);border:1px dashed rgba(123,111,255,.25);border-radius:var(--r);padding:12px;color:var(--s1);font-family:var(--fn);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;margin-top:4px;}
 .tt-add-slot-btn:hover{background:rgba(123,111,255,.14);border-color:var(--s1);}
+/* Conflict indicator */
+.tt-slot.conflict{border-color:rgba(240,111,160,.5)!important;background:rgba(240,111,160,.04);}
+.tt-conflict-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px;background:rgba(240,111,160,.15);color:var(--s3);border:1px solid rgba(240,111,160,.3);flex-shrink:0;}
 
 /* Emoji picker modal */
 #emojiPickerOverlay{display:none;position:fixed;inset:0;z-index:9900;align-items:flex-end;justify-content:center;}
@@ -3938,12 +3941,18 @@ function startSync(){
     // For potato/skips: union arrays
     var mergedPotato=Array.from(new Set([...(ST.potato||[]),...(val.potato||[])]));
     var mergedSkips=Array.from(new Set([...(ST.skips||[]),...(val.skips||[])]));
-    if(changed||remoteDone>localDone){
+    // subjOrder: take remote if it differs (last-write-wins — simple and correct for ordering)
+    var remoteSubjOrder=val.subjOrder&&Array.isArray(val.subjOrder)?val.subjOrder:null;
+    var localSubjOrderStr=JSON.stringify(ST.subjOrder||null);
+    var remoteSubjOrderStr=JSON.stringify(remoteSubjOrder);
+    var subjOrderChanged=remoteSubjOrder&&remoteSubjOrderStr!==localSubjOrderStr;
+    if(changed||remoteDone>localDone||subjOrderChanged){
       ST.done=mergedDone;ST.flags=mergedFlags;ST.pyqTopics=mergedPyq;
       ST.potato=mergedPotato;ST.skips=mergedSkips;
       // Take other fields from remote if they're more recent
       if(val.revisions)ST.revisions=val.revisions;
       if(val.revDone)ST.revDone=val.revDone;
+      if(remoteSubjOrder)ST.subjOrder=remoteSubjOrder; // sync subject order
       var d=defaultState();for(var k in d)if(ST[k]===undefined)ST[k]=d[k];
       localStorage.setItem('gate2027v6',JSON.stringify(ST));
       renderGate();
@@ -5191,45 +5200,45 @@ function renderTimetable(){
     listEl.innerHTML='<div style="text-align:center;padding:20px;font-size:12px;color:var(--mt);font-style:italic;">No slots yet. Add your first slot below.</div>';
     return;
   }
+  // Detect conflicts for this day
+  var _ttConflicts=getSlotConflicts(_ttSelectedDay);
   listEl.innerHTML='';
   slots.forEach(function(s,i){
-    listEl.appendChild(makeTTSlotCard(s,i,_ttSelectedDay));
+    listEl.appendChild(makeTTSlotCard(s,i,_ttSelectedDay,_ttConflicts));
   });
 }
 
-function makeTTSlotCard(s,i,day){
+function makeTTSlotCard(s,i,day,conflicts){
+  conflicts=conflicts||new Set();
+  var hasConflict=conflicts.has(s.id);
   var dur=(s.eh*60+s.em)-(s.sh*60+s.sm);
   var isOpen=(_ttOpenSlot===s.id);
   var div=document.createElement('div');
-  div.className='tt-slot'+(isOpen?' open':'');
+  div.className='tt-slot'+(isOpen?' open':'')+(hasConflict?' conflict':'');
   div.id='ttc_'+s.id;
-  div.setAttribute('draggable','true');
-  div.ondragstart=function(e){_ttDragIdx=i;_ttDragDay=day;e.dataTransfer.effectAllowed='move';};
-  div.ondragover=function(e){e.preventDefault();div.classList.add('drag-over');};
-  div.ondragleave=function(){div.classList.remove('drag-over');};
-  div.ondrop=function(e){
-    e.preventDefault();div.classList.remove('drag-over');
-    if(_ttDragIdx<0||_ttDragIdx===i||_ttDragDay!==day)return;
-    var arr=_timetable[day];
-    var moved=arr.splice(_ttDragIdx,1)[0];arr.splice(i,0,moved);
-    _ttDragIdx=-1;_ttDragDay=null;saveTimetable();
-  };
-  div.ondragend=function(){_ttDragIdx=-1;_ttDragDay=null;document.querySelectorAll('.tt-slot').forEach(function(c){c.classList.remove('drag-over');});};
 
+  // Head (collapsed view)
+  var head=document.createElement('div');head.className='tt-slot-head';
   var typePill='<span class="tt-type-pill tt-type-'+s.type+'">'+s.type.toUpperCase()+'</span>';
   var endStr=s.eh>=24?pad(s.eh-24)+':'+pad(s.em):pad(s.eh)+':'+pad(s.em);
   var timeStr=pad(s.sh)+':'+pad(s.sm)+'\u2013'+endStr;
   var durStr=dur>=60?Math.floor(dur/60)+'h'+(dur%60?' '+dur%60+'m':''):dur+'m';
-
-  // Head (collapsed view)
-  var head=document.createElement('div');head.className='tt-slot-head';
+  var conflictBadge=hasConflict?'<span class="tt-conflict-badge">⚠ Overlap</span>':'';
   head.innerHTML='<span class="tt-drag-ico">\u2807</span>'
     +'<span class="tt-slot-emoji" onclick="event.stopPropagation();openEmojiPicker(\''+s.id+'\',\''+day+'\')">'+(s.emoji||'\u26a1')+'</span>'
     +'<div class="tt-slot-info"><div class="tt-slot-name">'+esc(s.name)+'</div><div class="tt-slot-meta">'+timeStr+' \u00b7 '+durStr+(s.items&&s.items.length?' \u00b7 '+s.items.length+' items':'')+'</div></div>'
+    +conflictBadge
     +typePill
     +'<span class="tt-chevron">\u203a</span>';
   head.onclick=function(e){if(e.target.classList.contains('tt-slot-emoji'))return;_ttOpenSlot=isOpen?null:s.id;renderTimetable();};
   div.appendChild(head);
+
+  div.setAttribute('draggable','true');
+  div.ondragstart=function(e){_ttDragIdx=i;_ttDragDay=day;e.dataTransfer.effectAllowed='move';};
+  div.ondragover=function(e){e.preventDefault();div.classList.add('drag-over');};
+  div.ondragleave=function(){div.classList.remove('drag-over');};
+  div.ondrop=function(e){e.preventDefault();div.classList.remove('drag-over');if(_ttDragIdx<0||_ttDragIdx===i||_ttDragDay!==day)return;var arr=_timetable[day];var moved=arr.splice(_ttDragIdx,1)[0];arr.splice(i,0,moved);_ttDragIdx=-1;_ttDragDay=null;saveTimetable();};
+  div.ondragend=function(){_ttDragIdx=-1;_ttDragDay=null;document.querySelectorAll('.tt-slot').forEach(function(c){c.classList.remove('drag-over');});};
 
   if(!isOpen){return div;}
 
@@ -5299,6 +5308,35 @@ window.ttSetName=function(id,day,val){
   var s=ttFindSlot(day,id);if(!s)return;
   s.name=val;saveTimetable();
 };
+
+// ── CONFLICT DETECTION ────────────────────────────────────────────────────────
+function slotToMins(s){
+  // Returns {start, end} in absolute minutes; end may be >1440 for overnight slots
+  return {start:s.sh*60+s.sm, end:s.eh*60+s.em};
+}
+function slotsConflict(a,b){
+  if(a.id===b.id)return false;
+  var am=slotToMins(a),bm=slotToMins(b);
+  // Normalize overnight: bring both ends into [0,1440*2) range relative to start
+  var aEnd=am.end<am.start?am.end+1440:am.end;
+  var bEnd=bm.end<bm.start?bm.end+1440:bm.end;
+  // Simple overlap: [aStart,aEnd) overlaps [bStart,bEnd)?
+  return am.start<bEnd&&bm.start<aEnd;
+}
+function getSlotConflicts(day){
+  // Returns a Set of slot IDs that have at least one overlap on the given day
+  var slots=_timetable[day]||[];
+  var conflicting=new Set();
+  for(var i=0;i<slots.length;i++){
+    for(var j=i+1;j<slots.length;j++){
+      if(slotsConflict(slots[i],slots[j])){
+        conflicting.add(slots[i].id);
+        conflicting.add(slots[j].id);
+      }
+    }
+  }
+  return conflicting;
+}
 window.ttSetType=function(id,day,type){
   var s=ttFindSlot(day,id);if(!s)return;
   s.type=type;
@@ -5321,6 +5359,13 @@ window.ttSetTime=function(id,day,which,val){
     s.em=m;
   }
   saveTimetable();
+  // Warn if this slot now conflicts with others
+  var conflicts=getSlotConflicts(day);
+  if(conflicts.has(id)){
+    var others=(_timetable[day]||[]).filter(function(x){return x.id!==id&&conflicts.has(x.id);});
+    var names=others.map(function(x){return x.name;}).join(', ');
+    showT('⚠️ Time conflict','Overlaps with: '+names);
+  }
 };
 window.ttDeleteSlot=function(id,day){
   if(!confirm('Delete this slot?'))return;
