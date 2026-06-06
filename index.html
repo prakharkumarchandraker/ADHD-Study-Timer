@@ -4665,8 +4665,31 @@ var _pwaPrompt=null;
   navigator.serviceWorker.register('./sw.js').then(function(reg){
     window._swReg=reg;
     console.log('[SW] registered, scope:',reg.scope);
+
+    // Listen for a new SW installing — when it activates, reload to get fresh HTML
+    reg.addEventListener('updatefound', function(){
+      var newWorker = reg.installing;
+      if(!newWorker) return;
+      newWorker.addEventListener('statechange', function(){
+        if(newWorker.state === 'activated'){
+          // New SW activated — reload to get the fresh index.html from network
+          console.log('[SW] New version activated — reloading for fresh content');
+          window.location.reload();
+        }
+      });
+    });
+
+    // Also force a SW update check on every page load
+    reg.update().catch(function(){});
+
   }).catch(function(err){
     console.warn('[SW] registration failed:',err);
+  });
+
+  // When the controlling SW changes (e.g. after skipWaiting), reload
+  navigator.serviceWorker.addEventListener('controllerchange', function(){
+    console.log('[SW] Controller changed — reloading');
+    window.location.reload();
   });
 
   // Capture install prompt (Android Chrome)
