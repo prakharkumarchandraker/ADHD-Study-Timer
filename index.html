@@ -886,10 +886,10 @@ window.onerror=function(msg,src,line,col,err){
   <div id="bottomNav" role="navigation" aria-label="Main navigation">
     <button class="nav-btn act" id="navToday" role="tab" aria-selected="true" onclick="switchTab('today',this)"><span class="nav-ico" aria-hidden="true">🏠</span><span class="nav-txt">Today</span></button>
     <button class="nav-btn" id="navGate" role="tab" aria-selected="false" onclick="switchTab('gate',this)"><span class="nav-ico" aria-hidden="true">📚</span><span class="nav-txt">GATE</span></button>
-    <button class="nav-btn" id="navStats" role="tab" aria-selected="false" onclick="switchTab('stats',this)"><span class="nav-ico" aria-hidden="true">📊</span><span class="nav-txt">Stats</span></button>
-    <button class="nav-btn" id="navHistory" role="tab" aria-selected="false" onclick="switchTab('history',this)"><span class="nav-ico" aria-hidden="true">🗂️</span><span class="nav-txt">History</span></button>
-    <button class="nav-btn" id="navTimetable" role="tab" aria-selected="false" onclick="switchTab('timetable',this)"><span class="nav-ico" aria-hidden="true">📅</span><span class="nav-txt">Plan</span></button>
     <button class="nav-btn" id="navHabits" role="tab" aria-selected="false" onclick="switchTab('habits',this)"><span class="nav-ico" aria-hidden="true">🔥</span><span class="nav-txt">Habits</span></button>
+    <button class="nav-btn" id="navHistory" role="tab" aria-selected="false" onclick="switchTab('history',this)"><span class="nav-ico" aria-hidden="true">🗂️</span><span class="nav-txt">History</span></button>
+    <button class="nav-btn" id="navStats" role="tab" aria-selected="false" onclick="switchTab('stats',this)"><span class="nav-ico" aria-hidden="true">📊</span><span class="nav-txt">Stats</span></button>
+    <button class="nav-btn" id="navTimetable" role="tab" aria-selected="false" onclick="switchTab('timetable',this)"><span class="nav-ico" aria-hidden="true">📅</span><span class="nav-txt">Plan</span></button>
   </div>
 
   <!-- ═══════════════════════════════════════════ TAB: TODAY ═══ -->
@@ -3119,6 +3119,7 @@ function showFocusCountdown(){
 // ── FULLSCREEN FOCUS OVERLAY ──────────────────────────────────────────────────
 var _foInterval = null;
 var _foActive = false;
+var _foLastSlotId = null; // tracks which slot is shown so sub-items only re-render on slot change
 
 function updateFocusOverlay(){
   if(!_foActive) return;
@@ -3295,6 +3296,13 @@ function updateFocusOverlay(){
   if(foT)foT.textContent=totalScreenToday+'m';
   if(foSLbl)foSLbl.textContent=_isOtherSlot?'Today':((activeSlot||fs)?'This Ses.':'Today');
 
+  // Re-render sub-items checklist only when active slot changes (avoids flicker every second)
+  var _curSlotId = activeSlot?activeSlot.id:(fs?'ff':null);
+  if(_curSlotId!==_foLastSlotId){
+    _foLastSlotId=_curSlotId;
+    renderFoSubItems();
+  }
+
   // Water countdown
   var waterRow=document.getElementById('foWaterRow'),waterCd=document.getElementById('foWaterCd');
   if(waterRow&&waterCd){
@@ -3314,6 +3322,7 @@ function updateFocusOverlay(){
 
 function enterFocusOverlay(){
   _foActive = true;
+  _foLastSlotId = null; // reset so sub-items render immediately on first tick
   var ov = document.getElementById('focusOverlay');
   if(ov) ov.classList.add('active');
 
@@ -3324,6 +3333,7 @@ function enterFocusOverlay(){
   else if(el.mozRequestFullScreen){ el.mozRequestFullScreen(); }
 
   updateFocusOverlay();
+  renderFoSubItems(); // Show checklist immediately on enter
   _foInterval = setInterval(updateFocusOverlay, 1000);
 
   // Update focus buttons
@@ -3352,17 +3362,17 @@ function exitFocusOverlay(){
 
 // If user presses Escape or exits fullscreen via browser, close overlay too.
 // IMPORTANT: On Android, locking the screen fires fullscreenchange with no fullscreenElement.
-// We must NOT exit the overlay in that case — only exit if the page is actually visible
-// and the user deliberately left fullscreen (e.g. tapped back or swiped away).
+// We must NOT exit the overlay in that case — only exit if the user deliberately left.
+// Use a timestamp: if the page was hidden within the last 3 seconds, treat as screen lock.
+var _lastHiddenTs = 0;
+
 function _onFullscreenChange(){
   var isFullscreen=!!(document.fullscreenElement||document.webkitFullscreenElement||document.mozFullScreenElement);
   if(!isFullscreen&&_foActive){
-    // If the page is hidden (screen locked / app backgrounded), DON'T exit.
-    // Re-request fullscreen when the page becomes visible again instead.
-    if(document.visibilityState==='hidden'){
-      return; // screen lock — keep overlay state, re-enter fullscreen on resume
-    }
-    // Page is visible but fullscreen was lost → user navigated away intentionally
+    // If screen was locked recently (within 3s), Android fires fullscreenchange BEFORE
+    // visibilitychange fires with 'visible', so checking visibilityState here is unreliable.
+    if(document.visibilityState==='hidden') return; // still locked
+    if(Date.now()-_lastHiddenTs<3000) return; // just unlocked — don't exit
     exitFocusOverlay();
   }
 }
@@ -3373,6 +3383,9 @@ document.addEventListener('mozfullscreenchange', _onFullscreenChange);
 // When the screen is unlocked and the app comes back to foreground,
 // re-request fullscreen if focus overlay is still active.
 document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState==='hidden'){
+    _lastHiddenTs=Date.now(); // record when page was hidden
+  }
   if(document.visibilityState==='visible'&&_foActive){
     // Small delay to let the browser settle after unlock
     setTimeout(function(){
@@ -3381,7 +3394,7 @@ document.addEventListener('visibilitychange',function(){
         if(el.requestFullscreen){el.requestFullscreen().catch(function(){});}
         else if(el.webkitRequestFullscreen){el.webkitRequestFullscreen();}
       }
-    },400);
+    },600); // slightly longer delay to avoid race with _onFullscreenChange
   }
 });
 
@@ -4195,6 +4208,7 @@ function calcStreak(habit){
 
 // ── RENDER HABITS TAB ────────────────────────────────────────────────────────
 function renderHabits(){
+  try{
   var buildList=document.getElementById('habBuildList');
   var quitList=document.getElementById('habQuitList');
   var buildSec=document.getElementById('habBuildSection');
@@ -4206,12 +4220,12 @@ function renderHabits(){
   var builds=_habits.filter(function(h){return h.type==='build';});
   var quits=_habits.filter(function(h){return h.type==='quit';});
 
-  buildSec.style.display=builds.length?'block':'none';
-  quitSec.style.display=quits.length?'block':'none';
-  emptyState.style.display=_habits.length?'none':'block';
+  if(buildSec)buildSec.style.display=builds.length?'block':'none';
+  if(quitSec)quitSec.style.display=quits.length?'block':'none';
+  if(emptyState)emptyState.style.display=_habits.length?'none':'block';
 
   // Summary line
-  var todayDone=_habits.filter(function(h){return h.log[today]==='done';}).length;
+  var todayDone=_habits.filter(function(h){return h.log&&h.log[today]==='done';}).length;
   var todayTotal=_habits.length;
   if(summaryLine) summaryLine.textContent=todayTotal
     ? todayDone+'/'+todayTotal+' done today'
@@ -4219,10 +4233,11 @@ function renderHabits(){
 
   buildList.innerHTML='';
   quitList.innerHTML='';
-  builds.forEach(function(h){ buildList.appendChild(makeHabitCard(h)); });
-  quits.forEach(function(h){ quitList.appendChild(makeHabitCard(h)); });
+  builds.forEach(function(h){ try{buildList.appendChild(makeHabitCard(h));}catch(e){console.warn('Habit card error',e);} });
+  quits.forEach(function(h){ try{quitList.appendChild(makeHabitCard(h));}catch(e){console.warn('Habit card error',e);} });
 
   renderSuggestions();
+  }catch(e){console.error('renderHabits error',e);}
 }
 
 function makeHabitCard(h){
