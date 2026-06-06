@@ -112,8 +112,8 @@ html,body{background:var(--bg);color:var(--tx);font-family:var(--fn);font-size:1
 
 /* ── BOTTOM NAV ── */
 #bottomNav{position:fixed;bottom:0;left:0;right:0;z-index:5000;background:rgba(13,13,16,.92);backdrop-filter:blur(12px);border-top:1px solid var(--bd);display:flex;justify-content:space-around;padding:8px 0 max(8px,env(safe-area-inset-bottom));}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;color:var(--mt);font-family:var(--fn);font-size:8px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:4px 2px;transition:color .15s;min-width:0;}
-.nav-btn .nav-ico{font-size:18px;line-height:1;}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;color:var(--mt);font-family:var(--fn);font-size:8px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:6px 4px 4px;transition:color .15s;min-width:44px;touch-action:manipulation;-webkit-tap-highlight-color:transparent;overflow:visible;}
+.nav-btn .nav-ico{font-size:18px;line-height:1;display:block;}
 .nav-btn.act{color:var(--s1);}
 .nav-btn.act .nav-ico{filter:drop-shadow(0 0 6px rgba(123,111,255,.5));}
 
@@ -274,6 +274,29 @@ html,body{background:var(--bg);color:var(--tx);font-family:var(--fn);font-size:1
 .routine-item.done .routine-txt{text-decoration:line-through;color:var(--mt);}
 .routine-progress{height:3px;background:var(--sf3);border-radius:2px;overflow:hidden;margin:6px 0 10px;}
 .routine-prog-fill{height:100%;background:var(--s2);border-radius:2px;transition:width .4s ease;}
+/* ── ROUTINE EDIT MODE ── */
+.routine-edit-btn{background:var(--sf2);border:1px solid var(--bd2);color:var(--mt2);border-radius:8px;padding:3px 10px;font-family:var(--fn);font-size:10px;font-weight:600;cursor:pointer;transition:all .15s;}
+.routine-edit-btn:hover{border-color:var(--s1o);color:var(--s1);}
+.routine-edit-btn.active{background:var(--s1b);border-color:var(--s1o);color:var(--s1);}
+.routine-item.edit-mode{cursor:default;background:var(--sf3);}
+.routine-item.edit-mode:hover{border-color:var(--bd);}
+.routine-edit-actions{display:flex;gap:5px;align-items:center;flex-shrink:0;}
+.routine-del-btn{background:none;border:none;color:var(--mt);cursor:pointer;font-size:16px;line-height:1;opacity:.4;padding:0 2px;transition:opacity .15s;}
+.routine-del-btn:hover{opacity:1;color:var(--s3);}
+.routine-edit-inline{flex:1;background:transparent;border:none;border-bottom:1px solid var(--s1o);color:var(--tx);font-family:var(--fn);font-size:12px;font-weight:500;outline:none;padding:0 2px;width:100%;}
+.routine-edit-inline:focus{border-bottom-color:var(--s1);}
+.routine-block-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.routine-block-time-edit{background:var(--sf3);border:1px solid var(--bd2);border-radius:5px;color:var(--am);font-family:var(--mo);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;outline:none;width:140px;}
+.routine-block-time-edit:focus{border-color:var(--amo);}
+.routine-add-item{width:100%;background:none;border:1px dashed rgba(255,255,255,.12);border-radius:8px;color:var(--mt);font-family:var(--fn);font-size:11px;padding:6px;cursor:pointer;margin-top:3px;transition:all .15s;}
+.routine-add-item:hover{border-color:var(--s1o);color:var(--s1);}
+.routine-add-block-row{display:flex;gap:7px;margin-top:10px;padding-top:10px;border-top:1px dashed rgba(255,255,255,.07);}
+.routine-add-block-inp{flex:1;background:var(--sf2);border:1px solid var(--bd2);border-radius:var(--rs);padding:7px 10px;font-family:var(--fn);font-size:12px;color:var(--tx);outline:none;}
+.routine-add-block-inp:focus{border-color:var(--s1o);}
+.routine-add-block-inp::placeholder{color:var(--mt);font-style:italic;}
+.routine-add-block-btn{background:var(--s1b);border:1px solid var(--s1o);color:var(--s1);border-radius:var(--rs);padding:7px 12px;font-family:var(--fn);font-size:11px;font-weight:700;cursor:pointer;}
+.routine-del-block{background:none;border:none;color:var(--mt);cursor:pointer;font-size:12px;opacity:.4;padding:2px 5px;transition:opacity .15s;}
+.routine-del-block:hover{opacity:1;color:var(--s3);}
 .routine-summary{font-family:var(--mo);font-size:9px;color:var(--mt);text-align:right;margin-top:-6px;margin-bottom:8px;}
 
 /* ── FREE FOCUS BUTTON ── */
@@ -783,7 +806,10 @@ document.addEventListener('DOMContentLoaded',function(){const lock=document.getE
     <div class="card" id="routineCard">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
         <div class="ct" style="margin-bottom:0;">🗓 Daily Routine</div>
-        <span style="font-family:var(--mo);font-size:9px;color:var(--mt);" id="routineSummaryTop">0/0 done</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-family:var(--mo);font-size:9px;color:var(--mt);" id="routineSummaryTop">0/0 done</span>
+          <button class="routine-edit-btn" id="routineEditBtn" onclick="toggleRoutineEditMode()">✏️ Edit</button>
+        </div>
       </div>
       <div class="routine-progress"><div class="routine-prog-fill" id="routineProgFill" style="width:0%"></div></div>
       <div id="routineList"></div>
@@ -3352,7 +3378,7 @@ setInterval(function(){
 
 
 // ── DAILY ROUTINE ─────────────────────────────────────────────────────────────
-var ROUTINE_BLOCKS = [
+var ROUTINE_BLOCKS_DEFAULT = [
   {
     time: '7:30 – 8:00',
     items: [
@@ -3399,6 +3425,39 @@ var ROUTINE_BLOCKS = [
   }
 ];
 
+var ROUTINE_STRUCT_KEY = 'v5_routine_blocks_v1';
+
+// Load persisted structure, fall back to default
+function loadRoutineBlocks() {
+  try {
+    var s = localStorage.getItem(ROUTINE_STRUCT_KEY);
+    if (s) {
+      var p = JSON.parse(s);
+      if (Array.isArray(p) && p.length > 0) return p;
+    }
+  } catch(e) {}
+  return JSON.parse(JSON.stringify(ROUTINE_BLOCKS_DEFAULT));
+}
+
+var ROUTINE_BLOCKS = loadRoutineBlocks();
+
+function saveRoutineBlocks() {
+  localStorage.setItem(ROUTINE_STRUCT_KEY, JSON.stringify(ROUTINE_BLOCKS));
+  fbWrite(ROUTINE_STRUCT_KEY, ROUTINE_BLOCKS);
+  rebuildRoutineFlat();
+  renderRoutine();
+}
+
+function rebuildRoutineFlat() {
+  ROUTINE_FLAT = [];
+  ROUTINE_BLOCKS.forEach(function(block, bi) {
+    block.items.forEach(function(item, ii) {
+      ROUTINE_FLAT.push({ blockIdx: bi, itemIdx: ii, text: item });
+    });
+  });
+  ROUTINE_TOTAL = ROUTINE_FLAT.length;
+}
+
 var ROUTINE_KEY = 'v5_routine_' + today;
 var routineDone = (function() {
   try { return JSON.parse(localStorage.getItem(ROUTINE_KEY) || '[]'); } catch(e) { return []; }
@@ -3406,12 +3465,20 @@ var routineDone = (function() {
 
 // Build flat index: each item has a globalIdx
 var ROUTINE_FLAT = [];
-ROUTINE_BLOCKS.forEach(function(block, bi) {
-  block.items.forEach(function(item, ii) {
-    ROUTINE_FLAT.push({ blockIdx: bi, itemIdx: ii, text: item });
-  });
-});
+rebuildRoutineFlat();
 var ROUTINE_TOTAL = ROUTINE_FLAT.length;
+
+var _routineEditMode = false;
+
+window.toggleRoutineEditMode = function() {
+  _routineEditMode = !_routineEditMode;
+  var btn = document.getElementById('routineEditBtn');
+  if (btn) {
+    btn.textContent = _routineEditMode ? '✓ Done' : '✏️ Edit';
+    btn.classList.toggle('active', _routineEditMode);
+  }
+  renderRoutine();
+};
 
 function saveRoutine() {
   localStorage.setItem(ROUTINE_KEY, JSON.stringify(routineDone));
@@ -3424,6 +3491,7 @@ function routineIsDone(gIdx) {
 }
 
 window.toggleRoutineItem = function(gIdx) {
+  if (_routineEditMode) return;
   var pos = routineDone.indexOf(gIdx);
   if (pos >= 0) routineDone.splice(pos, 1);
   else routineDone.push(gIdx);
@@ -3431,47 +3499,178 @@ window.toggleRoutineItem = function(gIdx) {
   renderRoutine();
 };
 
+// ── ROUTINE EDIT ACTIONS ──────────────────────────────────────────────────────
+window.routineDeleteItem = function(bi, ii) {
+  // Remap routineDone: remove references to deleted gIdx, shift higher ones down
+  var deletedGIdx = 0;
+  for (var b = 0; b < bi; b++) deletedGIdx += ROUTINE_BLOCKS[b].items.length;
+  deletedGIdx += ii;
+  routineDone = routineDone
+    .filter(function(g) { return g !== deletedGIdx; })
+    .map(function(g) { return g > deletedGIdx ? g - 1 : g; });
+  saveRoutine();
+  ROUTINE_BLOCKS[bi].items.splice(ii, 1);
+  saveRoutineBlocks();
+};
+
+window.routineEditItem = function(bi, ii, newText) {
+  newText = newText.trim();
+  if (!newText) return;
+  ROUTINE_BLOCKS[bi].items[ii] = newText;
+  saveRoutineBlocks();
+};
+
+window.routineEditTime = function(bi, newTime) {
+  newTime = newTime.trim();
+  if (!newTime) return;
+  ROUTINE_BLOCKS[bi].time = newTime;
+  saveRoutineBlocks();
+};
+
+window.routineAddItem = function(bi) {
+  var inp = document.getElementById('routineNewItem_' + bi);
+  if (!inp) return;
+  var text = inp.value.trim();
+  if (!text) return;
+  ROUTINE_BLOCKS[bi].items.push(text);
+  inp.value = '';
+  saveRoutineBlocks();
+};
+
+window.routineAddItemKey = function(e, bi) {
+  if (e.key === 'Enter') window.routineAddItem(bi);
+};
+
+window.routineAddBlock = function() {
+  var timeInp = document.getElementById('routineNewBlockTime');
+  var t = timeInp ? timeInp.value.trim() : '';
+  if (!t) t = 'New Block';
+  ROUTINE_BLOCKS.push({ time: t, items: [] });
+  if (timeInp) timeInp.value = '';
+  saveRoutineBlocks();
+};
+
+window.routineDeleteBlock = function(bi) {
+  if (!confirm('Delete entire block "' + ROUTINE_BLOCKS[bi].time + '" and all its items?')) return;
+  // Remap routineDone
+  var blockStart = 0;
+  for (var b = 0; b < bi; b++) blockStart += ROUTINE_BLOCKS[b].items.length;
+  var blockSize = ROUTINE_BLOCKS[bi].items.length;
+  routineDone = routineDone
+    .filter(function(g) { return g < blockStart || g >= blockStart + blockSize; })
+    .map(function(g) { return g >= blockStart + blockSize ? g - blockSize : g; });
+  saveRoutine();
+  ROUTINE_BLOCKS.splice(bi, 1);
+  saveRoutineBlocks();
+};
+
 function renderRoutine() {
   var list = document.getElementById('routineList');
   if (!list) return;
-  var doneCount = routineDone.length;
-  var pct = ROUTINE_TOTAL > 0 ? Math.round(doneCount / ROUTINE_TOTAL * 100) : 0;
 
-  // Progress bar + summary
+  var doneCount = 0;
+  var gIdx = 0;
+  ROUTINE_BLOCKS.forEach(function(block) {
+    block.items.forEach(function() {
+      if (routineIsDone(gIdx)) doneCount++;
+      gIdx++;
+    });
+  });
+  var total = gIdx;
+  var pct = total > 0 ? Math.round(doneCount / total * 100) : 0;
+
   var fill = document.getElementById('routineProgFill');
   if (fill) fill.style.width = pct + '%';
   var summary = document.getElementById('routineSummaryTop');
-  if (summary) summary.textContent = doneCount + '/' + ROUTINE_TOTAL + ' done · ' + pct + '%';
+  if (summary) {
+    if (_routineEditMode) {
+      summary.textContent = '✏️ editing';
+      summary.style.color = 'var(--s1)';
+    } else {
+      summary.textContent = doneCount + '/' + total + ' done · ' + pct + '%';
+      summary.style.color = '';
+    }
+  }
 
-  // Build HTML
   var html = '';
-  var gIdx = 0;
-  ROUTINE_BLOCKS.forEach(function(block) {
-    html += '<div class="routine-block">';
-    html += '<div class="routine-time">' + esc(block.time) + '</div>';
-    block.items.forEach(function(item) {
-      var done = routineIsDone(gIdx);
-      html += '<div class="routine-item' + (done ? ' done' : '') + '" onclick="toggleRoutineItem(' + gIdx + ')">';
-      html += '<div class="routine-chk">' + (done ? '✓' : '') + '</div>';
-      html += '<div class="routine-txt">' + esc(item) + '</div>';
+  var gI = 0;
+
+  if (_routineEditMode) {
+    // ── EDIT MODE ──
+    ROUTINE_BLOCKS.forEach(function(block, bi) {
+      html += '<div class="routine-block">';
+      html += '<div class="routine-block-header">';
+      html += '<input class="routine-block-time-edit" value="' + esc(block.time) + '" onchange="routineEditTime(' + bi + ',this.value)" onblur="routineEditTime(' + bi + ',this.value)">';
+      html += '<button class="routine-del-block" onclick="routineDeleteBlock(' + bi + ')" title="Delete block">🗑 block</button>';
       html += '</div>';
-      gIdx++;
+
+      block.items.forEach(function(item, ii) {
+        html += '<div class="routine-item edit-mode" style="cursor:default;">';
+        html += '<div class="routine-chk" style="cursor:default;opacity:.3;"></div>';
+        html += '<input class="routine-edit-inline" value="' + esc(item) + '" onchange="routineEditItem(' + bi + ',' + ii + ',this.value)" onblur="routineEditItem(' + bi + ',' + ii + ',this.value)">';
+        html += '<div class="routine-edit-actions"><button class="routine-del-btn" onclick="routineDeleteItem(' + bi + ',' + ii + ')" title="Remove item">✕</button></div>';
+        html += '</div>';
+        gI++;
+      });
+
+      // Add item row
+      html += '<div style="display:flex;gap:6px;margin-top:4px;">';
+      html += '<input id="routineNewItem_' + bi + '" class="routine-edit-inline" style="background:var(--sf2);border:1px dashed rgba(255,255,255,.15);border-radius:6px;padding:5px 8px;" placeholder="Add item…" onkeydown="routineAddItemKey(event,' + bi + ')">';
+      html += '<button class="routine-add-block-btn" style="padding:5px 10px;font-size:11px;" onclick="routineAddItem(' + bi + ')">+ Add</button>';
+      html += '</div>';
+      html += '</div>';
     });
+
+    // Add new block row
+    html += '<div class="routine-add-block-row">';
+    html += '<input id="routineNewBlockTime" class="routine-add-block-inp" placeholder="New block label e.g. 23:00 – 00:00">';
+    html += '<button class="routine-add-block-btn" onclick="routineAddBlock()">+ Block</button>';
     html += '</div>';
-  });
+
+  } else {
+    // ── VIEW MODE ──
+    ROUTINE_BLOCKS.forEach(function(block) {
+      html += '<div class="routine-block">';
+      html += '<div class="routine-time">' + esc(block.time) + '</div>';
+      block.items.forEach(function(item) {
+        var done = routineIsDone(gI);
+        html += '<div class="routine-item' + (done ? ' done' : '') + '" onclick="toggleRoutineItem(' + gI + ')">';
+        html += '<div class="routine-chk">' + (done ? '✓' : '') + '</div>';
+        html += '<div class="routine-txt">' + esc(item) + '</div>';
+        html += '</div>';
+        gI++;
+      });
+      html += '</div>';
+    });
+  }
+
   list.innerHTML = html;
 }
 
 renderRoutine();
 
-// Sync routine from Firebase
+// Sync routine structure from Firebase
 window.addEventListener('fbReady', function() {
   var fb = window._fb;
   if (!fb || !fb.ready) return;
+  // Sync structure
+  fb.onValue(fb.ref(fb.db, fbPath(ROUTINE_STRUCT_KEY)), function(snap) {
+    var val = snap.val();
+    if (val && Array.isArray(val) && val.length > 0) {
+      var remote = JSON.stringify(val);
+      var local = JSON.stringify(ROUTINE_BLOCKS);
+      if (remote !== local) {
+        ROUTINE_BLOCKS = val;
+        localStorage.setItem(ROUTINE_STRUCT_KEY, remote);
+        rebuildRoutineFlat();
+        renderRoutine();
+      }
+    }
+  }, { onlyOnce: true });
+  // Sync done state
   fb.onValue(fb.ref(fb.db, fbPath(ROUTINE_KEY)), function(snap) {
     var val = snap.val();
     if (val && Array.isArray(val)) {
-      // Take union (keep any locally done items too)
       var merged = Array.from(new Set([].concat(routineDone, val.map(Number))));
       if (merged.length !== routineDone.length) {
         routineDone = merged;
