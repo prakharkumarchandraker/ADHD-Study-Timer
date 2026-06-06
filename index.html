@@ -2063,6 +2063,46 @@ updatePinStartBtn();
 window.navigate=function(d){ST.viewDate=addD(ST.viewDate||getToday(),d);saveGateState();renderGate();};
 window.goToday=function(){ST.viewDate=null;saveGateState();renderGate();};
 
+// ── SUBJECT REORDER MODAL ────────────────────────────────────────────────────
+window.openReorderModal=function(){
+  var ov=document.getElementById('reorderOverlay');if(!ov)return;
+  ov.classList.add('show');
+  var list=document.getElementById('reorderList');if(!list)return;
+  list.innerHTML='';
+  var order=getSubjOrder();
+  order.forEach(function(subj,i){
+    var col=COLORS[subj]||'#7b6fff';
+    var lbl=LABELS[subj]||subj;
+    var row=document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid rgba(255,255,255,.06);';
+    row.innerHTML='<span style="font-family:var(--mo);font-size:9px;font-weight:700;padding:2px 7px;border-radius:5px;background:'+col+'18;color:'+col+';">'+esc(lbl)+'</span>'
+      +'<span style="flex:1;font-size:13px;font-weight:600;">'+esc(subj)+'</span>'
+      +'<button onclick="subjMoveUp('+i+')" style="background:var(--sf2);border:1px solid var(--bd2);color:var(--mt2);border-radius:6px;padding:4px 9px;font-size:12px;cursor:pointer;"'+(i===0?' disabled':'')+'> ↑ </button>'
+      +'<button onclick="subjMoveDown('+i+')" style="background:var(--sf2);border:1px solid var(--bd2);color:var(--mt2);border-radius:6px;padding:4px 9px;font-size:12px;cursor:pointer;"'+(i===order.length-1?' disabled':'')+'> ↓ </button>';
+    list.appendChild(row);
+  });
+};
+window.closeReorderModal=function(){
+  var ov=document.getElementById('reorderOverlay');if(ov)ov.classList.remove('show');
+};
+window.resetSubjOrder=function(){
+  ST.subjOrder=null;saveGateState();renderGate();
+  window.openReorderModal(); // re-render list with default order
+  showT('↺ Reset','Subject order restored to default.');
+};
+window.subjMoveUp=function(i){
+  var order=getSubjOrder().slice();
+  if(i<=0)return;
+  var tmp=order[i-1];order[i-1]=order[i];order[i]=tmp;
+  ST.subjOrder=order;saveGateState();renderGate();window.openReorderModal();
+};
+window.subjMoveDown=function(i){
+  var order=getSubjOrder().slice();
+  if(i>=order.length-1)return;
+  var tmp=order[i+1];order[i+1]=order[i];order[i]=tmp;
+  ST.subjOrder=order;saveGateState();renderGate();window.openReorderModal();
+};
+
 // ── CONFETTI ────────────────────────────────────────────────────────────────
 function confettiBurst(big){
   var canvas=document.createElement('canvas');
@@ -2444,6 +2484,31 @@ var waterCount=waterLog.length;
 var doneOpen=false;var pinInputOpen=false;var waterLogOpen=false;
 var heatView='W';var heatOffset=0;
 var _foActive_legacy = false; // focusMode now managed by enterFocusOverlay/exitFocusOverlay
+// Day label — persisted per day. _dayLabel feeds the night-report export.
+var _dayLabel=(function(){
+  var perDay=localStorage.getItem('v5_ld_'+today);
+  if(perDay!==null)return perDay;
+  // Migrate legacy key (no per-day suffix)
+  var legacy=localStorage.getItem('v5_ld_label')||'';
+  if(legacy)localStorage.setItem('v5_ld_'+today,legacy);
+  return legacy;
+})();
+function saveDayLabel(){
+  var inp=document.getElementById('dayLabelInp');
+  if(!inp)return;
+  _dayLabel=inp.value;
+  var key='v5_ld_'+today;
+  localStorage.setItem(key,_dayLabel);
+  // Write to Firebase so other devices pick it up
+  if(window._fb&&window._fb.ready&&typeof fbPath==='function'){
+    window._fb.set(window._fb.ref(window._fb.db,fbPath(key)),_dayLabel).catch(function(){});
+  }
+}
+// Restore day label into the input on page load
+document.addEventListener('DOMContentLoaded',function(){
+  var inp=document.getElementById('dayLabelInp');
+  if(inp&&_dayLabel)inp.value=_dayLabel;
+},{once:true});
 
 // Overnight reset
 (function(){
@@ -2724,6 +2789,159 @@ function renderSegs(elapsed,total,color){
     else if(elapsed>=segStart){var pct=Math.min(100,((elapsed-segStart)/segDur)*100);box.className='seg-box active';fill.style.width=pct+'%';fill.style.background=color;var remSec=Math.max(0,Math.round(segEnd-elapsed));lbl.textContent=pad(Math.floor(remSec/60))+':'+pad(remSec%60);}
     else{box.className='seg-box';fill.style.width='0%';lbl.textContent=mins+'m';}
   }
+}
+
+// ── HISTORY TAB ──────────────────────────────────────────────────────────────
+var _histYear=(function(){var d=new Date();return d.getFullYear();}());
+var _histMonth=(function(){var d=new Date();return d.getMonth();}());
+var _histSelDay=null; // currently selected day string YYYY-MM-DD
+
+window.histNavMonth=function(dir){
+  _histMonth+=dir;
+  if(_histMonth>11){_histMonth=0;_histYear++;}
+  if(_histMonth<0){_histMonth=11;_histYear--;}
+  _histSelDay=null;
+  renderHistory();
+};
+
+function renderHistory(){
+  var MONS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var ml=document.getElementById('histMonthLabel');
+  if(ml)ml.textContent=MONS[_histMonth]+' '+_histYear;
+
+  // Build calendar
+  var labelsEl=document.getElementById('histCalLabels');
+  var gridEl=document.getElementById('histCalGrid');
+  if(labelsEl&&!labelsEl.innerHTML){
+    labelsEl.innerHTML=['S','M','T','W','T','F','S'].map(function(d){return '<div class="hist-cal-label">'+d+'</div>';}).join('');
+  }
+  if(!gridEl)return;
+
+  var firstDay=new Date(_histYear,_histMonth,1).getDay(); // 0=Sun
+  var daysInMonth=new Date(_histYear,_histMonth+1,0).getDate();
+  var today=getToday();
+
+  // Collect all study data for this month
+  var cells='';
+  for(var i=0;i<firstDay;i++) cells+='<div class="hist-cal-day empty hcd-0"></div>';
+  for(var d=1;d<=daysInMonth;d++){
+    var ds=_histYear+'-'+pad(_histMonth+1)+'-'+pad(d);
+    var mins=(heat[ds]||0)*60; // heat stores hours for older entries; check raw
+    // Try chk key for accurate per-day data
+    var chkDay=JSON.parse(localStorage.getItem('v5_chk_'+ds)||'[]');
+    var screenMinsDay=0;
+    try{var sft=JSON.parse(localStorage.getItem('v5_sft_'+ds)||'{}');Object.values(sft).forEach(function(v){screenMinsDay+=Math.floor((v||0)/60);});}catch(e){}
+    var hoursDay=screenMinsDay>0?screenMinsDay/60:(heat[ds]||0);
+    var lvl=hoursDay<=0?0:hoursDay<2?1:hoursDay<4?2:hoursDay<6?3:4;
+    var isToday=ds===today;
+    var isSel=ds===_histSelDay;
+    var cls='hist-cal-day hcd-'+lvl+(isToday?' today-marker':'')+(isSel?' selected':'')+(hoursDay>0?' has-data':'');
+    cells+='<div class="'+cls+'" onclick="histSelectDay(\''+ds+'\')" title="'+ds+'">'+d+'</div>';
+  }
+  gridEl.innerHTML=cells;
+
+  // Month stats
+  var statsEl=document.getElementById('histMonthStats');
+  if(statsEl){
+    var totalDays=0,totalH=0,bestH=0,activeDays=0;
+    for(var d2=1;d2<=daysInMonth;d2++){
+      var ds2=_histYear+'-'+pad(_histMonth+1)+'-'+pad(d2);
+      var sm2=0;
+      try{var sft2=JSON.parse(localStorage.getItem('v5_sft_'+ds2)||'{}');Object.values(sft2).forEach(function(v){sm2+=Math.floor((v||0)/60);});}catch(e){}
+      var h2=sm2>0?sm2/60:(heat[ds2]||0);
+      totalDays++;
+      totalH+=h2;
+      if(h2>bestH)bestH=h2;
+      if(h2>0)activeDays++;
+    }
+    statsEl.innerHTML=''
+      +'<div class="hms"><div class="hms-num" style="color:var(--s1);">'+activeDays+'</div><div class="hms-lbl">Active</div></div>'
+      +'<div class="hms"><div class="hms-num" style="color:var(--s2);">'+Math.round(totalH*10)/10+'h</div><div class="hms-lbl">Total</div></div>'
+      +'<div class="hms"><div class="hms-num" style="color:var(--am);">'+Math.round(totalH/Math.max(1,activeDays)*10)/10+'h</div><div class="hms-lbl">Avg/Day</div></div>'
+      +'<div class="hms"><div class="hms-num" style="color:var(--s3);">'+Math.round(bestH*10)/10+'h</div><div class="hms-lbl">Best</div></div>';
+  }
+
+  // Bar chart (last 7 days of the month or visible days)
+  var barEl=document.getElementById('histBarChart');
+  if(barEl){
+    var barDays=Math.min(14,daysInMonth);
+    var startBar=Math.max(1,daysInMonth-barDays+1);
+    var barHtml='';
+    var maxH=0;
+    var barData=[];
+    for(var bd=startBar;bd<=daysInMonth;bd++){
+      var bds=_histYear+'-'+pad(_histMonth+1)+'-'+pad(bd);
+      var bsm=0;
+      try{var bsft=JSON.parse(localStorage.getItem('v5_sft_'+bds)||'{}');Object.values(bsft).forEach(function(v){bsm+=Math.floor((v||0)/60);});}catch(e){}
+      var bh=bsm>0?bsm/60:(heat[bds]||0);
+      if(bh>maxH)maxH=bh;
+      barData.push({d:bd,h:bh});
+    }
+    barData.forEach(function(item){
+      var pct=maxH>0?Math.round(item.h/maxH*100):0;
+      barHtml+='<div class="hist-bar-wrap"><div class="hist-bar" style="height:'+pct+'%;"></div><div class="hist-bar-lbl">'+item.d+'</div></div>';
+    });
+    barEl.innerHTML=barHtml;
+  }
+
+  // Day list
+  renderHistDayList();
+}
+
+window.histSelectDay=function(ds){
+  _histSelDay=(_histSelDay===ds)?null:ds;
+  renderHistory();
+};
+
+function renderHistDayList(){
+  var listEl=document.getElementById('histDayList');
+  var countEl=document.getElementById('histDayCount');
+  if(!listEl)return;
+
+  // Show all days in the month that have any data, selected day expanded
+  var daysInMonth=new Date(_histYear,_histMonth+1,0).getDate();
+  var rows=[];
+  for(var d=daysInMonth;d>=1;d--){
+    var ds=_histYear+'-'+pad(_histMonth+1)+'-'+pad(d);
+    var sm=0;
+    try{var sft=JSON.parse(localStorage.getItem('v5_sft_'+ds)||'{}');Object.values(sft).forEach(function(v){sm+=Math.floor((v||0)/60);});}catch(e){}
+    var h=sm>0?sm/60:(heat[ds]||0);
+    var chkD=JSON.parse(localStorage.getItem('v5_chk_'+ds)||'[]');
+    var lblD=localStorage.getItem('v5_ld_'+ds)||'';
+    if(h>0||chkD.length>0||lblD){
+      rows.push({ds:ds,h:h,chkCount:chkD.length,lbl:lblD,d:d});
+    }
+  }
+  if(countEl)countEl.textContent=rows.length+' day'+(rows.length!==1?'s':'');
+  if(!rows.length){listEl.innerHTML='<div class="hist-empty">No study data for this month yet.</div>';return;}
+
+  listEl.innerHTML='';
+  rows.forEach(function(row){
+    var isExpanded=_histSelDay===row.ds;
+    var col=row.h>=6?'#2dd4a0':row.h>=3?'#7b6fff':row.h>=1?'#f5c542':'#5e5b6e';
+    var dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    var dayName=dayNames[new Date(row.ds).getDay()];
+    var div=document.createElement('div');
+    div.className='hist-day-row'+(isExpanded?' expanded':'');
+    div.onclick=function(){window.histSelectDay(row.ds);};
+    div.innerHTML='<div class="hist-day-dot" style="background:'+col+';"></div>'
+      +'<div class="hist-day-date">'+pad(row.d)+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][_histMonth]+'</div>'
+      +'<div class="hist-day-label">'+esc(row.lbl||dayName)+'</div>'
+      +'<div class="hist-day-pills">'
+      +(row.h>0?'<span class="hist-pill" style="background:rgba(123,111,255,.15);color:var(--s1);">'+Math.round(row.h*10)/10+'h</span>':'')
+      +(row.chkCount>0?'<span class="hist-pill" style="background:rgba(45,212,160,.1);color:var(--s2);">'+row.chkCount+' ✓</span>':'')
+      +'</div>';
+    listEl.appendChild(div);
+    if(isExpanded){
+      var panel=document.createElement('div');
+      panel.className='hist-expand-panel';
+      var gateDoneOnDay=Object.keys(ST.done).filter(function(tid){return ST.done[tid]&&ST.done[tid].split('T')[0]===row.ds;});
+      panel.innerHTML=(row.lbl?'<div class="hist-section-title">Day Label</div><div style="font-size:12px;color:var(--mt2);font-style:italic;margin-bottom:6px;">'+esc(row.lbl)+'</div>':'')
+        +(gateDoneOnDay.length?'<div class="hist-section-title">GATE Tasks Done ('+gateDoneOnDay.length+')</div><div style="font-size:11px;color:var(--mt2);">'+gateDoneOnDay.map(function(tid){var t=ALL_TASKS.find(function(x){return x.id===Number(tid);});return t?esc(LABELS[t.subject]||t.subject)+' #'+t.num:'';}).filter(Boolean).join(', ')+'</div>':'')
+        +'<div class="hist-section-title">Study Time</div><div style="font-family:var(--mo);font-size:13px;color:var(--s1);">'+Math.round(row.h*10)/10+'h screen time</div>';
+      listEl.appendChild(panel);
+    }
+  });
 }
 
 // ── UPDATE STATS ─────────────────────────────────────────────────────────────
@@ -3074,13 +3292,41 @@ function exitFocusOverlay(){
   });
 }
 
-// If user presses Escape or exits fullscreen via browser, close overlay too
-document.addEventListener('fullscreenchange', function(){
-  if(!document.fullscreenElement && _foActive) exitFocusOverlay();
+// If user presses Escape or exits fullscreen via browser, close overlay too.
+// IMPORTANT: On Android, locking the screen fires fullscreenchange with no fullscreenElement.
+// We must NOT exit the overlay in that case — only exit if the page is actually visible
+// and the user deliberately left fullscreen (e.g. tapped back or swiped away).
+function _onFullscreenChange(){
+  var isFullscreen=!!(document.fullscreenElement||document.webkitFullscreenElement||document.mozFullScreenElement);
+  if(!isFullscreen&&_foActive){
+    // If the page is hidden (screen locked / app backgrounded), DON'T exit.
+    // Re-request fullscreen when the page becomes visible again instead.
+    if(document.visibilityState==='hidden'){
+      return; // screen lock — keep overlay state, re-enter fullscreen on resume
+    }
+    // Page is visible but fullscreen was lost → user navigated away intentionally
+    exitFocusOverlay();
+  }
+}
+document.addEventListener('fullscreenchange', _onFullscreenChange);
+document.addEventListener('webkitfullscreenchange', _onFullscreenChange);
+document.addEventListener('mozfullscreenchange', _onFullscreenChange);
+
+// When the screen is unlocked and the app comes back to foreground,
+// re-request fullscreen if focus overlay is still active.
+document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState==='visible'&&_foActive){
+    // Small delay to let the browser settle after unlock
+    setTimeout(function(){
+      if(!document.fullscreenElement&&!document.webkitFullscreenElement&&_foActive){
+        var el=document.documentElement;
+        if(el.requestFullscreen){el.requestFullscreen().catch(function(){});}
+        else if(el.webkitRequestFullscreen){el.webkitRequestFullscreen();}
+      }
+    },400);
+  }
 });
-document.addEventListener('webkitfullscreenchange', function(){
-  if(!document.webkitFullscreenElement && _foActive) exitFocusOverlay();
-});
+
 // Keyboard shortcut: Escape also exits
 document.addEventListener('keydown', function(e){
   if(e.key==='Escape' && _foActive) exitFocusOverlay();
@@ -3521,10 +3767,67 @@ function fbToIntArr(val){return fbToArr(val).map(Number).filter(function(n){retu
 
 function startSync(){
   var fb=window._fb;if(!fb||!fb.ready)return;
-  // Daily: chk
-  fb.onValue(fb.ref(fb.db,fbPath('v5_chk_'+today)),function(snap){var val=snap.val();var incoming=val===null?[]:fbToIntArr(val).sort(function(a,b){return a-b;});var cur=[...chk].sort(function(a,b){return a-b;});if(JSON.stringify(incoming)!==JSON.stringify(cur)){chk=incoming;localStorage.setItem('v5_chk_'+today,JSON.stringify(chk));buildSchedule();up();}});
-  // hist
-  fb.onValue(fb.ref(fb.db,fbPath('v5_hist_'+today)),function(snap){var val=snap.val();hist=(val&&typeof val==='object')?val:{};localStorage.setItem('v5_hist_'+today,JSON.stringify(hist));});
+
+  // ── Daily session checks (chk) ─────────────────────────────────────────
+  // Upload local value first so other devices get it, then listen for remote changes.
+  fb.set(fb.ref(fb.db,fbPath('v5_chk_'+today)),chk).catch(function(){});
+  fb.onValue(fb.ref(fb.db,fbPath('v5_chk_'+today)),function(snap){
+    var val=snap.val();
+    var incoming=val===null?[]:fbToIntArr(val).sort(function(a,b){return a-b;});
+    var cur=[...chk].sort(function(a,b){return a-b;});
+    if(JSON.stringify(incoming)!==JSON.stringify(cur)){
+      chk=incoming;localStorage.setItem('v5_chk_'+today,JSON.stringify(chk));buildSchedule();up();
+    }
+  });
+
+  // ── Session history (hist) ─────────────────────────────────────────────
+  // Upload local hist first, then listen.
+  if(Object.keys(hist).length>0){
+    fb.set(fb.ref(fb.db,fbPath('v5_hist_'+today)),hist).catch(function(){});
+  }
+  fb.onValue(fb.ref(fb.db,fbPath('v5_hist_'+today)),function(snap){
+    var val=snap.val();
+    var incoming=(val&&typeof val==='object')?val:{};
+    // Merge: union of local and remote keys (both are treated as additive logs)
+    var changed=false;
+    Object.keys(incoming).forEach(function(k){if(!hist[k]){hist[k]=incoming[k];changed=true;}});
+    if(changed){localStorage.setItem('v5_hist_'+today,JSON.stringify(hist));}
+  });
+
+  // ── Daily Routine Done (v5_rdone_TODAY) ───────────────────────────────
+  // CRITICAL: This was the main missing sync. Upload local state, then listen.
+  var rdKey=ROUTINE_DONE_KEY();
+  fb.set(fb.ref(fb.db,fbPath(rdKey)),_routineDone).catch(function(){});
+  fb.onValue(fb.ref(fb.db,fbPath(rdKey)),function(snap){
+    var val=snap.val();
+    if(!val||typeof val!=='object')return;
+    // Merge: union of local + remote (checked items from any device are kept)
+    var changed=false;
+    Object.keys(val).forEach(function(k){
+      if(val[k]&&!_routineDone[k]){_routineDone[k]=true;changed=true;}
+    });
+    if(changed){
+      var key2=ROUTINE_DONE_KEY();
+      localStorage.setItem(key2,JSON.stringify(_routineDone));
+      if(typeof renderRoutineFromTimetable==='function')renderRoutineFromTimetable();
+      if(typeof renderFoSubItems==='function')renderFoSubItems();
+    }
+  });
+
+  // ── Day label (v5_ld_TODAY) ───────────────────────────────────────────
+  // Day label uses a per-day key so it doesn't get confused across days.
+  var dlKey='v5_ld_'+today;
+  var localDl=localStorage.getItem(dlKey)||localStorage.getItem('v5_ld')||'';
+  if(localDl){fb.set(fb.ref(fb.db,fbPath(dlKey)),localDl).catch(function(){});}
+  fb.onValue(fb.ref(fb.db,fbPath(dlKey)),function(snap){
+    var val=snap.val();
+    if(typeof val==='string'&&val&&val!==localDl){
+      localStorage.setItem(dlKey,val);
+      var inp=document.getElementById('dayLabelInp');
+      if(inp&&!inp.matches(':focus'))inp.value=val;
+    }
+  });
+
   // pin
   fb.onValue(fb.ref(fb.db,fbPath('v5_pin')),function(snap){var val=snap.val();if(val==='__null__'||val===null){if(pinTask!==null){pinTask=null;localStorage.removeItem('v5_pin');renderPin();}}else if(val&&typeof val==='object'){var inc=JSON.stringify(val);if(inc!==JSON.stringify(pinTask)){pinTask=val;localStorage.setItem('v5_pin',JSON.stringify(pinTask));renderPin();}}});
   // todos
@@ -4496,12 +4799,16 @@ function pushUpdateUI(){
   var nextEl=document.getElementById('pushNextAlarm');
   if(!statusEl)return;
 
-  if(!('Notification' in window)){
-    statusEl.textContent='Notifications not supported on this browser.';
+  // Notification API absent on file://, Android WebView, older browsers
+  if(typeof Notification==='undefined'){
+    statusEl.textContent='Notifications require HTTPS hosting (GitHub Pages / Netlify).';
+    if(enableBtn)enableBtn.style.display='none';
+    if(testBtn)testBtn.style.display='none';
     return;
   }
   if(!('serviceWorker' in navigator)){
     statusEl.textContent='Service Worker not supported — host app on HTTPS.';
+    if(enableBtn)enableBtn.style.display='none';
     return;
   }
 
@@ -4530,7 +4837,7 @@ function pushUpdateUI(){
 }
 
 window.pushRequestPermission=function(){
-  if(!('Notification' in window))return;
+  if(typeof Notification==='undefined')return;
   Notification.requestPermission().then(function(result){
     pushUpdateUI();
     if(result==='granted'){
@@ -4543,7 +4850,7 @@ window.pushRequestPermission=function(){
 };
 
 window.pushSendTest=function(){
-  if(Notification.permission!=='granted')return;
+  if(typeof Notification==='undefined'||Notification.permission!=='granted')return;
   if(window._swReg){
     window._swReg.showNotification('📚 Study OS — Test',{
       body:'Notifications are working! You\'ll be alerted before each session.',
@@ -4569,7 +4876,7 @@ function pushGetNextSlotTime(){
 
 // Schedule an alarm 5 minutes before each timetable slot for today
 function pushScheduleAllAlarms(){
-  if(Notification.permission!=='granted'||!window._swReg)return;
+  if(typeof Notification==='undefined'||Notification.permission!=='granted'||!window._swReg)return;
   var sw=window._swReg.active;if(!sw)return;
   var now=new Date();var nm=now.getHours()*60+now.getMinutes();
   var scheduled=0;
@@ -4596,7 +4903,10 @@ function pushScheduleAllAlarms(){
 // Init push UI and schedule alarms on load
 document.addEventListener('DOMContentLoaded',function(){
   pushUpdateUI();
-  if(Notification.permission==='granted')pushScheduleAllAlarms();
+  // Guard: Notification API may not exist on file:// or some mobile browsers
+  if(typeof Notification!=='undefined'&&Notification.permission==='granted'){
+    pushScheduleAllAlarms();
+  }
 },{once:true});
 
 </script>
