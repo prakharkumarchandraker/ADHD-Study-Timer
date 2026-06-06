@@ -654,12 +654,32 @@ body.focus-mode .hero-cd{font-size:96px!important;letter-spacing:-4px;}
 #potato-btn.potato-active{background:linear-gradient(135deg,#6b7280,#4b5563);box-shadow:0 2px 8px rgba(0,0,0,.3);}
 
 
-/* ── NAV: icons-only on mobile ── */
-.nav-btn .nav-txt{font-size:8px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;}
 @media(max-width:540px){
   .nav-btn .nav-txt{display:none;}
   .nav-btn{padding:8px 2px 6px;}
   .nav-btn .nav-ico{font-size:22px;}
+}
+
+/* ── MOBILE GATE TAB LAYOUT FIXES ── */
+/* Do Next button - compact on mobile */
+.do-next-btn{max-width:80px;overflow:hidden;text-overflow:ellipsis;}
+@media(max-width:600px){
+  /* Task card flag buttons - wrap cleanly */
+  .gate-flag-wrap{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px;}
+  /* Split action buttons (Start Now / Skip) - stack on tiny screens */
+  .gate-split-btns{display:flex;gap:5px;flex-wrap:wrap;}
+  .gate-split-btns button{flex:1;min-width:120px;font-size:10px!important;padding:7px 6px!important;}
+  /* Hero gate task badge - don't overflow */
+  .hgt-badge{max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  /* Session header in GATE - allow wrap */
+  .gate-ses-header{flex-wrap:wrap;gap:6px;}
+  /* Reduce padding in session cards on mobile */
+  .un-card{padding:10px 11px;}
+  .un-name{font-size:14px!important;}
+  /* Carry-forward badge inline */
+  .cf-badge{display:inline-flex;}
+  /* GATE banner font */
+  #gate-banner{font-size:11px;padding:8px 12px;line-height:1.4;}
 }
 
 /* ── TIMETABLE TAB ── */
@@ -1520,14 +1540,14 @@ window.onerror=function(msg,src,line,col,err){
 <!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getDatabase, ref, onValue, set } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+import { getDatabase, ref, onValue, set, update } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
 const FIREBASE_CONFIG={apiKey:"AIzaSyBiR56BExZjtmmpjOHn2YHqlnjJNkggReY",authDomain:"adhd-timer-27e1b.firebaseapp.com",databaseURL:"https://adhd-timer-27e1b-default-rtdb.firebaseio.com",projectId:"adhd-timer-27e1b",storageBucket:"adhd-timer-27e1b.firebasestorage.app",messagingSenderId:"1081377208233",appId:"1:1081377208233:web:6671afd64e30a4b8fff6b8"};
 function setSyncStatus(state,label){const dot=document.getElementById('syncDot');const lbl=document.getElementById('syncLbl');if(dot)dot.className='sync-dot '+(state==='ok'?'ok':state==='err'?'err':'');if(lbl)lbl.textContent=label;}
 try{
   const app=initializeApp(FIREBASE_CONFIG);
   const db=getDatabase(app);
   setSyncStatus('ok','synced');
-  window._fb={db,ref,onValue,set,ready:true};
+  window._fb={db,ref,onValue,set,update,ready:true};
   window._setSyncStatus=setSyncStatus;
   window.dispatchEvent(new Event('fbReady'));
 }catch(e){
@@ -1662,8 +1682,18 @@ function isRoutineDone(slotId,itemIdx){return !!_routineDone[slotId+'_'+itemIdx]
 function saveRoutineDone(){
   var key=ROUTINE_DONE_KEY();
   localStorage.setItem(key,JSON.stringify(_routineDone));
-  if(window._fb&&window._fb.ready&&typeof fbPath==='function'){
-    window._fb.set(window._fb.ref(window._fb.db,fbPath(key)),_routineDone).catch(function(){});
+  var fb=window._fb;
+  if(fb&&fb.ready&&typeof fbPath==='function'){
+    // Use update() for atomic per-key writes — prevents cross-device overwrites
+    if(fb.update){
+      var patch={};patch[fbPath(key)]=_routineDone;
+      fb.update(fb.ref(fb.db,'/'),patch).catch(function(){
+        // Fallback to set if update fails
+        fb.set(fb.ref(fb.db,fbPath(key)),_routineDone).catch(function(){});
+      });
+    } else {
+      fb.set(fb.ref(fb.db,fbPath(key)),_routineDone).catch(function(){});
+    }
   }
 }
 window.toggleRoutineItemNew=function(slotId,itemIdx){
@@ -3148,7 +3178,8 @@ function updateFocusOverlay(){
     if(timerEl) timerEl.textContent = fmtSecs(remSecs);
     if(timerLbl) timerLbl.textContent = 'time remaining';
     if(sessionBadge){
-      sessionBadge.textContent = (activeSlot.type==='class'?'📡 CLASS':'📚 STUDY')+' · '+(activeSlot.label||'SESSION').toUpperCase();
+      var _sTypeLabel = activeSlot.type==='class'?'📡 CLASS':activeSlot.type==='other'?'🗓 ROUTINE':'📚 STUDY';
+      sessionBadge.textContent = _sTypeLabel+' · '+(activeSlot.label||'SESSION').toUpperCase();
     }
     if(sessionName) sessionName.textContent = activeSlot.label||'Study Session';
     if(sessionRange){
@@ -3159,11 +3190,19 @@ function updateFocusOverlay(){
     if(progressFill) progressFill.style.width = Math.min(100,Math.round(elapsedSecs/durSecs*100))+'%';
     var sched4 = buildSched(); var nextT4 = getNextTask(sched4);
     if(taskPill){
-      taskPill.style.display='block';
-      if(nextT4){
-        var lbl4=LABELS[nextT4.item.subject]||nextT4.item.subject;
-        taskPill.textContent='📚 '+lbl4+' · '+nextT4.item.name;
-      } else taskPill.textContent='✅ All tasks done!';
+      if(activeSlot.type==='other'){
+        // Other slots: show checklist progress in pill
+        var _itTotal=activeSlot.items?activeSlot.items.length:0;
+        var _itDone=activeSlot.items?activeSlot.items.filter(function(_x,_ii){return isRoutineDone(activeSlot.id,_ii);}).length:0;
+        taskPill.style.display=_itTotal>0?'block':'none';
+        if(_itTotal>0)taskPill.textContent='🗓 '+_itDone+'/'+_itTotal+' routine items done';
+      } else {
+        taskPill.style.display='block';
+        if(nextT4){
+          var lbl4=LABELS[nextT4.item.subject]||nextT4.item.subject;
+          taskPill.textContent='📚 '+lbl4+' · '+nextT4.item.name;
+        } else taskPill.textContent='✅ All tasks done!';
+      }
     }
     if(pomoDots){
       var numDots=Math.max(1,Math.ceil(dur2/25));
@@ -3241,17 +3280,20 @@ function updateFocusOverlay(){
   if(activeSlot){var stX=toM(activeSlot.start[0],activeSlot.start[1]);curSlotElapsed=Math.max(0,Math.min(slotMins(activeSlot),nm-stX));}
   else if(fs){curSlotElapsed=Math.floor(fs.secs/60);curSlotScreen=Math.floor(fs.secs/60);}
   var dispScreen,dispAway,dispPct;
-  if(activeSlot||fs){dispScreen=curSlotScreen;dispAway=Math.max(0,curSlotElapsed-curSlotScreen);dispPct=curSlotElapsed>0?Math.min(100,Math.round(curSlotScreen/curSlotElapsed*100)):(fs?100:0);}
+  // For Other slots: screen/away is meaningless (you're meant to be away). Show today totals instead.
+  var _isOtherSlot = activeSlot && activeSlot.type==='other';
+  if(_isOtherSlot){dispScreen=totalScreenToday;dispAway=Math.max(0,totalElapsedToday-totalScreenToday);dispPct=totalElapsedToday>0?Math.min(100,Math.round(totalScreenToday/totalElapsedToday*100)):0;}
+  else if(activeSlot||fs){dispScreen=curSlotScreen;dispAway=Math.max(0,curSlotElapsed-curSlotScreen);dispPct=curSlotElapsed>0?Math.min(100,Math.round(curSlotScreen/curSlotElapsed*100)):(fs?100:0);}
   else{dispScreen=totalScreenToday;dispAway=Math.max(0,totalElapsedToday-totalScreenToday);dispPct=totalElapsedToday>0?Math.min(100,Math.round(totalScreenToday/totalElapsedToday*100)):0;}
   var colPct=dispPct>=80?'#34d399':dispPct>=50?'#f9a825':'#f87171';
   var foS=document.getElementById('foScreenTime'),foA=document.getElementById('foAwayTime');
   var foP=document.getElementById('foPresentPct'),foT=document.getElementById('foTotalScreen');
   var foSLbl=document.getElementById('foScreenLbl');
   if(foS)foS.textContent=dispScreen+'m';
-  if(foA)foA.textContent=dispAway+'m';
-  if(foP){foP.textContent=dispPct+'%';foP.style.color=colPct;}
+  if(foA)foA.textContent=_isOtherSlot?'—':dispAway+'m';
+  if(foP){foP.textContent=_isOtherSlot?'—':dispPct+'%';if(!_isOtherSlot)foP.style.color=colPct;else foP.style.color='var(--mt)';}
   if(foT)foT.textContent=totalScreenToday+'m';
-  if(foSLbl)foSLbl.textContent=(activeSlot||fs)?'This Ses.':'Today';
+  if(foSLbl)foSLbl.textContent=_isOtherSlot?'Today':((activeSlot||fs)?'This Ses.':'Today');
 
   // Water countdown
   var waterRow=document.getElementById('foWaterRow'),waterCd=document.getElementById('foWaterCd');
@@ -3811,18 +3853,18 @@ function startSync(){
   });
 
   // ── Daily Routine Done (v5_rdone_TODAY) ───────────────────────────────
-  // CRITICAL: This was the main missing sync. Upload local state, then listen.
+  // CRITICAL: Upload local state then listen. Full-replace strategy so both
+  // checking AND unchecking sync correctly across devices.
   var rdKey=ROUTINE_DONE_KEY();
   fb.set(fb.ref(fb.db,fbPath(rdKey)),_routineDone).catch(function(){});
   fb.onValue(fb.ref(fb.db,fbPath(rdKey)),function(snap){
     var val=snap.val();
-    if(!val||typeof val!=='object')return;
-    // Merge: union of local + remote (checked items from any device are kept)
-    var changed=false;
-    Object.keys(val).forEach(function(k){
-      if(val[k]&&!_routineDone[k]){_routineDone[k]=true;changed=true;}
-    });
-    if(changed){
+    // Full replace: accept Firebase state (last-write-wins, handles unchecks)
+    var remote=val&&typeof val==='object'?val:{};
+    var remoteStr=JSON.stringify(remote);
+    var localStr=JSON.stringify(_routineDone);
+    if(remoteStr!==localStr){
+      _routineDone=remote;
       var key2=ROUTINE_DONE_KEY();
       localStorage.setItem(key2,JSON.stringify(_routineDone));
       if(typeof renderRoutineFromTimetable==='function')renderRoutineFromTimetable();
@@ -5376,21 +5418,7 @@ window.addEventListener('fbReady',function(){
       }
     }
   });
-  // Also sync routine done state in real-time
-  var rdKey=ROUTINE_DONE_KEY();
-  fb.onValue(fb.ref(fb.db,fbPath(rdKey)),function(snap){
-    var val=snap.val();
-    if(!val||typeof val!=='object')return;
-    var changed=false;
-    Object.keys(val).forEach(function(k){
-      if(val[k]&&!_routineDone[k]){_routineDone[k]=true;changed=true;}
-    });
-    if(changed){
-      localStorage.setItem(rdKey,JSON.stringify(_routineDone));
-      if(typeof renderRoutineFromTimetable==='function')renderRoutineFromTimetable();
-      if(typeof renderFoSubItems==='function')renderFoSubItems();
-    }
-  });
+  // Routine done sync is handled in startSync() — no duplicate listener needed here
 },{once:true});
 
 </script>
