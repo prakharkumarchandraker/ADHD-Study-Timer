@@ -581,29 +581,38 @@ body.focus-mode .hero-cd{font-size:96px!important;letter-spacing:-4px;}
 .fo-glow{position:absolute;border-radius:50%;filter:blur(80px);opacity:.12;}
 .fo-glow-1{width:60vw;height:60vw;top:-10%;left:-10%;background:#7b6fff;}
 .fo-glow-2{width:50vw;height:50vw;bottom:-10%;right:-10%;background:#2dd4a0;}
-.fo-session-badge{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:10px;font-family:var(--mo);}
-.fo-session-name{font-size:20px;font-weight:700;color:rgba(255,255,255,.85);margin-bottom:4px;text-align:center;max-width:90vw;padding:0 16px;}
-@media(max-width:480px){.fo-session-name{font-size:16px;}}
-.fo-session-range{font-size:12px;color:rgba(255,255,255,.3);font-family:var(--mo);margin-bottom:32px;}
-.fo-timer{font-size:96px;font-weight:700;font-family:'DM Mono','Courier New',Courier,monospace;letter-spacing:-2px;color:#fff;line-height:1;margin-bottom:8px;text-align:center;}
-@media(max-width:480px){.fo-timer{font-size:68px;}}
-@media(min-width:900px){.fo-timer{font-size:130px;}}
-.fo-timer-lbl{font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:36px;}
-.fo-progress-wrap{width:min(340px,80vw);height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;margin-bottom:36px;}
-.fo-progress-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,#7b6fff,#2dd4a0);transition:width .5s linear;}
-.fo-pomo{display:flex;gap:8px;margin-bottom:40px;min-height:10px;align-items:center;}
-.fo-pomo-dot{width:10px;height:10px;min-width:10px;min-height:10px;max-width:10px;max-height:10px;border-radius:50%;background:rgba(255,255,255,.12);transition:all .3s;flex-shrink:0;}
+/* Top bar */
+.fo-topbar{position:absolute;top:max(16px,env(safe-area-inset-top,16px));left:max(16px,env(safe-area-inset-left,16px));right:max(16px,env(safe-area-inset-right,16px));display:flex;align-items:center;justify-content:space-between;z-index:1;}
+.fo-exit-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:7px 13px;color:rgba(255,255,255,.5);font-family:var(--fn);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;}
+.fo-exit-btn:hover,.fo-exit-btn:active{background:rgba(255,255,255,.15);color:#fff;}
+.fo-topbar-right{display:flex;align-items:center;gap:10px;}
+.fo-top-chip{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:5px 10px;font-family:var(--mo);font-size:11px;color:rgba(255,255,255,.4);}
+/* Session info */
+.fo-session-badge{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:8px;font-family:var(--mo);}
+.fo-session-name{font-size:clamp(15px,4vw,22px);font-weight:700;color:rgba(255,255,255,.85);margin-bottom:3px;text-align:center;max-width:90vw;padding:0 16px;}
+.fo-session-range{font-size:11px;color:rgba(255,255,255,.28);font-family:var(--mo);margin-bottom:20px;}
+/* Task pill */
+.fo-task-pill{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:20px;padding:6px 16px;font-size:11px;color:rgba(255,255,255,.45);font-family:var(--mo);max-width:80vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:16px;}
+/* Big timer */
+.fo-timer{font-size:clamp(56px,14vw,110px);font-weight:700;font-family:'DM Mono','Courier New',Courier,monospace;letter-spacing:-2px;color:#fff;line-height:1;margin-bottom:6px;text-align:center;font-variant-numeric:tabular-nums;}
+.fo-timer-lbl{font-size:10px;color:rgba(255,255,255,.28);letter-spacing:.12em;text-transform:uppercase;margin-bottom:24px;}
+/* Progress bar */
+.fo-progress-wrap{width:min(300px,75vw);height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;margin-bottom:24px;}
+.fo-progress-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,#7b6fff,#2dd4a0);transition:width .8s linear;}
+/* Pomo dots */
+.fo-pomo{display:flex;gap:7px;margin-bottom:28px;min-height:10px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:80vw;}
+.fo-pomo-dot{width:9px;height:9px;min-width:9px;min-height:9px;border-radius:50%;background:rgba(255,255,255,.1);transition:all .3s;flex-shrink:0;}
 .fo-pomo-dot.done{background:#7b6fff;}
 .fo-pomo-dot.active{background:#fff;box-shadow:0 0 8px rgba(255,255,255,.5);}
-.fo-stats{display:flex;gap:clamp(16px,4vw,40px);margin-bottom:48px;}
-.fo-stat{text-align:center;}
-.fo-stat-num{font-size:28px;font-weight:700;font-family:'DM Mono','Courier New',Courier,monospace;line-height:1;}
-@media(max-width:480px){.fo-stat-num{font-size:20px;}}
-.fo-stat-lbl{font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.08em;text-transform:uppercase;margin-top:4px;}
-.fo-stat-divider{width:1px;background:rgba(255,255,255,.08);align-self:stretch;margin:4px 0;}
-.fo-exit-btn{position:absolute;top:max(20px,env(safe-area-inset-top,20px));right:max(20px,env(safe-area-inset-right,20px));background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:8px 14px;color:rgba(255,255,255,.5);font-family:var(--fn);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;z-index:1;}
-.fo-exit-btn:hover,.fo-exit-btn:active{background:rgba(255,255,255,.15);color:#fff;}
-.fo-task-pill{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:7px 16px;font-size:11px;color:rgba(255,255,255,.45);font-family:var(--mo);max-width:80vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:20px;}
+/* Stats */
+.fo-stats{display:flex;gap:clamp(12px,3.5vw,32px);margin-bottom:20px;align-items:stretch;}
+.fo-stat{text-align:center;min-width:48px;}
+.fo-stat-num{font-size:clamp(18px,5vw,26px);font-weight:700;font-family:'DM Mono','Courier New',Courier,monospace;line-height:1;font-variant-numeric:tabular-nums;}
+.fo-stat-lbl{font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.08em;text-transform:uppercase;margin-top:4px;}
+.fo-stat-divider{width:1px;background:rgba(255,255,255,.07);align-self:stretch;margin:2px 0;}
+/* Bottom water row */
+.fo-water-row{display:flex;align-items:center;gap:6px;font-family:var(--mo);font-size:10px;color:rgba(255,255,255,.25);margin-top:4px;}
+.fo-water-row.soon{color:rgba(56,189,248,.7);}
 
 .notice{border-radius:10px;padding:10px 14px;margin-bottom:10px;font-weight:600;font-size:13px;display:none;text-align:center;}
 #potato-notice{background:rgba(245,159,0,.1);border:1px solid rgba(245,159,0,.3);color:#f59f00;}
@@ -635,6 +644,41 @@ body.focus-mode .hero-cd{font-size:96px!important;letter-spacing:-4px;}
 .hbm{font-size:9px;}
 /* Potato button - clear active state */
 #potato-btn.potato-active{background:linear-gradient(135deg,#6b7280,#4b5563);box-shadow:0 2px 8px rgba(0,0,0,.3);}
+
+/* ── SESSION EDITOR ── */
+#sessEditorOverlay{display:none;position:fixed;inset:0;z-index:9800;align-items:flex-end;justify-content:center;}
+#sessEditorOverlay.show{display:flex;}
+#sessEditorBg{position:absolute;inset:0;background:rgba(8,8,14,.65);backdrop-filter:blur(6px);}
+#sessEditorSheet{position:relative;z-index:1;background:#16161e;border:1px solid rgba(255,255,255,.08);border-bottom:none;border-radius:20px 20px 0 0;padding:18px 16px 32px;width:min(540px,100vw);box-shadow:0 -16px 60px rgba(0,0,0,.6);max-height:90vh;overflow-y:auto;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,1.1,.58,1);}
+#sessEditorSheet.open{transform:translateY(0);}
+.se-drag-handle-bar{width:36px;height:4px;background:rgba(255,255,255,.12);border-radius:2px;margin:0 auto 16px;}
+.se-title{font-size:15px;font-weight:700;color:#ece9f4;margin-bottom:4px;}
+.se-sub{font-size:11px;color:var(--mt);margin-bottom:12px;}
+.se-card{background:var(--sf2);border:1px solid var(--bd2);border-radius:12px;padding:10px 12px;margin-bottom:8px;}
+.se-card.drag-over{border-color:var(--s1o);background:rgba(123,111,255,.07);}
+.se-card-top{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.se-drag-ico{color:var(--mt);font-size:16px;cursor:grab;flex-shrink:0;padding:0 2px;user-select:none;}
+.se-type-toggle{display:flex;border-radius:8px;overflow:hidden;border:1px solid var(--bd2);flex-shrink:0;}
+.se-type-btn{padding:3px 9px;font-size:10px;font-weight:700;font-family:var(--fn);border:none;cursor:pointer;transition:all .15s;background:transparent;color:var(--mt);}
+.se-type-btn.active-study{background:rgba(123,111,255,.25);color:var(--s1);}
+.se-type-btn.active-class{background:rgba(45,212,160,.2);color:var(--s2);}
+.se-name-inp{flex:1;background:transparent;border:none;border-bottom:1px solid var(--bd2);color:var(--tx);font-family:var(--fn);font-size:13px;font-weight:600;outline:none;padding:2px 4px;min-width:0;}
+.se-name-inp:focus{border-bottom-color:var(--s1o);}
+.se-del-btn{background:none;border:none;color:var(--mt);cursor:pointer;font-size:18px;opacity:.35;transition:opacity .15s;flex-shrink:0;padding:0 2px;}
+.se-del-btn:hover{opacity:1;color:var(--s3);}
+.se-times{display:flex;align-items:flex-end;gap:8px;padding-left:24px;}
+.se-time-group{display:flex;flex-direction:column;gap:3px;flex:1;}
+.se-time-lbl{font-size:9px;color:var(--mt);letter-spacing:.08em;text-transform:uppercase;}
+.se-time-inp{background:var(--sf3);border:1px solid var(--bd2);border-radius:7px;padding:5px 8px;font-family:var(--mo);font-size:13px;color:var(--tx);outline:none;width:100%;box-sizing:border-box;}
+.se-time-inp:focus{border-color:var(--s1o);}
+.se-dur-badge{font-family:var(--mo);font-size:10px;padding:4px 8px;border-radius:6px;background:var(--sf3);color:var(--mt2);white-space:nowrap;flex-shrink:0;margin-bottom:1px;}
+.se-add-btn{width:100%;background:rgba(123,111,255,.08);border:1px dashed rgba(123,111,255,.25);border-radius:10px;padding:10px;color:var(--s1);font-family:var(--fn);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;margin-top:4px;}
+.se-add-btn:hover{background:rgba(123,111,255,.15);border-color:var(--s1);}
+.se-footer{display:flex;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.07);}
+.se-reset-btn{flex:1;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:10px;font-family:var(--fn);font-size:11px;color:#f87171;cursor:pointer;}
+.se-save-btn{flex:2;background:linear-gradient(135deg,rgba(123,111,255,.2),rgba(45,212,160,.12));border:1px solid rgba(123,111,255,.4);border-radius:10px;padding:10px;font-family:var(--fn);font-size:13px;font-weight:700;color:#ece9f4;cursor:pointer;}
+.se-daily-info{background:rgba(45,212,160,.06);border:1px solid rgba(45,212,160,.15);border-radius:8px;padding:7px 12px;font-size:11px;color:var(--s2);margin-bottom:12px;font-family:var(--mo);}
+.se-warn{background:rgba(240,111,160,.08);border:1px solid rgba(240,111,160,.25);border-radius:8px;padding:6px 10px;font-size:10px;color:var(--s3);margin-top:4px;display:none;}
 
 </style>
 
@@ -838,6 +882,7 @@ document.addEventListener('DOMContentLoaded',function(){const lock=document.getE
           <button id="undo-btn" onclick="doUndo()">↩ Undo</button>
           <button id="potato-btn" onclick="window.openPotatoModal()">🥔 Potato Day</button>
           <button onclick="window.openReorderModal()" title="Reorder subjects" style="background:var(--sf2);border:1px solid var(--bd2);color:var(--mt2);font-weight:600;font-size:11px;padding:7px 12px;border-radius:12px;cursor:pointer;font-family:var(--fn);">⇅ Order</button>
+          <button onclick="window.openSessionEditor()" title="Edit sessions" style="background:var(--sf2);border:1px solid var(--bd2);color:var(--mt2);font-weight:600;font-size:11px;padding:7px 12px;border-radius:12px;cursor:pointer;font-family:var(--fn);">⏱ Sessions</button>
           <button id="pin-start-btn" onclick="window.openPinModal()" title="Pin schedule start date" style="background:var(--sf2);border:1px solid var(--bd2);color:var(--mt2);font-weight:600;font-size:11px;padding:7px 12px;border-radius:12px;cursor:pointer;font-family:var(--fn);">📅 Start</button>
         </div>
       </div>
@@ -1357,29 +1402,67 @@ function getSubjOrder(){
   if(ST&&ST.subjOrder&&Array.isArray(ST.subjOrder)&&ST.subjOrder.length===SUBJ.length)return ST.subjOrder;
   return SUBJ.slice();
 }
-const FIXED_START_DATE='2026-05-21'; // original hard start (for heatmap range only)
+const FIXED_START_DATE='2026-05-21';
 const TARGET_DATE='2026-12-31';
 const GATE_DATE='2027-02-01';
-const DAILY_MINS=480;
+
+// ── SESSION CONFIG (single source of truth) ──────────────────────────────────
+var SESS_KEY='v5_sessions_v1';
+var ALL_SESSIONS_DEFAULT=[
+  {id:'ls1',name:'Engineering Mathematics',type:'class',sh:11,sm:30,eh:12,em:45},
+  {id:'ls2',name:'Discrete Mathematics',type:'class',sh:12,sm:50,eh:14,em:5},
+  {id:'ss0',name:'Session 3',type:'study',sh:14,sm:30,eh:15,em:45},
+  {id:'ss1',name:'Session 4',type:'study',sh:16,sm:0,eh:17,em:15},
+  {id:'ss2',name:'Session 5',type:'study',sh:17,sm:30,eh:18,em:45},
+  {id:'ss3',name:'Session 6',type:'study',sh:19,sm:0,eh:20,em:15},
+  {id:'ss4',name:'Session 7',type:'study',sh:21,sm:0,eh:22,em:15},
+  {id:'ss5',name:'Session 8',type:'study',sh:22,sm:30,eh:24,em:15},
+];
+var _allSessions=(function(){try{var s=localStorage.getItem(SESS_KEY);if(s){var p=JSON.parse(s);if(Array.isArray(p)&&p.length>0)return p;}}catch(e){}return JSON.parse(JSON.stringify(ALL_SESSIONS_DEFAULT));})();
+
+// Derived — rebuilt whenever sessions change
+var DAILY_MINS=480,SESSIONS=[],LIVE_SESSIONS=[],ALL_SLOTS=[];
+
+function _sesTimeStr(sh,sm,eh,em){
+  var displayEnd=(eh>=24)?pad(eh-24)+':'+pad(em):pad(eh)+':'+pad(em);
+  return pad(sh)+':'+pad(sm)+'\u2013'+displayEnd;
+}
+function rebuildSessionDerived(){
+  ALL_SLOTS=_allSessions.map(function(s){
+    var dur=(s.eh*60+s.em)-(s.sh*60+s.sm);
+    return {id:s.id,time:_sesTimeStr(s.sh,s.sm,s.eh,s.em),start:[s.sh,s.sm],end:[s.eh,s.em],
+      label:s.name,subs:s.type==='class'?s.name+' \u00b7 Class':s.name+' \u00b7 '+dur+'m',
+      isLive:s.type==='class',liveKey:s.type==='class'?s.id:null,type:s.type,dur:dur};
+  });
+  SESSIONS=ALL_SLOTS.filter(function(s){return s.type==='study';}).map(function(s,i){
+    return {idx:i,id:s.id,name:s.label,time:s.time,dur:s.dur,sh:s.start[0],sm:s.start[1],eh:s.end[0],em:s.end[1]};
+  });
+  LIVE_SESSIONS=ALL_SLOTS.filter(function(s){return s.type==='class';}).map(function(s){
+    return {key:s.id,name:s.label,label:s.label,time:s.time,dur:s.dur,sh:s.start[0],sm:s.start[1],eh:s.end[0],em:s.end[1]};
+  });
+  DAILY_MINS=SESSIONS.reduce(function(a,s){return a+s.dur;},0);
+}
+rebuildSessionDerived();
+
+function saveAllSessions(){
+  localStorage.setItem(SESS_KEY,JSON.stringify(_allSessions));
+  rebuildSessionDerived();
+  if(window._fb&&window._fb.ready){window._fb.set(window._fb.ref(window._fb.db,'study/'+USER_ID+'/'+SESS_KEY),_allSessions).catch(function(){});}
+  // Rebuild everything that depends on sessions
+  if(typeof buildSchedule==='function')buildSchedule();
+  if(typeof renderGate==='function')renderGate();
+  if(typeof up==='function')up();
+  renderSessionEditor();
+}
+function genSessId(){return 'cs_'+Date.now().toString(36)+Math.random().toString(36).substr(2,4);}
+
 // Rolling schedule: always start from today unless user pinned a date
 function getSchedStart(){
   var pinned=localStorage.getItem('v5_sched_start');
   var today=getToday();
-  if(pinned&&pinned>=today)return pinned; // future pinned date
-  return today; // default: always today
+  if(pinned&&pinned>=today)return pinned;
+  return today;
 }
-const SESSIONS=[
-  {idx:0,name:'Session 3',time:'14:30\u201315:45',dur:75,sh:14,sm:30,eh:15,em:45},
-  {idx:1,name:'Session 4',time:'16:00\u201317:15',dur:75,sh:16,sm:0,eh:17,em:15},
-  {idx:2,name:'Session 5',time:'17:30\u201318:45',dur:75,sh:17,sm:30,eh:18,em:45},
-  {idx:3,name:'Session 6',time:'19:00\u201320:15',dur:75,sh:19,sm:0,eh:20,em:15},
-  {idx:4,name:'Session 7',time:'21:00\u201322:15',dur:75,sh:21,sm:0,eh:22,em:15},
-  {idx:5,name:'Session 8',time:'22:30\u201300:15',dur:105,sh:22,sm:30,eh:24,em:15},
-];
-const LIVE_SESSIONS=[
-  {key:'s1',name:'Engineering Mathematics',label:'Session 1',time:'11:30\u201312:45',dur:75,sh:11,sm:30,eh:12,em:45},
-  {key:'s2',name:'Discrete Mathematics',label:'Session 2',time:'12:50\u201314:05',dur:75,sh:12,sm:50,eh:14,em:5},
-];
 
 // ── GATE STATE ──────────────────────────────────────────────────────────────
 const DAYS_ARR=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -1448,7 +1531,7 @@ function isPyqAllDone(id){if(ST.done[id])return true;var t=null;for(var i=0;i<AL
 function buildSched(){
   var done=new Set(Object.keys(ST.done).map(Number));
   var potato=new Set(ST.potato);var skips=new Set(ST.skips);var sched={};
-  function ensureDay(d){if(!sched[d])sched[d]={dateStr:d,sessions:SESSIONS.map(function(s){return{idx:s.idx,name:s.name,time:s.time,dur:s.dur,sh:s.sh,sm:s.sm,eh:s.eh,em:s.em,items:[]};})};} 
+  function ensureDay(d){if(!sched[d])sched[d]={dateStr:d,sessions:SESSIONS.map(function(s){return{idx:s.idx,id:s.id,name:s.name,time:s.time,dur:s.dur,sh:s.sh,sm:s.sm,eh:s.eh,em:s.em,items:[]};})};} 
   var cur=getSchedStart();
   while(potato.has(cur))cur=addD(cur,1);
   var sIdx=0,sRem=SESSIONS[0].dur;ensureDay(cur);
@@ -2069,17 +2152,8 @@ var today=getToday();
 var DAYS_S=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 var MONS_S=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-// All 8 sessions (GATE schedule)
-var ALL_SLOTS=[
-  {time:'11:30–12:45',start:[11,30],end:[12,45],label:'Session 1 · EM Live',subs:'Engineering Mathematics · Live',isLive:true,liveKey:'s1'},
-  {time:'12:50–14:05',start:[12,50],end:[14,5],label:'Session 2 · DM Live',subs:'Discrete Mathematics · Live',isLive:true,liveKey:'s2'},
-  {time:'14:30–15:45',start:[14,30],end:[15,45],label:'Session 3',subs:'Recorded · 75 min',isLive:false},
-  {time:'16:00–17:15',start:[16,0],end:[17,15],label:'Session 4',subs:'Recorded · 75 min',isLive:false},
-  {time:'17:30–18:45',start:[17,30],end:[18,45],label:'Session 5',subs:'Recorded · 75 min',isLive:false},
-  {time:'19:00–20:15',start:[19,0],end:[20,15],label:'Session 6',subs:'Recorded · 75 min',isLive:false},
-  {time:'21:00–22:15',start:[21,0],end:[22,15],label:'Session 7',subs:'Recorded · 75 min',isLive:false},
-  {time:'22:30–00:15',start:[22,30],end:[24,15],label:'Session 8',subs:'Recorded · 105 min',isLive:false},
-];
+// ALL_SLOTS is now derived — already populated by rebuildSessionDerived() above
+// (slotMins, toM, nowMins, slotActive, slotPast use ALL_SLOTS via closure)
 function slotMins(s){var st=s.start[0]*60+s.start[1],en=s.end[0]*60+s.end[1];return en-st;}
 function toM(h,m){var v=h*60+m;return v>=1440?v-1440:v;}
 function nowMins(){var n=new Date();return n.getHours()*60+n.getMinutes();}
@@ -2098,7 +2172,23 @@ var pinTask=JSON.parse(localStorage.getItem('v5_pin')||'null');
 var lw=parseInt(localStorage.getItem('v5_lw')||'0')||Date.now();
 var focusSecs=parseInt(localStorage.getItem('v5_focus_'+today)||'0');
 var focusInterval=null;
-var slotFocusSecs=(function(){try{var raw=JSON.parse(localStorage.getItem('v5_sft_'+today)||'{}');var clean={};Object.keys(raw).forEach(function(k){var v=raw[k];if(typeof v==='number'&&v>=0&&isFinite(v))clean[k]=v;});return clean;}catch(e){return {};}})();
+var slotFocusSecs=(function(){
+  try{
+    var raw=JSON.parse(localStorage.getItem('v5_sft_'+today)||'{}');
+    // Migration: if keys are all numeric, map to default session IDs by position
+    var keys=Object.keys(raw);
+    var allNumeric=keys.length>0&&keys.every(function(k){return /^\d+$/.test(k);});
+    if(allNumeric){
+      var defIds=ALL_SESSIONS_DEFAULT.map(function(s){return s.id;});
+      var migrated={};
+      keys.forEach(function(k){var v=raw[k];var i=parseInt(k);if(defIds[i]&&typeof v==='number'&&v>=0)migrated[defIds[i]]=v;});
+      localStorage.setItem('v5_sft_'+today,JSON.stringify(migrated));
+      return migrated;
+    }
+    var clean={};keys.forEach(function(k){var v=raw[k];if(typeof v==='number'&&v>=0&&isFinite(v))clean[k]=v;});
+    return clean;
+  }catch(e){return {};}
+})();
 // Push sanitized version back to Firebase to overwrite any corrupt values stored there
 window.addEventListener('fbReady',function(){
   var hasCorrupt=false;
@@ -2224,7 +2314,7 @@ var FF_KEY = 'v5_ff_done_' + today;
 try { freeFocusDone = JSON.parse(localStorage.getItem(FF_KEY)||'[]'); } catch(e){}
 
 // ── SCHEDULE + SCREEN TIME ───────────────────────────────────────────────────
-function slotScreenMins(i){return Math.max(0,Math.floor((slotFocusSecs[i]||0)/60));}
+function slotScreenMins(id){return Math.max(0,Math.floor((slotFocusSecs[id]||0)/60));}
 function buildSchedule(){
   var sl=document.getElementById('slist');if(!sl)return;sl.innerHTML='';
   var now2=new Date(),nowMinsBS=now2.getHours()*60+now2.getMinutes();
@@ -2248,7 +2338,7 @@ function buildSchedule(){
   var totalScreen=0;
   ALL_SLOTS.forEach(function(s,i){
     var st=toM(s.start[0],s.start[1]),en=toM(s.end[0],s.end[1]),dur=slotMins(s);
-    var screenMins=slotScreenMins(i);totalScreen+=screenMins;
+    var screenMins=slotScreenMins(s.id);totalScreen+=screenMins;
     var isNow=slotActive(s),isPast=slotPast(s);
     var pct=dur>0?Math.min(100,Math.round(screenMins/dur*100)):0;
     var barColor=pct>=80?'#34d399':pct>=40?'#f9a825':'#a78bfa';
@@ -2269,7 +2359,7 @@ function isFocusActive(){
 function tickSlotFocus(){
   if(document.visibilityState!=='visible'||window._ffPaused)return;
   ALL_SLOTS.forEach(function(s,i){
-    if(slotActive(s)){slotFocusSecs[i]=(slotFocusSecs[i]||0)+1;}
+    if(slotActive(s)){slotFocusSecs[s.id]=(slotFocusSecs[s.id]||0)+1;}
   });
   if(focusSecs%30===0){localStorage.setItem('v5_sft_'+today,JSON.stringify(slotFocusSecs));fbWrite('v5_sft_'+today,slotFocusSecs);}
 }
@@ -2393,7 +2483,7 @@ function up(){
   var mxEl=document.getElementById('mxstk');if(mxEl)mxEl.textContent=maxStreak;
   // Screen time stats
   var n2=new Date(),nowMinsN=n2.getHours()*60+n2.getMinutes();
-  var totalScreen=ALL_SLOTS.reduce(function(a,s,i){return a+Math.max(0,Math.min(slotMins(s),slotScreenMins(i)));},0);
+  var totalScreen=ALL_SLOTS.reduce(function(a,s){return a+Math.max(0,Math.min(slotMins(s),slotScreenMins(s.id)));},0);
   var totalElapsed=ALL_SLOTS.reduce(function(a,s){
     var st=toM(s.start[0],s.start[1]),en2raw=s.end[0]*60+s.end[1];
     var nm=nowMinsN;
@@ -2414,7 +2504,7 @@ function up(){
   if(document.getElementById('ovScreenTime'))document.getElementById('ovScreenTime').textContent=fStr;
   if(document.getElementById('ovAwayTime'))document.getElementById('ovAwayTime').textContent=aStr;
   if(document.getElementById('ovFocusPct')){document.getElementById('ovFocusPct').textContent=totalElapsed>0?pctPresent+'%':'—';document.getElementById('ovFocusPct').style.color=totalElapsed>0?colP:'var(--mt)';}
-  var slotsActive=ALL_SLOTS.filter(function(s,i){return (slotFocusSecs[i]||0)>30;}).length;
+  var slotsActive=ALL_SLOTS.filter(function(s){return (slotFocusSecs[s.id]||0)>30;}).length;
   var slotsStarted=ALL_SLOTS.filter(function(s){return nowMinsN>toM(s.start[0],s.start[1]);}).length;
   if(document.getElementById('focusStatSess'))document.getElementById('focusStatSess').textContent=slotsActive+'/'+slotsStarted;
   if(document.getElementById('focusStatPct')){document.getElementById('focusStatPct').textContent=totalElapsed>0?aStr:'—';document.getElementById('focusStatPct').style.color=away<=10?'#34d399':away<=30?'#f9a825':'#f87171';}
@@ -2520,16 +2610,15 @@ var _foActive = false;
 function updateFocusOverlay(){
   if(!_foActive) return;
   var now2 = new Date();
-  var nm = now2.getHours()*60 + now2.getMinutes();
+  var nowH = now2.getHours(), nowMin = now2.getMinutes(), nowSec = now2.getSeconds();
+  var nm = nowH*60 + nowMin; // minutes since midnight
 
   // Find active slot
   var activeSlot = null, activeIdx = -1;
   ALL_SLOTS.forEach(function(s,i){ if(slotActive(s)){activeSlot=s;activeIdx=i;} });
 
-  // Also check free focus session
   var fs = freeFocusSession;
 
-  // ── Timer ──
   var timerEl = document.getElementById('foTimer');
   var timerLbl = document.getElementById('foTimerLbl');
   var progressFill = document.getElementById('foProgressFill');
@@ -2539,19 +2628,24 @@ function updateFocusOverlay(){
   var sessionRange = document.getElementById('foSessionRange');
   var taskPill = document.getElementById('foTaskPill');
 
+  // Helper: format seconds as HH:MM:SS or MM:SS
+  function fmtSecs(s){
+    s = Math.max(0, Math.round(s));
+    var h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sc=s%60;
+    return h>0 ? pad(h)+':'+pad(m)+':'+pad(sc) : pad(m)+':'+pad(sc);
+  }
+
   if(fs && !activeSlot){
     // Free focus mode
     var tot = fs.durationMins*60;
     var rem = Math.max(0, tot - fs.secs);
-    var mm = Math.floor(rem/60), ss2 = rem%60;
-    if(timerEl) timerEl.textContent = pad(mm)+':'+pad(ss2);
+    if(timerEl) timerEl.textContent = fmtSecs(rem);
     if(timerLbl) timerLbl.textContent = 'time remaining';
     if(sessionBadge) sessionBadge.textContent = '⚡ FREE FOCUS';
     if(sessionName) sessionName.textContent = fs.label;
     if(sessionRange) sessionRange.textContent = fs.durationMins + ' min session';
-    if(progressFill) progressFill.style.width = Math.min(100, Math.round(fs.secs/tot*100))+'%';
+    if(progressFill) progressFill.style.width = Math.min(100,Math.round(fs.secs/tot*100))+'%';
     if(taskPill) taskPill.style.display = 'none';
-    // Pomo dots for free focus
     if(pomoDots){
       var segs = Math.ceil(fs.durationMins/25); var doneSeg = Math.floor(fs.secs/1500);
       pomoDots.innerHTML='';
@@ -2562,29 +2656,35 @@ function updateFocusOverlay(){
       }
     }
   } else if(activeSlot){
-    var st2 = toM(activeSlot.start[0], activeSlot.start[1]);
-    var enRaw2 = activeSlot.end[0]*60 + activeSlot.end[1];
+    var st2 = activeSlot.start[0]*60 + activeSlot.start[1];
     var dur2 = slotMins(activeSlot);
-    var elapsed2 = nm - st2; if(elapsed2<0) elapsed2+=1440;
-    var rem2 = Math.max(0, dur2 - elapsed2);
-    var mm2 = Math.floor(rem2/60), ss3 = rem2%60;
-    if(timerEl) timerEl.textContent = pad(mm2)+':'+pad(ss3);
+    var elapsedMins = nm - st2; if(elapsedMins<0) elapsedMins+=1440;
+    var elapsedSecs = elapsedMins*60 + nowSec;
+    var durSecs = dur2*60;
+    var remSecs = Math.max(0, durSecs - elapsedSecs);
+    if(timerEl) timerEl.textContent = fmtSecs(remSecs);
     if(timerLbl) timerLbl.textContent = 'time remaining';
-    if(sessionBadge) sessionBadge.textContent = (activeSlot.label||'SESSION').toUpperCase();
+    if(sessionBadge){
+      sessionBadge.textContent = (activeSlot.type==='class'?'📡 CLASS':'📚 STUDY')+' · '+(activeSlot.label||'SESSION').toUpperCase();
+    }
     if(sessionName) sessionName.textContent = activeSlot.label||'Study Session';
-    if(sessionRange) sessionRange.textContent = activeSlot.time||'';
-    if(progressFill) progressFill.style.width = Math.min(100,Math.round(elapsed2/dur2*100))+'%';
-    // Task pill
+    if(sessionRange){
+      var elMin = Math.floor(elapsedSecs/60);
+      var elH = Math.floor(elMin/60), elM = elMin%60;
+      sessionRange.textContent = activeSlot.time+' · '+(elH>0?elH+'h ':'')+elM+'m in';
+    }
+    if(progressFill) progressFill.style.width = Math.min(100,Math.round(elapsedSecs/durSecs*100))+'%';
     var sched4 = buildSched(); var nextT4 = getNextTask(sched4);
     if(taskPill){
       taskPill.style.display='block';
-      if(nextT4) taskPill.textContent = '📚 '+nextT4.item.subject+' · '+nextT4.item.name;
-      else taskPill.textContent = '✓ All tasks done';
+      if(nextT4){
+        var lbl4=LABELS[nextT4.item.subject]||nextT4.item.subject;
+        taskPill.textContent='📚 '+lbl4+' · '+nextT4.item.name;
+      } else taskPill.textContent='✅ All tasks done!';
     }
-    // Pomodoro dots (5 × 25m blocks — handle sessions shorter/longer than 125m)
     if(pomoDots){
-      var numDots = Math.max(1, Math.ceil(dur2/25));
-      var donePomo = Math.floor(elapsed2/25);
+      var numDots=Math.max(1,Math.ceil(dur2/25));
+      var donePomo=Math.floor(elapsedSecs/1500);
       pomoDots.innerHTML='';
       for(var pj=0;pj<numDots;pj++){
         var dot2=document.createElement('div');
@@ -2593,124 +2693,95 @@ function updateFocusOverlay(){
       }
     }
   } else {
-    // Between sessions — find next upcoming slot
-    var nextSlot = null, minsUntilNext = 9999;
+    var nextSlotFO=null, secsUntilNextFO=999999;
     ALL_SLOTS.forEach(function(s){
-      var st3 = toM(s.start[0], s.start[1]);
-      var minsUntil = st3 - nm;
-      if(minsUntil < 0) minsUntil += 1440; // wraps past midnight
-      if(!slotPast(s) && minsUntil < minsUntilNext){
-        minsUntilNext = minsUntil; nextSlot = s;
-      }
+      if(slotPast(s))return;
+      var st3=toM(s.start[0],s.start[1]);
+      var diff=(st3-nm)*60-nowSec;
+      if(diff<0)diff+=86400;
+      if(diff<secsUntilNextFO){secsUntilNextFO=diff;nextSlotFO=s;}
     });
-
-    if(nextSlot && minsUntilNext < 600){
-      // Show countdown to next session
-      var secsUntil = minsUntilNext * 60 - new Date().getSeconds();
-      if(secsUntil < 0) secsUntil = 0;
-      var cH = Math.floor(secsUntil/3600);
-      var cM = Math.floor((secsUntil%3600)/60);
-      var cS = secsUntil%60;
-      var timerStr = cH>0 ? cH+':'+pad(cM)+':'+pad(cS) : pad(cM)+':'+pad(cS);
-      if(timerEl) timerEl.textContent = timerStr;
-      if(timerLbl) timerLbl.textContent = 'until next session';
-      if(sessionBadge) sessionBadge.textContent = 'BREAK';
-      if(sessionName) sessionName.textContent = 'Next: '+(nextSlot.label||'Session');
-      if(sessionRange) sessionRange.textContent = nextSlot.time||'';
-      // Progress bar — % of break elapsed
-      var prevEnd = null;
+    if(nextSlotFO && secsUntilNextFO<3*3600){
+      if(timerEl)timerEl.textContent=fmtSecs(secsUntilNextFO);
+      if(timerLbl)timerLbl.textContent='until next session';
+      if(sessionBadge)sessionBadge.textContent='BREAK';
+      if(sessionName)sessionName.textContent='Next: '+(nextSlotFO.label||'Session');
+      if(sessionRange)sessionRange.textContent=nextSlotFO.time||'';
+      if(taskPill)taskPill.style.display='none';
+      var prevEndFO=null;
       ALL_SLOTS.forEach(function(s){
-        var en = toM(s.end[0],s.end[1]);
-        var st4 = toM(nextSlot.start[0],nextSlot.start[1]);
-        if(en <= st4 && (prevEnd===null || en>prevEnd)) prevEnd=en;
+        var en=toM(s.end[0],s.end[1]),st4=toM(nextSlotFO.start[0],nextSlotFO.start[1]);
+        if(en<=st4&&(prevEndFO===null||en>prevEndFO))prevEndFO=en;
       });
-      if(prevEnd!==null){
-        var breakDur = toM(nextSlot.start[0],nextSlot.start[1]) - prevEnd;
-        var breakElapsed = nm - prevEnd;
-        if(breakDur>0&&breakElapsed>=0) {
-          if(progressFill) progressFill.style.width = Math.min(100,Math.round(breakElapsed/breakDur*100))+'%';
-        }
-      } else {
-        if(progressFill) progressFill.style.width = '0%';
+      if(prevEndFO!==null){
+        var bDur=(toM(nextSlotFO.start[0],nextSlotFO.start[1])-prevEndFO)*60;
+        var bEl=(nm-prevEndFO)*60+nowSec;
+        if(bDur>0&&bEl>=0&&progressFill)progressFill.style.width=Math.min(100,Math.round(bEl/bDur*100))+'%';
       }
-      // Dots showing next session's pomodoros
       if(pomoDots){
-        var nextDur = slotMins(nextSlot);
-        var nDots = Math.max(1, Math.ceil(nextDur/25));
+        var nd=Math.max(1,Math.ceil(slotMins(nextSlotFO)/25));
         pomoDots.innerHTML='';
-        for(var pk=0;pk<nDots;pk++){
-          var dot3=document.createElement('div');
-          dot3.className='fo-pomo-dot'; // all unlit — session hasn't started
-          pomoDots.appendChild(dot3);
-        }
+        for(var pk=0;pk<nd;pk++){var dot3=document.createElement('div');dot3.className='fo-pomo-dot';pomoDots.appendChild(dot3);}
       }
     } else {
-      // All sessions done for the day
-      if(timerEl) timerEl.textContent = 'DONE';
-      if(timerLbl) timerLbl.textContent = 'all sessions complete';
-      if(sessionBadge) sessionBadge.textContent = 'TODAY';
-      if(sessionName) sessionName.textContent = 'Great work! 🎉';
-      if(sessionRange) sessionRange.textContent = '';
-      if(progressFill) progressFill.style.width = '100%';
-      if(pomoDots) pomoDots.innerHTML='';
+      if(timerEl){timerEl.textContent='DONE';timerEl.style.fontSize='clamp(40px,10vw,72px)';}
+      if(timerLbl)timerLbl.textContent='all sessions complete';
+      if(sessionBadge)sessionBadge.textContent='TODAY';
+      if(sessionName)sessionName.textContent='Great work! 🎉';
+      if(sessionRange)sessionRange.textContent='';
+      if(progressFill)progressFill.style.width='100%';
+      if(pomoDots)pomoDots.innerHTML='';
+      if(taskPill)taskPill.style.display='none';
     }
-    if(taskPill) taskPill.style.display='none';
   }
+  if(timerEl&&timerEl.textContent!=='DONE')timerEl.style.fontSize='';
 
-  // ── Screen / Away stats ── Show today's totals across all sessions
-  var totalScreenToday = ALL_SLOTS.reduce(function(a,s,i){
-    return a + Math.max(0, Math.min(slotMins(s), slotScreenMins(i)));
-  }, 0);
+  // Top chips
+  var gateChip=document.getElementById('foGateChip');
+  var streakChip=document.getElementById('foStreakChip');
+  var waterChip=document.getElementById('foWaterChip');
+  if(gateChip){var pr=getProgress();gateChip.textContent=pr.overall+'% GATE';}
+  if(streakChip)streakChip.textContent='🔥 '+streak;
+  if(waterChip)waterChip.textContent='💧 '+waterLog.length;
 
-  // Total elapsed = sum of elapsed time across sessions that have started
-  var totalElapsedToday = ALL_SLOTS.reduce(function(a,s){
-    var st2=toM(s.start[0],s.start[1]);
-    var enRaw2=s.end[0]*60+s.end[1];
-    var dur2=slotMins(s);
-    if(nm<st2) return a; // not started
-    if(enRaw2>=1440){
-      var en2=enRaw2-1440;
-      if(nm>=st2) return a+Math.min(nm-st2,dur2);
-      if(nm<en2) return a+Math.min(nm+1440-st2,dur2);
-      return a;
-    }
-    if(nm>=enRaw2) return a+dur2;
-    return a+Math.min(nm-st2,dur2);
-  }, 0);
-
-  // For current active slot — show its specific stats
-  var curSlotScreen = activeIdx>=0 ? slotScreenMins(activeIdx) : 0;
-  var curSlotElapsed = 0;
-  if(activeSlot){
-    var stX=toM(activeSlot.start[0],activeSlot.start[1]);
-    curSlotElapsed=Math.max(0,Math.min(slotMins(activeSlot),nm-stX));
-  } else if(fs){
-    curSlotElapsed=Math.floor(fs.secs/60);
-    curSlotScreen=Math.floor(fs.secs/60);
-  }
-
-  // What to display: if in active session show that slot's stats; if on break show today totals
-  var dispScreen, dispAway, dispPct;
-  if(activeSlot || fs){
-    dispScreen = curSlotScreen;
-    dispAway = Math.max(0, curSlotElapsed - curSlotScreen);
-    dispPct = curSlotElapsed>0 ? Math.min(100,Math.round(curSlotScreen/curSlotElapsed*100)) : (fs?100:0);
-  } else {
-    // Break — show today's totals
-    dispScreen = totalScreenToday;
-    dispAway = Math.max(0, totalElapsedToday - totalScreenToday);
-    dispPct = totalElapsedToday>0 ? Math.min(100,Math.round(totalScreenToday/totalElapsedToday*100)) : 0;
-  }
-  var colPct = dispPct>=80?'#34d399':dispPct>=50?'#f9a825':'#f87171';
-
-  var foS=document.getElementById('foScreenTime');var foA=document.getElementById('foAwayTime');
-  var foP=document.getElementById('foPresentPct');var foT=document.getElementById('foTotalScreen');
+  // Screen/away stats
+  var totalScreenToday=ALL_SLOTS.reduce(function(a,s){return a+Math.max(0,Math.min(slotMins(s),slotScreenMins(s.id)));},0);
+  var totalElapsedToday=ALL_SLOTS.reduce(function(a,s){
+    var st2=toM(s.start[0],s.start[1]),enRaw2=s.end[0]*60+s.end[1],dur2=slotMins(s);
+    if(nm<st2)return a;
+    if(enRaw2>=1440){var en2=enRaw2-1440;if(nm>=st2)return a+Math.min(nm-st2,dur2);if(nm<en2)return a+Math.min(nm+1440-st2,dur2);return a;}
+    if(nm>=enRaw2)return a+dur2;return a+Math.min(nm-st2,dur2);
+  },0);
+  var curSlotScreen=activeSlot?slotScreenMins(activeSlot.id):0;
+  var curSlotElapsed=0;
+  if(activeSlot){var stX=toM(activeSlot.start[0],activeSlot.start[1]);curSlotElapsed=Math.max(0,Math.min(slotMins(activeSlot),nm-stX));}
+  else if(fs){curSlotElapsed=Math.floor(fs.secs/60);curSlotScreen=Math.floor(fs.secs/60);}
+  var dispScreen,dispAway,dispPct;
+  if(activeSlot||fs){dispScreen=curSlotScreen;dispAway=Math.max(0,curSlotElapsed-curSlotScreen);dispPct=curSlotElapsed>0?Math.min(100,Math.round(curSlotScreen/curSlotElapsed*100)):(fs?100:0);}
+  else{dispScreen=totalScreenToday;dispAway=Math.max(0,totalElapsedToday-totalScreenToday);dispPct=totalElapsedToday>0?Math.min(100,Math.round(totalScreenToday/totalElapsedToday*100)):0;}
+  var colPct=dispPct>=80?'#34d399':dispPct>=50?'#f9a825':'#f87171';
+  var foS=document.getElementById('foScreenTime'),foA=document.getElementById('foAwayTime');
+  var foP=document.getElementById('foPresentPct'),foT=document.getElementById('foTotalScreen');
   var foSLbl=document.getElementById('foScreenLbl');
-  if(foS) foS.textContent = dispScreen+'m';
-  if(foA) foA.textContent = dispAway+'m';
-  if(foP){ foP.textContent = dispPct+'%'; foP.style.color = colPct; }
-  if(foT) foT.textContent = totalScreenToday+'m';
-  if(foSLbl) foSLbl.textContent = (activeSlot||fs) ? 'This Session' : 'Today';
+  if(foS)foS.textContent=dispScreen+'m';
+  if(foA)foA.textContent=dispAway+'m';
+  if(foP){foP.textContent=dispPct+'%';foP.style.color=colPct;}
+  if(foT)foT.textContent=totalScreenToday+'m';
+  if(foSLbl)foSLbl.textContent=(activeSlot||fs)?'This Ses.':'Today';
+
+  // Water countdown
+  var waterRow=document.getElementById('foWaterRow'),waterCd=document.getElementById('foWaterCd');
+  if(waterRow&&waterCd){
+    var nextW=lw+(30*60*1000),dw=Math.max(0,Math.round((nextW-Date.now())/1000));
+    if(dw===0){
+      waterRow.innerHTML='💧 <span style="color:#38bdf8;font-weight:700;">Drink water now!</span>';
+      waterRow.className='fo-water-row soon';
+    } else {
+      var wm=Math.floor(dw/60),ws=dw%60;
+      waterRow.innerHTML='💧 next water in <span id="foWaterCd">'+(dw<60?ws+'s':pad(wm)+':'+pad(ws))+'</span>';
+      waterRow.className='fo-water-row'+(dw<120?' soon':'');
+    }
+  }
 }
 
 function enterFocusOverlay(){
@@ -2830,12 +2901,12 @@ function saveExportPrefs(){
   // Read session chips
   var mChips=document.querySelectorAll('#ec_m_session_checkboxes .ec-ses-chip');
   if(mChips.length){
-    var sel=[];mChips.forEach(function(c){if(c.classList.contains('selected'))sel.push(parseInt(c.dataset.idx));});
+    var sel=[];mChips.forEach(function(c){if(c.classList.contains('selected'))sel.push(c.dataset.sid);});
     _exportPrefs.m_timetable_sessions=sel.length===mChips.length?null:sel;
   }
   var nChips=document.querySelectorAll('#ec_n_session_checkboxes .ec-ses-chip');
   if(nChips.length){
-    var sel2=[];nChips.forEach(function(c){if(c.classList.contains('selected'))sel2.push(parseInt(c.dataset.idx));});
+    var sel2=[];nChips.forEach(function(c){if(c.classList.contains('selected'))sel2.push(c.dataset.sid);});
     _exportPrefs.n_timetable_sessions=sel2.length===nChips.length?null:sel2;
   }
   localStorage.setItem('v5_export_prefs',JSON.stringify(_exportPrefs));
@@ -2844,13 +2915,14 @@ function saveExportPrefs(){
 function buildSessionChips(containerId, prefKey){
   var container=document.getElementById(containerId);
   if(!container)return;
-  var savedSel=_exportPrefs[prefKey]; // null = all selected
+  var savedSel=_exportPrefs[prefKey]; // null = all selected, array of session IDs
   container.innerHTML='';
-  ALL_SLOTS.forEach(function(s,i){
+  ALL_SLOTS.forEach(function(s){
     var chip=document.createElement('button');
-    chip.className='ec-ses-chip'+(savedSel===null||savedSel.indexOf(i)>=0?' selected':'');
-    chip.dataset.idx=i;
-    chip.textContent=s.label.replace('Session ','S');
+    var isSelected=savedSel===null||savedSel.indexOf(s.id)>=0;
+    chip.className='ec-ses-chip'+(isSelected?' selected':'');
+    chip.dataset.sid=s.id;
+    chip.textContent=s.label.length>12?s.label.replace('Session ','S').replace('Engineering Mathematics','EngMath').replace('Discrete Mathematics','DiscMath'):s.label;
     chip.onclick=function(){
       chip.classList.toggle('selected');
       saveExportPrefs();
@@ -2990,8 +3062,8 @@ window.doExportDownload=function(){
         todaySched.sessions.forEach(function(ses,si){
           // ses.idx is SESSIONS-local (0-5 for S3-S8). Chip indices are ALL_SLOTS-based (0-7).
           // Map: SESSIONS idx 0 = ALL_SLOTS idx 2 (Session 3), etc.
-          var allSlotsIdx = ses.idx + 2;
-          if(selSessions!==null&&selSessions.indexOf(allSlotsIdx)<0)return;
+          
+          if(selSessions!==null&&selSessions.indexOf(ses.id)<0)return;
           if(!ses.items||ses.items.length===0)return; // skip empty sessions
           var sesDiv=document.createElement('div');sesDiv.className='ec-tt-session';
           sesDiv.innerHTML='<div class="ec-tt-ses-header">'+esc(ses.name||'Session')+' · '+(ses.time||'')+'</div>';
@@ -3015,7 +3087,7 @@ window.doExportDownload=function(){
     // Night: Stats bar
     if(prefs.n_stats!==false){
       var nowMinsN=now2.getHours()*60+now2.getMinutes();
-      var totScrN=ALL_SLOTS.reduce(function(a,s,i){return a+Math.max(0,Math.min(slotMins(s),slotScreenMins(i)));},0);
+      var totScrN=ALL_SLOTS.reduce(function(a,s){return a+Math.max(0,Math.min(slotMins(s),slotScreenMins(s.id)));},0);
       var totElN=ALL_SLOTS.reduce(function(a,s){var st=toM(s.start[0],s.start[1]);var enRaw=s.end[0]*60+s.end[1];var dur=slotMins(s);if(enRaw>=1440){var en2=enRaw-1440;if(nowMinsN>=st)return a+Math.min(nowMinsN-st,dur);if(nowMinsN<en2)return a+Math.min(nowMinsN+1440-st,dur);return a;}if(nowMinsN>=enRaw)return a+dur;if(nowMinsN>=st)return a+(nowMinsN-st);return a;},0);
       var awN=Math.max(0,totElN-totScrN);var pctN=totElN>0?Math.min(100,Math.round(totScrN/totElN*100)):0;
       var colN=pctN>=80?'#34d399':pctN>=50?'#f9a825':'#f87171';
@@ -3039,12 +3111,12 @@ window.doExportDownload=function(){
       var sesBreakSec=document.createElement('div');sesBreakSec.style.cssText=sep;
       sesBreakSec.innerHTML='<div style="'+secLbl+'">⏱ Session Breakdown</div>';
       ALL_SLOTS.forEach(function(s,i){
-        if(selSesN!==null&&selSesN.indexOf(i)<0)return;
+        if(selSesN!==null&&selSesN.indexOf(s.id)<0)return;
         var st=toM(s.start[0],s.start[1]);var enRaw=s.end[0]*60+s.end[1];var dur2x=slotMins(s);var elapsed;
         if(enRaw>=1440){var en2x=enRaw-1440;if(nowMinsN2>=st)elapsed=Math.min(nowMinsN2-st,dur2x);else if(nowMinsN2<en2x)elapsed=Math.min(nowMinsN2+1440-st,dur2x);else elapsed=0;}
         else{if(nowMinsN2>=enRaw)elapsed=dur2x;else if(nowMinsN2>=st)elapsed=nowMinsN2-st;else elapsed=0;}
         if(elapsed<=0)return;
-        var scM=Math.min(elapsed,slotScreenMins(i));var awM=elapsed-scM;
+        var scM=Math.min(elapsed,slotScreenMins(s.id));var awM=elapsed-scM;
         var col=scM>=elapsed*0.8?'#34d399':scM>=elapsed*0.5?'#f9a825':'#f87171';
         var row=document.createElement('div');row.style.cssText='display:flex;justify-content:space-between;font-size:10px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.05);';
         row.innerHTML='<span style="color:#c4b5fd;">'+esc(s.label)+'</span><span style="color:'+col+';">'+scM+'m screen · '+awM+'m away</span>';
@@ -3210,7 +3282,7 @@ function startSync(){
   // focus secs
   fb.onValue(fb.ref(fb.db,fbPath('v5_focus_'+today)),function(snap){var val=snap.val();if(typeof val==='number'&&val>focusSecs){focusSecs=val;localStorage.setItem('v5_focus_'+today,focusSecs);up();}});
   // slot focus
-  fb.onValue(fb.ref(fb.db,fbPath('v5_sft_'+today)),function(snap){var val=snap.val();if(val&&typeof val==='object'){var changed=false;Object.entries(val).forEach(function(e){var idx=parseInt(e[0]);if(!isNaN(idx)&&typeof e[1]==='number'&&e[1]>0&&e[1]>(slotFocusSecs[idx]||0)){slotFocusSecs[idx]=e[1];changed=true;}});if(changed){localStorage.setItem('v5_sft_'+today,JSON.stringify(slotFocusSecs));buildSchedule();up();}}});
+  fb.onValue(fb.ref(fb.db,fbPath('v5_sft_'+today)),function(snap){var val=snap.val();if(val&&typeof val==='object'){var changed=false;Object.entries(val).forEach(function(e){var k=e[0];var v=e[1];if(typeof v==='number'&&v>0&&v>(slotFocusSecs[k]||0)){slotFocusSecs[k]=v;changed=true;}});if(changed){localStorage.setItem('v5_sft_'+today,JSON.stringify(slotFocusSecs));buildSchedule();up();}}});
   // water log
   fb.onValue(fb.ref(fb.db,fbPath('v5_wlog_'+today)),function(snap){var val=snap.val();if(val&&Array.isArray(val)){if(JSON.stringify(val)!==JSON.stringify(waterLog)){waterLog=val;waterCount=waterLog.length;localStorage.setItem('v5_wlog_'+today,JSON.stringify(waterLog));updateWaterBadge();renderWaterLog();renderWaterLogInline();}}});
   // notes
@@ -3889,7 +3961,7 @@ function buildSnapshot() {
   // Screen time per slot
   var sessionBreakdown = [];
   ALL_SLOTS.forEach(function(s,i){
-    var scM = slotScreenMins(i);
+    var scM = slotScreenMins(s.id);
     var enRaw = s.end[0]*60+s.end[1]; var dur = slotMins(s);
     var elapsed;
     if(enRaw>=1440){var en2=enRaw-1440;if(nowMinsN>=s.start[0]*60+s.start[1])elapsed=Math.min(nowMinsN-(s.start[0]*60+s.start[1]),dur);else if(nowMinsN<en2)elapsed=Math.min(nowMinsN+1440-(s.start[0]*60+s.start[1]),dur);else elapsed=0;}
@@ -3907,7 +3979,7 @@ function buildSnapshot() {
     if(t){if(!gateBySubj[t.subject])gateBySubj[t.subject]=[];gateBySubj[t.subject].push(tid);}
   });
   var prog = getProgress();
-  var totalScreenMins = ALL_SLOTS.reduce(function(a,s,i){return a+Math.max(0,Math.min(slotMins(s),slotScreenMins(i)));},0);
+  var totalScreenMins = ALL_SLOTS.reduce(function(a,s){return a+Math.max(0,Math.min(slotMins(s),slotScreenMins(s.id)));},0);
   var totalElapsed = sessionBreakdown.reduce(function(a,s){return a+s.elapsed;},0);
   var awayMins = Math.max(0,totalElapsed-totalScreenMins);
   var pctPresent = totalElapsed>0?Math.min(100,Math.round(totalScreenMins/totalElapsed*100)):0;
@@ -4857,18 +4929,25 @@ updateWaterBadge();
     <div class="fo-glow fo-glow-2"></div>
   </div>
 
-  <!-- Exit button -->
-  <button class="fo-exit-btn" onclick="exitFocusOverlay()">✕ Exit Focus</button>
+  <!-- Top bar: exit + quick chips -->
+  <div class="fo-topbar">
+    <button class="fo-exit-btn" onclick="exitFocusOverlay()">✕ Exit</button>
+    <div class="fo-topbar-right">
+      <div class="fo-top-chip" id="foGateChip">—% GATE</div>
+      <div class="fo-top-chip" id="foStreakChip">🔥 0</div>
+      <div class="fo-top-chip" id="foWaterChip">💧 0</div>
+    </div>
+  </div>
 
   <!-- Session info -->
-  <div class="fo-session-badge" id="foSessionBadge">SESSION 3</div>
+  <div class="fo-session-badge" id="foSessionBadge">SESSION</div>
   <div class="fo-session-name" id="foSessionName">Loading…</div>
-  <div class="fo-session-range" id="foSessionRange">14:30 – 15:45</div>
+  <div class="fo-session-range" id="foSessionRange">—</div>
 
   <!-- Current task pill -->
   <div class="fo-task-pill" id="foTaskPill">📚 Loading task…</div>
 
-  <!-- Big timer -->
+  <!-- Big timer with seconds -->
   <div class="fo-timer" id="foTimer">00:00</div>
   <div class="fo-timer-lbl" id="foTimerLbl">time remaining</div>
 
@@ -4880,11 +4959,11 @@ updateWaterBadge();
   <!-- Pomodoro dots -->
   <div class="fo-pomo" id="foPomo"></div>
 
-  <!-- Screen / Away / Present stats -->
+  <!-- Screen / Away / Present / Total stats -->
   <div class="fo-stats">
     <div class="fo-stat">
       <div class="fo-stat-num" id="foScreenTime" style="color:#2dd4a0;">0m</div>
-      <div class="fo-stat-lbl" id="foScreenLbl">This Session</div>
+      <div class="fo-stat-lbl" id="foScreenLbl">Screen</div>
     </div>
     <div class="fo-stat-divider"></div>
     <div class="fo-stat">
@@ -4894,15 +4973,241 @@ updateWaterBadge();
     <div class="fo-stat-divider"></div>
     <div class="fo-stat">
       <div class="fo-stat-num" id="foPresentPct" style="color:#fff;">—</div>
-      <div class="fo-stat-lbl">On Tab %</div>
+      <div class="fo-stat-lbl">On Tab</div>
     </div>
     <div class="fo-stat-divider"></div>
     <div class="fo-stat">
-      <div class="fo-stat-num" id="foTotalScreen" style="color:rgba(255,255,255,.5);">0m</div>
-      <div class="fo-stat-lbl">Today Total</div>
+      <div class="fo-stat-num" id="foTotalScreen" style="color:rgba(255,255,255,.4);">0m</div>
+      <div class="fo-stat-lbl">Today</div>
+    </div>
+  </div>
+
+  <!-- Water reminder row -->
+  <div class="fo-water-row" id="foWaterRow">💧 next water in <span id="foWaterCd">—</span></div>
+</div>
+<!-- ── SESSION EDITOR MODAL ─────────────────────────────────────────────────── -->
+<div id="sessEditorOverlay">
+  <div id="sessEditorBg" onclick="closeSessionEditor()"></div>
+  <div id="sessEditorSheet">
+    <div class="se-drag-handle-bar"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+      <div class="se-title">⏱ Session Editor</div>
+      <button onclick="closeSessionEditor()" style="background:none;border:none;color:var(--mt);font-size:20px;cursor:pointer;line-height:1;">✕</button>
+    </div>
+    <div class="se-sub">Drag to reorder · changes apply immediately</div>
+    <div class="se-daily-info" id="seDailyInfo">Study: 480 min/day · 8 sessions</div>
+    <div id="seCardList"></div>
+    <button class="se-add-btn" onclick="seAddSession()">+ Add Session</button>
+    <div class="se-footer">
+      <button class="se-reset-btn" onclick="seResetDefaults()">↺ Reset to Default</button>
+      <button class="se-save-btn" onclick="closeSessionEditor()">✓ Done</button>
     </div>
   </div>
 </div>
+
+<script>
+// ── SESSION EDITOR ──────────────────────────────────────────────────────────
+var _seDragIdx = -1;
+
+window.openSessionEditor = function() {
+  var ov = document.getElementById('sessEditorOverlay');
+  var sheet = document.getElementById('sessEditorSheet');
+  if (!ov || !sheet) return;
+  ov.style.display = 'flex';
+  setTimeout(function() { sheet.classList.add('open'); }, 10);
+  renderSessionEditor();
+};
+
+window.closeSessionEditor = function() {
+  var sheet = document.getElementById('sessEditorSheet');
+  if (sheet) sheet.classList.remove('open');
+  setTimeout(function() {
+    var ov = document.getElementById('sessEditorOverlay');
+    if (ov) ov.style.display = 'none';
+  }, 320);
+};
+
+function seTimeToHM(val) {
+  // "HH:MM" → {h, m}
+  if (!val) return null;
+  var parts = val.split(':');
+  if (parts.length !== 2) return null;
+  var h = parseInt(parts[0]), m = parseInt(parts[1]);
+  if (isNaN(h) || isNaN(m)) return null;
+  return { h: h, m: m };
+}
+
+function seComputeDur(sh, sm, eh, em) {
+  var st = sh * 60 + sm, en = eh * 60 + em;
+  if (en <= st) en += 1440; // midnight crossing
+  return en - st;
+}
+
+function seFormatTime(h, m) {
+  // For display in <input type="time">: handle eh >= 24
+  var displayH = h >= 24 ? h - 24 : h;
+  return pad(displayH) + ':' + pad(m);
+}
+
+function seDurLabel(dur) {
+  if (dur <= 0) return '?';
+  var h = Math.floor(dur / 60), m = dur % 60;
+  return h > 0 ? h + 'h' + (m ? ' ' + m + 'm' : '') : m + 'm';
+}
+
+function seUpdateDailyInfo() {
+  var el = document.getElementById('seDailyInfo');
+  if (!el) return;
+  var studySess = _allSessions.filter(function(s) { return s.type === 'study'; });
+  var totalMins = studySess.reduce(function(a, s) { return a + seComputeDur(s.sh, s.sm, s.eh, s.em); }, 0);
+  var h = Math.floor(totalMins / 60), m = totalMins % 60;
+  el.textContent = 'Study: ' + (h > 0 ? h + 'h ' : '') + (m > 0 ? m + 'm' : (h > 0 ? '' : '0m')) + '/day · ' + studySess.length + ' study session' + (studySess.length !== 1 ? 's' : '') + ' · ' + _allSessions.filter(function(s){return s.type==='class';}).length + ' class';
+}
+
+function renderSessionEditor() {
+  var list = document.getElementById('seCardList');
+  if (!list) return;
+  seUpdateDailyInfo();
+  var html = '';
+  _allSessions.forEach(function(s, i) {
+    var dur = seComputeDur(s.sh, s.sm, s.eh, s.em);
+    var startVal = seFormatTime(s.sh, s.sm);
+    var endVal = seFormatTime(s.eh, s.em);
+    var nextDay = s.eh >= 24;
+    var isStudy = s.type === 'study';
+    html += '<div class="se-card" id="seCard_' + i + '" draggable="true"' +
+      ' ondragstart="seDragStart(event,' + i + ')"' +
+      ' ondragover="seDragOver(event)"' +
+      ' ondrop="seDrop(event,' + i + ')"' +
+      ' ondragend="seDragEnd()">';
+    html += '<div class="se-card-top">';
+    html += '<span class="se-drag-ico">⠿</span>';
+    html += '<div class="se-type-toggle">';
+    html += '<button class="se-type-btn ' + (isStudy ? 'active-study' : '') + '" onclick="seSetType(' + i + ',\'study\')">Study</button>';
+    html += '<button class="se-type-btn ' + (!isStudy ? 'active-class' : '') + '" onclick="seSetType(' + i + ',\'class\')">Class</button>';
+    html += '</div>';
+    html += '<input class="se-name-inp" value="' + esc(s.name) + '" placeholder="Session name" onchange="seSetName(' + i + ',this.value)" onblur="seSetName(' + i + ',this.value)">';
+    html += '<button class="se-del-btn" onclick="seDeleteSession(' + i + ')" title="Delete session">✕</button>';
+    html += '</div>';
+    html += '<div class="se-times">';
+    html += '<div class="se-time-group"><div class="se-time-lbl">Start</div><input class="se-time-inp" type="time" value="' + startVal + '" onchange="seSetTime(' + i + ',\'start\',this.value)"></div>';
+    html += '<div class="se-time-group"><div class="se-time-lbl">End' + (nextDay ? ' <span style="color:var(--am);font-size:8px;">+1</span>' : '') + '</div><input class="se-time-inp" type="time" value="' + endVal + '" onchange="seSetTime(' + i + ',\'end\',this.value)"></div>';
+    html += '<div class="se-dur-badge">' + seDurLabel(dur) + '</div>';
+    html += '</div>';
+    html += '</div>';
+  });
+  list.innerHTML = html;
+}
+
+window.seSetName = function(i, val) {
+  val = val.trim();
+  if (!val || !_allSessions[i]) return;
+  _allSessions[i].name = val;
+  saveAllSessions();
+};
+
+window.seSetType = function(i, type) {
+  if (!_allSessions[i]) return;
+  _allSessions[i].type = type;
+  saveAllSessions();
+};
+
+window.seSetTime = function(i, which, val) {
+  var hm = seTimeToHM(val);
+  if (!hm || !_allSessions[i]) return;
+  var s = _allSessions[i];
+  if (which === 'start') {
+    s.sh = hm.h; s.sm = hm.m;
+  } else {
+    // Detect midnight crossing: if end <= start, store as eh = h + 24
+    var startMins = s.sh * 60 + s.sm;
+    var endMins = hm.h * 60 + hm.m;
+    if (endMins <= startMins) {
+      s.eh = hm.h + 24; s.em = hm.m;
+    } else {
+      s.eh = hm.h; s.em = hm.m;
+    }
+  }
+  saveAllSessions();
+};
+
+window.seDeleteSession = function(i) {
+  if (_allSessions.length <= 1) { showT('⚠️ Cannot delete', 'Need at least one session.'); return; }
+  _allSessions.splice(i, 1);
+  saveAllSessions();
+};
+
+window.seAddSession = function() {
+  // Default: 1 hour after the last session ends
+  var last = _allSessions[_allSessions.length - 1];
+  var newSh = last ? (last.eh >= 24 ? (last.eh - 24) : last.eh) : 8;
+  var newSm = last ? last.em : 0;
+  // Clamp to valid range
+  if (newSh >= 23) { newSh = 8; newSm = 0; }
+  var newEh = newSh + 1, newEm = newSm;
+  _allSessions.push({ id: genSessId(), name: 'New Session', type: 'study', sh: newSh, sm: newSm, eh: newEh, em: newEm });
+  saveAllSessions();
+  // Scroll to bottom
+  setTimeout(function() {
+    var sheet = document.getElementById('sessEditorSheet');
+    if (sheet) sheet.scrollTop = sheet.scrollHeight;
+  }, 100);
+};
+
+window.seResetDefaults = function() {
+  if (!confirm('Reset all sessions to default? Your study progress is not affected.')) return;
+  _allSessions = JSON.parse(JSON.stringify(ALL_SESSIONS_DEFAULT));
+  saveAllSessions();
+  showT('↺ Sessions reset', 'Back to default timetable.');
+};
+
+// Drag reorder
+window.seDragStart = function(e, i) {
+  _seDragIdx = i;
+  e.dataTransfer.effectAllowed = 'move';
+};
+window.seDragOver = function(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  document.querySelectorAll('.se-card').forEach(function(c) { c.classList.remove('drag-over'); });
+  if (e.currentTarget) e.currentTarget.classList.add('drag-over');
+};
+window.seDrop = function(e, targetIdx) {
+  e.preventDefault();
+  document.querySelectorAll('.se-card').forEach(function(c) { c.classList.remove('drag-over'); });
+  if (_seDragIdx === targetIdx || _seDragIdx < 0) return;
+  var moved = _allSessions.splice(_seDragIdx, 1)[0];
+  _allSessions.splice(targetIdx, 0, moved);
+  _seDragIdx = -1;
+  saveAllSessions();
+};
+window.seDragEnd = function() {
+  _seDragIdx = -1;
+  document.querySelectorAll('.se-card').forEach(function(c) { c.classList.remove('drag-over'); });
+};
+
+// Sync session config from Firebase on load
+window.addEventListener('fbReady', function() {
+  var fb = window._fb;
+  if (!fb || !fb.ready) return;
+  fb.onValue(fb.ref(fb.db, 'study/' + USER_ID + '/' + SESS_KEY), function(snap) {
+    var val = snap.val();
+    if (val && Array.isArray(val) && val.length > 0) {
+      var remote = JSON.stringify(val);
+      var local = JSON.stringify(_allSessions);
+      if (remote !== local) {
+        _allSessions = val;
+        localStorage.setItem(SESS_KEY, remote);
+        rebuildSessionDerived();
+        renderSessionEditor();
+        if (typeof buildSchedule === 'function') buildSchedule();
+        if (typeof renderGate === 'function') renderGate();
+        if (typeof up === 'function') up();
+      }
+    }
+  }, { onlyOnce: true });
+}, { once: true });
+</script>
 
 </body>
 </html>
