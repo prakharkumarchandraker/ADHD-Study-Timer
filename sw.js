@@ -1,6 +1,6 @@
 // ── Study OS · Service Worker ──────────────────────────────────────────────
 // Cache name — bump this string whenever you deploy to force all devices to update
-const CACHE = 'studyos-v4';
+const CACHE = 'studyos-v5';
 
 // Static assets that are safe to cache forever (fonts, CDN libraries)
 // index.html is intentionally NOT cached here — it uses network-first below
@@ -141,7 +141,24 @@ self.addEventListener('push', function(e) {
 // ── NOTIFICATION CLICK ────────────────────────────────────────────────────
 self.addEventListener('notificationclick', function(e) {
   e.notification.close();
-  if (e.action === 'dismiss') return;
+  if (e.action === 'dismiss') {
+    // Snooze 5 minutes — reschedule the alarm
+    setTimeout(function() {
+      self.registration.showNotification(e.notification.title || '📚 Study OS', {
+        body: e.notification.body || 'Snoozed reminder — time to study!',
+        tag: (e.notification.tag || 'studyos-alarm') + '-snooze',
+        icon: 'data:image/svg+xml,' + encodeURIComponent(
+          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">' +
+          '<rect width="192" height="192" rx="38" fill="#0d0d10"/>' +
+          '<text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-size="110">📚</text></svg>'),
+        vibrate: [300, 150, 300, 150, 300],
+        data: e.notification.data || { url: './index.html' },
+        requireInteraction: true,
+        actions: [{ action: 'open', title: '▶ Start Now' }, { action: 'dismiss', title: '✕ Snooze 5m' }]
+      });
+    }, 5 * 60 * 1000);
+    return;
+  }
   var targetUrl = (e.notification.data && e.notification.data.url) ? e.notification.data.url : './index.html';
   e.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(wins) {

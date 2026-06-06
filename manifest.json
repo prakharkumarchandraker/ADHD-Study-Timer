@@ -41,7 +41,7 @@
       "name": "GATE Tasks",
       "short_name": "GATE",
       "description": "View GATE task schedule",
-      "url": "./index.html",
+      "url": "./index.html?tab=gate",
       "icons": [{"src": "./icon-192.png", "sizes": "192x192", "type": "image/png"}]
     }
   ]
