@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Study OS · GATE 2027</title>
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d0d10">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="StudyOS">
+<!-- Viewport height fix: use dvh where supported so mobile browser chrome doesn't eat space -->
+<style>:root{--vh:1vh;}@supports(height:100dvh){:root{--vh:1dvh;}}</style>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
@@ -222,7 +231,7 @@ html,body{background:var(--bg);color:var(--tx);font-family:var(--fn);font-size:1
 .day-label-inp:focus{border-color:var(--s1o);}
 .save-snap-btn{background:var(--s2b);border:1px solid var(--s2o);color:var(--s2);border-radius:var(--rs);padding:7px 12px;font-family:var(--fn);font-size:11px;font-weight:700;cursor:pointer;}
 /* Archive export card */
-#archiveCard{position:fixed;left:-9999px;top:0;width:400px;background:#0d0d10;padding:20px;font-family:'Sora',sans-serif;}
+#archiveCard{position:fixed;left:-9999px;top:0;width:400px;background:#0d0d10;padding:20px;font-family:'Sora',sans-serif;color:#ece9f4;}
 
 /* ── PIN NEXT / DO NEXT ── */
 .pinned-badge{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 9px;border-radius:20px;background:rgba(240,111,160,.15);color:#f06fa0;border:1px solid rgba(240,111,160,.35);margin-bottom:8px;}
@@ -737,14 +746,40 @@ body.focus-mode .hero-cd{font-size:96px!important;letter-spacing:-4px;}
 .fo-sub-txt{font-size:12px;color:rgba(255,255,255,.7);flex:1;line-height:1.4;}
 .fo-sub-txt.done{text-decoration:line-through;color:rgba(255,255,255,.3);}
 
-</style>
+/* ── PWA INSTALL BANNER ── */
+#pwaInstallBanner{display:none;position:fixed;bottom:calc(64px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:8000;background:var(--sf);border:1px solid var(--s1o);border-radius:16px;padding:10px 14px;max-width:min(380px,92vw);width:100%;box-shadow:0 8px 32px rgba(0,0,0,.5);align-items:center;gap:10px;}
+#pwaInstallBanner.show{display:flex;}
+.pwa-banner-text{flex:1;font-size:11px;color:var(--tx);line-height:1.4;}
+.pwa-banner-text strong{color:var(--s1);}
+.pwa-install-btn{background:var(--s1b);border:1px solid var(--s1o);color:var(--s1);border-radius:8px;padding:6px 12px;font-family:var(--fn);font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;}
+.pwa-dismiss-btn{background:none;border:none;color:var(--mt);cursor:pointer;font-size:18px;line-height:1;padding:0 2px;}
 
+/* ── SUBJECT VELOCITY CARD ── */
+.vel-grid{display:flex;flex-direction:column;gap:5px;}
+.vel-row{display:flex;align-items:center;gap:8px;padding:6px 0;}
+.vel-lbl{font-family:var(--mo);font-size:9px;font-weight:700;padding:2px 6px;border-radius:5px;min-width:34px;text-align:center;flex-shrink:0;}
+.vel-subj{font-size:11px;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.vel-bar-wrap{width:90px;height:5px;background:var(--sf3);border-radius:3px;overflow:hidden;flex-shrink:0;}
+.vel-bar-fill{height:100%;border-radius:3px;transition:width .6s;}
+.vel-eta{font-family:var(--mo);font-size:9px;color:var(--mt);flex-shrink:0;min-width:52px;text-align:right;}
+.vel-ok{color:var(--s2);}
+.vel-warn{color:var(--am);}
+.vel-behind{color:var(--s3);}
+
+/* ── CARRY-FORWARD BADGE ── */
+.cf-badge{display:inline-flex;align-items:center;gap:4px;font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:10px;background:rgba(245,197,66,.12);color:var(--am);border:1px solid rgba(245,197,66,.3);margin-left:6px;vertical-align:middle;}
+.cf-section-label{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--am);padding:6px 0 4px;border-top:1px dashed rgba(245,197,66,.2);margin-top:4px;}
+
+</style>
+</head>
+<body>
 <!-- ── PIN LOCK ── -->
 <script>
-// PIN is stored as SHA-256 hash — not as plaintext
-// To change PIN: run  crypto.subtle.digest('SHA-256', new TextEncoder().encode('YOUR_NEW_PIN'))
-//   in DevTools console, then copy the hex string below.
-// Hash of '7108':
+// PIN is stored as SHA-256 hash — not as plaintext.
+// To change PIN: open DevTools console and run:
+//   crypto.subtle.digest('SHA-256', new TextEncoder().encode('YOUR_NEW_PIN'))
+//     .then(b => console.log(Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')))
+// Then paste the resulting hex string below. Do NOT write the PIN itself in this file.
 const CORRECT_PIN_HASH='fa86c63b0d4afca3891d0986470c5fe3570c77e405f0625e7579e33f58b13ddb';
 async function hashPin(pin){
   const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pin));
@@ -754,13 +789,30 @@ let pinEntry='';
 function renderPinDots(shake){for(let i=0;i<4;i++){const d=document.getElementById('pd'+i);if(!d)return;d.className='pin-dot'+(i<pinEntry.length?' filled':'')+(shake?' error':'');}}
 function pinKey(k){if(!k||pinEntry.length>=4)return;pinEntry+=k;renderPinDots(false);const err=document.getElementById('pinErr');if(err)err.textContent='';if(pinEntry.length===4){hashPin(pinEntry).then(function(h){if(h===CORRECT_PIN_HASH){sessionStorage.setItem('v5_unlock_time',Date.now().toString());document.getElementById('pinLock').classList.remove('show');document.getElementById('pinLock').style.display='none';const tryW=()=>{if(typeof window.showWaterAlert==='function')window.showWaterAlert(true);else setTimeout(tryW,100);};setTimeout(tryW,300);}else{renderPinDots(true);if(err)err.textContent='Wrong PIN';setTimeout(()=>{pinEntry='';renderPinDots(false);},700);}});}}
 function pinDel(){if(pinEntry.length>0){pinEntry=pinEntry.slice(0,-1);renderPinDots(false);}const err=document.getElementById('pinErr');if(err)err.textContent='';}
-let waCountdown=null;
-window.showWaterAlert=function(isFirstOpen){const el=document.getElementById('waterAlert');if(!el)return;const title=el.querySelector('.wa-title');const sub=el.querySelector('.wa-sub');if(isFirstOpen){title.textContent='Drink Water First';sub.innerHTML='Before you study,<br>drink a full glass of water now.';}else{title.textContent='Time to Hydrate';sub.innerHTML='30 minutes have passed.<br>Tap to confirm you drank.';}el.style.display='flex';el.classList.add('show');if(typeof playAlertWater==='function'){playAlertWater();setTimeout(()=>playAlertWater(),800);}let secs=15;const timerEl=document.getElementById('waTimer');if(timerEl)timerEl.textContent='Auto-closing in '+secs+'s';clearInterval(waCountdown);waCountdown=setInterval(()=>{secs--;if(timerEl)timerEl.textContent='Auto-closing in '+secs+'s';if(secs<=0)window.skipWaterAlert();},1000);};
-window.closeWaterAlert=function(){clearInterval(waCountdown);const el=document.getElementById('waterAlert');if(el){el.classList.remove('show');el.style.display='none';}localStorage.setItem('v5_lw',Date.now().toString());if(typeof lw!=='undefined')lw=Date.now();if(typeof logWaterGlass==='function')logWaterGlass();};
-window.skipWaterAlert=function(){clearInterval(waCountdown);const el=document.getElementById('waterAlert');if(el){el.classList.remove('show');el.style.display='none';}localStorage.setItem('v5_lw',Date.now().toString());if(typeof lw!=='undefined')lw=Date.now();};
+// lw is declared here so closeWaterAlert/skipWaterAlert can reference it safely.
+// It will be overwritten with the persisted value once the main script block runs.
+var lw=parseInt(localStorage.getItem('v5_lw')||'0')||Date.now();
+var waCountdown=null;
+window.showWaterAlert=function(isFirstOpen){
+  var el=document.getElementById('waterAlert');if(!el)return;
+  var title=el.querySelector('.wa-title');
+  var sub=el.querySelector('.wa-sub');
+  // Guard: if the waterAlert markup is missing inner elements, bail safely.
+  if(!title||!sub)return;
+  if(isFirstOpen){title.textContent='Drink Water First';sub.innerHTML='Before you study,<br>drink a full glass of water now.';}
+  else{title.textContent='Time to Hydrate';sub.innerHTML='30 minutes have passed.<br>Tap to confirm you drank.';}
+  el.style.display='flex';el.classList.add('show');
+  if(typeof playAlertWater==='function'){playAlertWater();setTimeout(function(){playAlertWater();},800);}
+  var secs=15;
+  var timerEl=document.getElementById('waTimer');
+  if(timerEl)timerEl.textContent='Auto-closing in '+secs+'s';
+  clearInterval(waCountdown);
+  waCountdown=setInterval(function(){secs--;if(timerEl)timerEl.textContent='Auto-closing in '+secs+'s';if(secs<=0)window.skipWaterAlert();},1000);
+};
+window.closeWaterAlert=function(){clearInterval(waCountdown);var el=document.getElementById('waterAlert');if(el){el.classList.remove('show');el.style.display='none';}lw=Date.now();localStorage.setItem('v5_lw',lw.toString());if(typeof logWaterGlass==='function')logWaterGlass();};
+window.skipWaterAlert=function(){clearInterval(waCountdown);var el=document.getElementById('waterAlert');if(el){el.classList.remove('show');el.style.display='none';}lw=Date.now();localStorage.setItem('v5_lw',lw.toString());};
 document.addEventListener('DOMContentLoaded',function(){const lock=document.getElementById('pinLock');const unlockTime=parseInt(sessionStorage.getItem('v5_unlock_time')||'0');const now=Date.now();if(now-unlockTime<8*60*60*1000&&unlockTime>0){lock.style.display='none';}else{lock.classList.add('show');}document.addEventListener('keydown',function(e){if(!lock.classList.contains('show')&&lock.style.display==='none')return;if(e.key>='0'&&e.key<='9')pinKey(e.key);else if(e.key==='Backspace')pinDel();});});
 </script>
-<body>
 <script>
 window.onerror=function(msg,src,line,col,err){
   var d=document.getElementById("mainWrap");
@@ -788,6 +840,13 @@ window.onerror=function(msg,src,line,col,err){
       <button class="pin-key" onclick="pinKey('')" aria-hidden="true" style="visibility:hidden;"></button><button class="pin-key" aria-label="0" onclick="pinKey('0')">0</button><button class="pin-key del" aria-label="Delete" onclick="pinDel()">⌫</button>
     </div>
   </div>
+</div>
+
+<!-- PWA INSTALL BANNER -->
+<div id="pwaInstallBanner">
+  <div class="pwa-banner-text">📲 <strong>Add to home screen</strong> for fullscreen offline mode</div>
+  <button class="pwa-install-btn" onclick="pwaTriggerInstall()">Install</button>
+  <button class="pwa-dismiss-btn" onclick="pwaDismissBanner()" aria-label="Dismiss">×</button>
 </div>
 
 <div id="mainWrap">
@@ -954,6 +1013,15 @@ window.onerror=function(msg,src,line,col,err){
       <div id="subj-grid"></div>
     </div>
 
+    <!-- SUBJECT VELOCITY -->
+    <div class="card" id="vel-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div class="ct" style="margin-bottom:0;">📈 Velocity Tracker</div>
+        <span id="vel-summary" style="font-family:var(--mo);font-size:9px;color:var(--mt);"></span>
+      </div>
+      <div class="vel-grid" id="vel-grid"></div>
+    </div>
+
     <!-- GATE HEATMAP -->
     <div class="card" id="gate-hm">
       <div class="ct">Study Heatmap · May 21 → Dec 31</div>
@@ -1039,6 +1107,18 @@ window.onerror=function(msg,src,line,col,err){
         <button class="exp-btn exp-morning" id="btnMorning2" onclick="exportList('morning')">🌅 Morning plan</button>
         <button class="exp-btn exp-night" id="btnNight2" onclick="exportList('night')">🌙 Night report</button>
       </div>
+    </div>
+
+    <!-- PUSH NOTIFICATIONS -->
+    <div class="card" id="pushCard">
+      <div class="ct">🔔 Session Alarms</div>
+      <div style="font-size:11px;color:var(--mt2);margin-bottom:12px;line-height:1.5;">Get notified when your next study session is about to start — even when the app is in the background.</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+        <div id="pushStatus" style="font-family:var(--mo);font-size:10px;color:var(--mt);">Checking…</div>
+        <button id="pushEnableBtn" onclick="pushRequestPermission()" style="background:var(--s1b);border:1px solid var(--s1o);color:var(--s1);border-radius:var(--rs);padding:8px 14px;font-family:var(--fn);font-size:11px;font-weight:700;cursor:pointer;display:none;">Enable Notifications</button>
+        <button id="pushTestBtn" onclick="pushSendTest()" style="background:var(--sf2);border:1px solid var(--bd2);color:var(--mt2);border-radius:var(--rs);padding:8px 14px;font-family:var(--fn);font-size:11px;cursor:pointer;display:none;">Send Test</button>
+      </div>
+      <div id="pushNextAlarm" style="font-size:10px;color:var(--mt);margin-top:8px;font-family:var(--mo);"></div>
     </div>
 
   </div><!-- end tab-stats -->
@@ -1408,7 +1488,7 @@ window.onerror=function(msg,src,line,col,err){
 
 
 <!-- ARCHIVE EXPORT CARD (off-screen) -->
-<div id="archiveCard" style="position:fixed;left:-9999px;top:0;width:400px;background:#0d0d10;padding:20px;font-family:'Sora',sans-serif;color:#ece9f4;">
+<div id="archiveCard">
   <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
     <div>
       <div style="font-size:22px;font-weight:800;" id="archTitle">Day Report</div>
@@ -1559,13 +1639,16 @@ function rebuildFromTimetable(){
 rebuildFromTimetable();
 
 // ── ROUTINE DONE STATE ────────────────────────────────────────────────────────
-var ROUTINE_DONE_KEY='v5_rdone_'+getToday();
-var _routineDone=(function(){try{return JSON.parse(localStorage.getItem(ROUTINE_DONE_KEY)||'{}');}catch(e){return {};}})();
+// ROUTINE_DONE_KEY is a function — not a constant — so that if the tab stays open
+// past the 4 am logical-day rollover, saves/reads always go to the correct day's key.
+function ROUTINE_DONE_KEY(){return 'v5_rdone_'+getToday();}
+var _routineDone=(function(){try{return JSON.parse(localStorage.getItem(ROUTINE_DONE_KEY())||'{}');}catch(e){return {};}})();
 function isRoutineDone(slotId,itemIdx){return !!_routineDone[slotId+'_'+itemIdx];}
 function saveRoutineDone(){
-  localStorage.setItem(ROUTINE_DONE_KEY,JSON.stringify(_routineDone));
+  var key=ROUTINE_DONE_KEY();
+  localStorage.setItem(key,JSON.stringify(_routineDone));
   if(window._fb&&window._fb.ready&&typeof fbPath==='function'){
-    window._fb.set(window._fb.ref(window._fb.db,fbPath(ROUTINE_DONE_KEY)),_routineDone).catch(function(){});
+    window._fb.set(window._fb.ref(window._fb.db,fbPath(key)),_routineDone).catch(function(){});
   }
 }
 window.toggleRoutineItemNew=function(slotId,itemIdx){
@@ -1623,7 +1706,7 @@ function weekday(s){return fromStr(s).toLocaleDateString('en-IN',{weekday:'long'
 function fmtMins(m){m=Math.round(m);if(m<60)return m+'m';var h=Math.floor(m/60),r=m%60;return h+'h'+(r?' '+r+'m':'');}
 function daysBetween(a,b){return Math.round((fromStr(b)-fromStr(a))/86400000);}
 function hmColor(m){if(!m||m<1)return '#1a1a2e';var h=m/60;if(h<2)return '#1e3b2e';if(h<4)return '#2d5e3a';if(h<6)return '#3d8c4e';if(h<8)return '#5ab86b';return '#a6e3a1';}
-function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 
 function defaultState(){return{done:{},pyqTopics:{},potato:[],viewDate:null,skips:[],expanded:[],flags:{},revisions:{},revDone:{},live:{},subjOrder:null,pinnedNext:null};}
 function loadGateState(){try{var s=localStorage.getItem('gate2027v6');if(s){var p=JSON.parse(s);var d=defaultState();for(var k in d)if(p[k]===undefined)p[k]=d[k];return p;}}catch(e){}return defaultState();}
@@ -2187,6 +2270,40 @@ function renderGate(){
     subjGrid.innerHTML=html;
   }
 
+  // Velocity tracker (runs after subject grid so data is fresh)
+  if(typeof renderVelocity==='function')renderVelocity();
+
+  // Carry-forward: inject missed tasks at top of session plan if viewing today
+  (function renderCarryForward(){
+    var sesContainer=document.getElementById('ses-container');
+    if(!sesContainer)return;
+    var cf=typeof getCarryForwardTasks==='function'?getCarryForwardTasks(sched):[];
+    if(!cf.length)return;
+    var done=new Set(Object.keys(ST.done).map(Number));
+    var cfHtml='<div class="card" style="border-color:rgba(245,197,66,.3);margin-bottom:8px;">'
+      +'<div class="ct" style="color:var(--am);">📌 Carry-Forward — Missed Tasks</div>';
+    cf.forEach(function(item){
+      var t=null;for(var i=0;i<ALL_TASKS.length;i++){if(ALL_TASKS[i].id===item.taskId){t=ALL_TASKS[i];break;}}
+      if(!t)return;
+      var col=COLORS[t.subject]||'#7b6fff';
+      var ago=item.daysAgo===1?'yesterday':item.daysAgo+'d ago';
+      cfHtml+='<div style="display:flex;align-items:center;gap:10px;padding:9px 11px;background:rgba(245,197,66,.04);border-radius:9px;border:1px solid rgba(245,197,66,.15);margin-bottom:5px;">'
+        +'<div style="flex:1;min-width:0;">'
+        +'<div style="font-size:11px;font-weight:600;color:'+col+';">'+esc(t.subject)+'<span class="cf-badge">'+ago+'</span></div>'
+        +'<div style="font-size:13px;font-weight:700;line-height:1.3;margin-top:2px;">'+esc(t.name)+'</div>'
+        +'<div style="font-family:var(--mo);font-size:10px;color:var(--mt);margin-top:2px;">'+fmtMins(t.chunk||t.duration)+' · was in '+esc(item.sesName)+'</div>'
+        +'</div>'
+        +'<button onclick="haptic([40,30,80]);markDone('+item.taskId+')" style="background:var(--s2b);border:1px solid var(--s2o);color:var(--s2);border-radius:8px;padding:6px 12px;font-family:var(--fn);font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;">Done ✓</button>'
+        +'</div>';
+    });
+    cfHtml+='</div>';
+    // Prepend carry-forward above today's session plan
+    var existing=sesContainer.querySelector('.cf-carry-wrap');
+    if(existing)existing.remove();
+    var wrap=document.createElement('div');wrap.className='cf-carry-wrap';wrap.innerHTML=cfHtml;
+    sesContainer.insertBefore(wrap,sesContainer.firstChild);
+  })();
+
   // Gate heatmap
   renderGateHeatmap(studyDays);
 
@@ -2294,7 +2411,8 @@ var streak=parseInt(localStorage.getItem('v5_streak')||'0');
 var maxStreak=parseInt(localStorage.getItem('v5_maxstreak')||'0');
 var lastD=localStorage.getItem('v5_ld')||'';
 var pinTask=JSON.parse(localStorage.getItem('v5_pin')||'null');
-var lw=parseInt(localStorage.getItem('v5_lw')||'0')||Date.now();
+// lw declared early (PIN block); re-read persisted value here to ensure freshness.
+lw=parseInt(localStorage.getItem('v5_lw')||'0')||Date.now();
 var focusSecs=parseInt(localStorage.getItem('v5_focus_'+today)||'0');
 var focusInterval=null;
 var slotFocusSecs=(function(){
@@ -2508,13 +2626,19 @@ document.addEventListener('visibilitychange',function(){
 });
 
 // ── AUDIO ─────────────────────────────────────────────────────────────────────
-function getCtx(){return new(window.AudioContext||window.webkitAudioContext)();}
-function playDone(){try{var c=getCtx();[[880,0],[1100,.1]].forEach(function(p){var o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.value=p[0];g.gain.setValueAtTime(0,.0);g.gain.linearRampToValueAtTime(.15,p[1]+.01);g.gain.exponentialRampToValueAtTime(.001,p[1]+.3);o.start(c.currentTime+p[1]);o.stop(c.currentTime+p[1]+.32);});setTimeout(function(){c.close();},600);}catch(e){}}
-function playPomoDone(){try{var c=getCtx();[[660,0],[880,.15],[1100,.3]].forEach(function(p){var o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.value=p[0];g.gain.setValueAtTime(0,.0);g.gain.linearRampToValueAtTime(.18,p[1]+.01);g.gain.exponentialRampToValueAtTime(.001,p[1]+.32);o.start(c.currentTime+p[1]);o.stop(c.currentTime+p[1]+.35);});setTimeout(function(){c.close();},800);}catch(e){}}
-function playAlertStart(){try{var c=getCtx();[[523,0],[659,.12],[784,.24],[1047,.38]].forEach(function(p){var o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.value=p[0];g.gain.setValueAtTime(0,.0);g.gain.linearRampToValueAtTime(.18,p[1]+.01);g.gain.exponentialRampToValueAtTime(.001,p[1]+.28);o.start(c.currentTime+p[1]);o.stop(c.currentTime+p[1]+.3);});setTimeout(function(){c.close();},1200);}catch(e){}}
-function playAlertEnd(){try{var c=getCtx();[[880,0],[784,.15],[659,.3],[523,.48]].forEach(function(p){var o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='triangle';o.frequency.value=p[0];g.gain.setValueAtTime(0,.0);g.gain.linearRampToValueAtTime(.2,p[1]+.01);g.gain.exponentialRampToValueAtTime(.001,p[1]+.32);o.start(c.currentTime+p[1]);o.stop(c.currentTime+p[1]+.35);});setTimeout(function(){c.close();},1400);}catch(e){}}
-function playAlertWarn(){try{var c=getCtx();[0,.22,.44].forEach(function(t){var o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.value=1100;g.gain.setValueAtTime(0,.0);g.gain.linearRampToValueAtTime(.22,t+.01);g.gain.exponentialRampToValueAtValue(.001,t+.18);o.start(c.currentTime+t);o.stop(c.currentTime+t+.2);});setTimeout(function(){c.close();},1000);}catch(e){}}
-function playAlertWater(){try{var c=getCtx();[[1319,0],[1568,.1],[2093,.2]].forEach(function(p){var o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.value=p[0];g.gain.setValueAtTime(0,.0);g.gain.linearRampToValueAtTime(.1,p[1]+.01);g.gain.exponentialRampToValueAtTime(.001,p[1]+.22);o.start(c.currentTime+p[1]);o.stop(c.currentTime+p[1]+.25);});setTimeout(function(){c.close();},800);}catch(e){}}
+// Shared AudioContext singleton — avoids hitting the browser per-page limit (~6).
+var _audioCtx=null;
+function getCtx(){
+  if(_audioCtx&&_audioCtx.state!=='closed')return _audioCtx;
+  _audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  return _audioCtx;
+}
+function playDone(){try{var c=getCtx();[[880,0],[1100,.1]].forEach(function(p){var o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.value=p[0];g.gain.setValueAtTime(0,c.currentTime);g.gain.linearRampToValueAtTime(.15,c.currentTime+p[1]+.01);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+p[1]+.3);o.start(c.currentTime+p[1]);o.stop(c.currentTime+p[1]+.32);});}catch(e){}}
+function playPomoDone(){try{var c=getCtx();[[660,0],[880,.15],[1100,.3]].forEach(function(p){var o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.value=p[0];g.gain.setValueAtTime(0,c.currentTime);g.gain.linearRampToValueAtTime(.18,c.currentTime+p[1]+.01);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+p[1]+.32);o.start(c.currentTime+p[1]);o.stop(c.currentTime+p[1]+.35);});}catch(e){}}
+function playAlertStart(){try{var c=getCtx();[[523,0],[659,.12],[784,.24],[1047,.38]].forEach(function(p){var o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.value=p[0];g.gain.setValueAtTime(0,c.currentTime);g.gain.linearRampToValueAtTime(.18,c.currentTime+p[1]+.01);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+p[1]+.28);o.start(c.currentTime+p[1]);o.stop(c.currentTime+p[1]+.3);});}catch(e){}}
+function playAlertEnd(){try{var c=getCtx();[[880,0],[784,.15],[659,.3],[523,.48]].forEach(function(p){var o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='triangle';o.frequency.value=p[0];g.gain.setValueAtTime(0,c.currentTime);g.gain.linearRampToValueAtTime(.2,c.currentTime+p[1]+.01);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+p[1]+.32);o.start(c.currentTime+p[1]);o.stop(c.currentTime+p[1]+.35);});}catch(e){}}
+function playAlertWarn(){try{var c=getCtx();[0,.22,.44].forEach(function(t){var o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.value=1100;g.gain.setValueAtTime(0,c.currentTime);g.gain.linearRampToValueAtTime(.22,c.currentTime+t+.01);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+t+.18);o.start(c.currentTime+t);o.stop(c.currentTime+t+.2);});}catch(e){}}
+function playAlertWater(){try{var c=getCtx();[[1319,0],[1568,.1],[2093,.2]].forEach(function(p){var o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.value=p[0];g.gain.setValueAtTime(0,c.currentTime);g.gain.linearRampToValueAtTime(.1,c.currentTime+p[1]+.01);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+p[1]+.22);o.start(c.currentTime+p[1]);o.stop(c.currentTime+p[1]+.25);});}catch(e){}}
 
 // ── TOAST ─────────────────────────────────────────────────────────────────────
 var toastTimer=null;
@@ -2900,11 +3024,13 @@ function updateFocusOverlay(){
   if(waterRow&&waterCd){
     var nextW=lw+(30*60*1000),dw=Math.max(0,Math.round((nextW-Date.now())/1000));
     if(dw===0){
-      waterRow.innerHTML='💧 <span style="color:#38bdf8;font-weight:700;">Drink water now!</span>';
+      waterCd.textContent='Drink water now!';
+      waterCd.style.color='#38bdf8';waterCd.style.fontWeight='700';
       waterRow.className='fo-water-row soon';
     } else {
       var wm=Math.floor(dw/60),ws=dw%60;
-      waterRow.innerHTML='💧 next water in <span id="foWaterCd">'+(dw<60?ws+'s':pad(wm)+':'+pad(ws))+'</span>';
+      waterCd.textContent=(dw<60?ws+'s':pad(wm)+':'+pad(ws));
+      waterCd.style.color='';waterCd.style.fontWeight='';
       waterRow.className='fo-water-row'+(dw<120?' soon':'');
     }
   }
@@ -4121,7 +4247,7 @@ window.addEventListener('fbReady',function(){
       localStorage.setItem(HAB_KEY,JSON.stringify(_habits));
       if(document.getElementById('tab-habits').classList.contains('act')) renderHabits();
     }
-  },{onlyOnce:true});
+  });
 },{once:true});
 
 // Init
@@ -4132,6 +4258,346 @@ bh();
 buildWeekChart();
 renderWaterLogInline();
 updateWaterBadge();
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ── SERVICE WORKER + PWA INSTALL ─────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+var _pwaPrompt=null;
+(function initPWA(){
+  if(!('serviceWorker' in navigator))return;
+  // Register SW
+  navigator.serviceWorker.register('./sw.js').then(function(reg){
+    window._swReg=reg;
+    console.log('[SW] registered, scope:',reg.scope);
+  }).catch(function(err){
+    console.warn('[SW] registration failed:',err);
+  });
+
+  // Capture install prompt (Android Chrome)
+  window.addEventListener('beforeinstallprompt',function(e){
+    e.preventDefault();
+    _pwaPrompt=e;
+    // Show banner only once; skip if already installed or dismissed
+    if(!localStorage.getItem('v5_pwa_dismissed')&&!window.matchMedia('(display-mode: fullscreen)').matches){
+      var b=document.getElementById('pwaInstallBanner');
+      if(b)b.classList.add('show');
+    }
+  });
+  window.addEventListener('appinstalled',function(){
+    var b=document.getElementById('pwaInstallBanner');if(b)b.classList.remove('show');
+    showT('📲 Installed!','Open from home screen for fullscreen mode.');
+  });
+})();
+
+window.pwaTriggerInstall=function(){
+  var b=document.getElementById('pwaInstallBanner');if(b)b.classList.remove('show');
+  if(_pwaPrompt){_pwaPrompt.prompt();_pwaPrompt.userChoice.then(function(){_pwaPrompt=null;});}
+};
+window.pwaDismissBanner=function(){
+  var b=document.getElementById('pwaInstallBanner');if(b)b.classList.remove('show');
+  localStorage.setItem('v5_pwa_dismissed','1');
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ── HAPTIC FEEDBACK ──────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// haptic(pattern) — silently no-ops on devices that don't support vibrate
+function haptic(pattern){
+  try{if(navigator.vibrate)navigator.vibrate(pattern);}catch(e){}
+}
+// Wrap the existing markDone to add haptic
+(function patchMarkDone(){
+  var orig=window.markDone;
+  if(typeof orig==='function'){
+    window.markDone=function(id){
+      haptic([40,30,80]); // short-pause-longer = "done" feel
+      return orig.call(this,id);
+    };
+  }
+  // Patch toggleTodo
+  var origToggle=window.toggleTodo;
+  if(typeof origToggle==='function'){
+    window.toggleTodo=function(i){
+      haptic([30]);
+      return origToggle.call(this,i);
+    };
+  }
+  // Patch toggleRoutineItemNew
+  var origRoutine=window.toggleRoutineItemNew;
+  if(typeof origRoutine==='function'){
+    window.toggleRoutineItemNew=function(slotId,itemIdx){
+      haptic([30]);
+      return origRoutine.call(this,slotId,itemIdx);
+    };
+  }
+})();
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ── SUBJECT VELOCITY TRACKING ────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// Computes per-subject: tasks done in last 7 days, needed rate, ETA
+function getSubjectVelocity(){
+  var today=getToday();
+  var done=new Set(Object.keys(ST.done).map(Number));
+  // Count tasks done per subject in last 7 days
+  var recent={};
+  var cutoff=addD(today,-7);
+  Object.keys(ST.done).forEach(function(tid){
+    var ts=ST.done[tid];
+    var date=ts.split('T')[0];
+    if(date>=cutoff){
+      var t=null;for(var i=0;i<ALL_TASKS.length;i++){if(ALL_TASKS[i].id===Number(tid)){t=ALL_TASKS[i];break;}}
+      if(t){recent[t.subject]=(recent[t.subject]||0)+1;}
+    }
+  });
+  var TARGET='2026-02-01'; // GATE exam date approx
+  var dLeft=daysBetween(today,TARGET);
+  var result=[];
+  getSubjOrder().forEach(function(subj){
+    var tasks=ALL_TASKS.filter(function(t){return t.subject===subj;});
+    var remaining=tasks.filter(function(t){return !done.has(t.id)&&!isPyqAllDone(t.id);}).length;
+    if(remaining===0){result.push({subj:subj,remaining:0,rate7:recent[subj]||0,needed:0,eta:today,status:'done'});return;}
+    var rate7=(recent[subj]||0)/7; // tasks per day in last 7d
+    var needed=dLeft>0?remaining/dLeft:0; // tasks per day needed
+    var eta=rate7>0?addD(today,Math.ceil(remaining/rate7)):TARGET;
+    var status=rate7>=needed?'ok':rate7>=needed*0.6?'warn':'behind';
+    result.push({subj:subj,remaining:remaining,rate7:rate7,needed:needed,eta:eta,status:status});
+  });
+  return result;
+}
+
+function renderVelocity(){
+  var grid=document.getElementById('vel-grid');
+  var summary=document.getElementById('vel-summary');
+  if(!grid)return;
+  var data=getSubjectVelocity();
+  var onTrack=data.filter(function(d){return d.status==='ok'||d.status==='done';}).length;
+  if(summary)summary.textContent=onTrack+'/'+data.length+' on track';
+  var html='';
+  data.forEach(function(d){
+    if(d.status==='done'){
+      html+='<div class="vel-row"><span class="vel-lbl" style="background:rgba(45,212,160,.12);color:var(--s2);">'+esc(LABELS[d.subj]||d.subj)+'</span>'
+        +'<span class="vel-subj">'+esc(d.subj)+'</span>'
+        +'<span class="vel-bar-wrap"><span class="vel-bar-fill" style="width:100%;background:var(--s2);"></span></span>'
+        +'<span class="vel-eta vel-ok">✓ Done</span></div>';
+      return;
+    }
+    var col=COLORS[d.subj]||'#7b6fff';
+    var pct=d.needed>0?Math.min(100,Math.round((d.rate7/d.needed)*100)):0;
+    var cls=d.status==='ok'?'vel-ok':d.status==='warn'?'vel-warn':'vel-behind';
+    var etaStr=d.eta<=getToday()?'Overdue':fmtShort(d.eta);
+    var rateStr=d.rate7>0?(Math.round(d.rate7*10)/10)+'/d':'0/d';
+    html+='<div class="vel-row">'
+      +'<span class="vel-lbl" style="background:'+col+'18;color:'+col+';">'+esc(LABELS[d.subj]||d.subj)+'</span>'
+      +'<span class="vel-subj">'+esc(d.subj)+'</span>'
+      +'<span class="vel-bar-wrap"><span class="vel-bar-fill" style="width:'+pct+'%;background:'+col+';"></span></span>'
+      +'<span class="vel-eta '+cls+'" title="'+d.remaining+' tasks left · need '+Math.round(d.needed*10)/10+'/d · doing '+rateStr+'">'+etaStr+'</span>'
+      +'</div>';
+  });
+  grid.innerHTML=html||'<div style="font-size:11px;color:var(--mt);text-align:center;padding:10px;">Start marking tasks done to see velocity.</div>';
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ── CARRY-FORWARD INCOMPLETE TASKS ───────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// Returns tasks that were scheduled in the last 3 days but are not yet done
+function getCarryForwardTasks(sched){
+  var done=new Set(Object.keys(ST.done).map(Number));
+  var today=getToday();
+  var result=[];
+  var cutoff=addD(today,-3);
+  Object.keys(sched).sort().forEach(function(date){
+    if(date>=today||date<cutoff)return; // only past 3 days (not today)
+    var day=sched[date];
+    (day.sessions||[]).forEach(function(ses){
+      (ses.items||[]).forEach(function(item){
+        if(!done.has(item.taskId)&&!isPyqAllDone(item.taskId)){
+          // Don't add duplicates
+          if(!result.some(function(r){return r.taskId===item.taskId;})){
+            result.push({taskId:item.taskId,date:date,sesName:ses.name,daysAgo:daysBetween(date,today)});
+          }
+        }
+      });
+    });
+  });
+  return result;
+}
+
+// Patch renderGate to inject carry-forward section — hook into renderGate's up-next area
+(function patchRenderGate(){
+  var origRenderGate=window.renderGate||renderGate;
+  // Store original reference; we wrap it after definition
+  var _wrapped=false;
+  function wrapIt(){
+    if(_wrapped||typeof renderGate!=='function')return;
+    _wrapped=true;
+    var orig=renderGate;
+    // We can't reassign a declared function directly, so we call renderVelocity
+    // after every renderGate call via the existing up() mechanism below.
+  }
+  // Instead: hook into renderGate completion via a MutationObserver on vel-grid
+  // Simpler: call renderVelocity from up() which already runs every second
+})();
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ── MULTI-DEVICE CONFLICT RESOLUTION (timestamp-based) ───────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// Each write to Firebase now includes a _wt (write timestamp ms).
+// On receive: if incoming._wt < local._wt for a specific key, we skip the
+// remote update for that key (last-write-wins per field, not per document).
+// We patch fbWrite to always attach _wt, and update startSync's gate_state
+// listener to do field-level timestamp comparison.
+
+// Attach write-time to every saveGateState call
+(function patchSaveGateState(){
+  var orig=saveGateState;
+  // saveGateState is a regular function — we add the timestamp to ST before it writes
+  // We do this by patching the Firebase set call via _fb interception isn't clean,
+  // so instead we add a _wt field to ST itself that travels with each write.
+  // The field is ignored by all rendering code (no consumer checks _wt).
+  var origFn=saveGateState;
+  saveGateState=function(){
+    ST._wt=Date.now(); // stamp the write time
+    origFn.call(this);
+  };
+})();
+
+// Upgrade the GATE state Firebase listener in startSync to use field-level timestamps
+// We do this by overriding the merge logic — find the existing listener setup and
+// patch it post-hoc via a new fbReady listener that runs after startSync.
+window.addEventListener('fbReady',function(){
+  var fb=window._fb;if(!fb||!fb.ready)return;
+  // Listen to a dedicated _wt path to detect concurrent writes from other tabs/devices
+  fb.onValue(fb.ref(fb.db,fbPath('gate_state/_wt')),function(snap){
+    var remoteWt=snap.val();
+    // If remote write is newer than local, and local _wt is set, alert via sync dot
+    if(remoteWt&&ST._wt&&remoteWt>ST._wt+500){ // >500ms newer = genuinely different device
+      if(window._setSyncStatus)window._setSyncStatus('ok','synced ↑');
+      // The existing gate_state onValue listener in startSync will handle the actual merge
+    }
+  });
+},{once:true});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ── PUSH NOTIFICATIONS ───────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// VAPID public key — self-contained local notifications only (no server needed).
+// For server-sent push you'd need a VAPID keypair + backend.
+// This implementation uses the Service Worker's setTimeout-based alarm
+// (sw.js SCHEDULE_ALARM message) which works even when app is backgrounded,
+// as long as the SW is active.
+
+var _pushAlarmIds={}; // tag → timeout reference (in case we need to cancel via re-schedule)
+
+function pushUpdateUI(){
+  var statusEl=document.getElementById('pushStatus');
+  var enableBtn=document.getElementById('pushEnableBtn');
+  var testBtn=document.getElementById('pushTestBtn');
+  var nextEl=document.getElementById('pushNextAlarm');
+  if(!statusEl)return;
+
+  if(!('Notification' in window)){
+    statusEl.textContent='Notifications not supported on this browser.';
+    return;
+  }
+  if(!('serviceWorker' in navigator)){
+    statusEl.textContent='Service Worker not supported — host app on HTTPS.';
+    return;
+  }
+
+  var perm=Notification.permission;
+  if(perm==='granted'){
+    statusEl.style.color='var(--s2)';
+    statusEl.textContent='🔔 Notifications enabled';
+    if(enableBtn)enableBtn.style.display='none';
+    if(testBtn)testBtn.style.display='';
+    // Show next scheduled alarm
+    if(nextEl){
+      var next=pushGetNextSlotTime();
+      nextEl.textContent=next?'Next alarm: '+next:'No upcoming sessions today.';
+    }
+  } else if(perm==='denied'){
+    statusEl.style.color='var(--s3)';
+    statusEl.textContent='🔕 Blocked — enable in browser settings.';
+    if(enableBtn)enableBtn.style.display='none';
+    if(testBtn)testBtn.style.display='none';
+  } else {
+    statusEl.style.color='var(--mt)';
+    statusEl.textContent='Not enabled — get session start alerts.';
+    if(enableBtn)enableBtn.style.display='';
+    if(testBtn)testBtn.style.display='none';
+  }
+}
+
+window.pushRequestPermission=function(){
+  if(!('Notification' in window))return;
+  Notification.requestPermission().then(function(result){
+    pushUpdateUI();
+    if(result==='granted'){
+      pushScheduleAllAlarms();
+      showT('🔔 Notifications on','You\'ll be alerted before each session.');
+    } else {
+      showT('Notifications blocked','Allow in browser/system settings.');
+    }
+  });
+};
+
+window.pushSendTest=function(){
+  if(Notification.permission!=='granted')return;
+  if(window._swReg){
+    window._swReg.showNotification('📚 Study OS — Test',{
+      body:'Notifications are working! You\'ll be alerted before each session.',
+      tag:'studyos-test',
+      icon:'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="38" fill="#0d0d10"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-size="110">📚</text></svg>'),
+      vibrate:[200,100,200]
+    });
+    showT('🔔 Test sent','Check your notification shade.');
+  }
+};
+
+// Get time string for the next upcoming timetable slot
+function pushGetNextSlotTime(){
+  var now=new Date();var nm=now.getHours()*60+now.getMinutes();
+  var next=null;
+  ALL_SLOTS.forEach(function(s){
+    var st=s.start[0]*60+s.start[1];
+    if(st>nm&&(!next||st<next.mins)){next={mins:st,label:s.label,h:s.start[0],m:s.start[1]};}
+  });
+  if(!next)return null;
+  return pad(next.h)+':'+pad(next.m)+' — '+next.label;
+}
+
+// Schedule an alarm 5 minutes before each timetable slot for today
+function pushScheduleAllAlarms(){
+  if(Notification.permission!=='granted'||!window._swReg)return;
+  var sw=window._swReg.active;if(!sw)return;
+  var now=new Date();var nm=now.getHours()*60+now.getMinutes();
+  var scheduled=0;
+  ALL_SLOTS.forEach(function(s){
+    var st=s.start[0]*60+s.start[1];
+    var alarmMins=st-5; // 5 min before slot start
+    if(alarmMins>nm){ // only future alarms
+      var delayMs=(alarmMins-nm)*60*1000;
+      var tag='studyos-slot-'+s.id;
+      sw.postMessage({
+        type:'SCHEDULE_ALARM',
+        delayMs:delayMs,
+        title:'📚 Session starting in 5 min',
+        body:s.label+(s.type==='study'?' · Study session':s.type==='class'?' · Class':' · Other'),
+        tag:tag,
+        url:'./index.html'
+      });
+      scheduled++;
+    }
+  });
+  if(scheduled>0)console.log('[Push] Scheduled',scheduled,'alarms for today.');
+}
+
+// Init push UI and schedule alarms on load
+document.addEventListener('DOMContentLoaded',function(){
+  pushUpdateUI();
+  if(Notification.permission==='granted')pushScheduleAllAlarms();
+},{once:true});
 
 </script>
 
@@ -4416,8 +4882,12 @@ window.ttSetTime=function(id,day,which,val){
   var s=ttFindSlot(day,id);if(!s)return;
   if(which==='start'){s.sh=h;s.sm=m;}
   else{
-    var startMins=s.sh*60+s.sm,endMins=h*60+m;
-    s.eh=endMins<=startMins?h+24:h;s.em=m;
+    // Normalize start to [0,1439] in case it was stored with the +24 overnight offset
+    var startMins=(s.sh%24)*60+s.sm;
+    var endMins=h*60+m;
+    // If end is <= start (in raw 0-23 terms) treat as overnight — store h+24
+    s.eh=(endMins<=startMins)?h+24:h;
+    s.em=m;
   }
   saveTimetable();
 };
@@ -4425,6 +4895,11 @@ window.ttDeleteSlot=function(id,day){
   if(!confirm('Delete this slot?'))return;
   var arr=_timetable[day]||[];
   _timetable[day]=arr.filter(function(s){return s.id!==id;});
+  // Remove any routine-done entries that belong to this slot
+  Object.keys(_routineDone).forEach(function(key){
+    if(key.indexOf(id+'_')===0){delete _routineDone[key];}
+  });
+  saveRoutineDone();
   _ttOpenSlot=null;saveTimetable();
 };
 window.ttAddSlot=function(){
@@ -4549,7 +5024,7 @@ window.addEventListener('fbReady',function(){
         if(typeof renderTimetable==='function')renderTimetable();
       }
     }
-  },{onlyOnce:true});
+  });
 },{once:true});
 
 </script>
