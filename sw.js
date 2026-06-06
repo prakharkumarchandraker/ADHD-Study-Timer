@@ -1,6 +1,6 @@
 // ── Study OS · Service Worker ──────────────────────────────────────────────
 // Cache name — bump version to force update
-const CACHE = 'studyos-v1';
+const CACHE = 'studyos-v3';
 
 // App shell: files that make the UI work offline
 const SHELL = [
