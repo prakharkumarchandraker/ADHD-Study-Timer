@@ -1715,7 +1715,7 @@ function rebuildFromTimetable(){
     return {id:s.id,emoji:s.emoji||(s.type==='study'?'📚':s.type==='class'?'📡':'⚡'),
       time:pad(s.sh)+':'+pad(s.sm)+'\u2013'+displayEnd,
       start:[s.sh,s.sm],end:[s.eh,s.em],label:s.name,
-      subs:s.type==='study'?s.name+' \u00b7 '+dur+'m':s.type==='class'?s.name+' \u00b7 Class':s.name+' \u00b7 Other',
+      subs:s.type==='study'?s.name+' \u00b7 '+dur+'m':s.type==='class'?s.name+' \u00b7 Recorded':s.name+' \u00b7 Routine',
       isLive:s.type==='class',liveKey:s.type==='class'?s.id:null,
       type:s.type,dur:dur,items:s.items||[]};
   });
@@ -2889,28 +2889,34 @@ function updateHeroGateTask(nextTask){
 }
 
 // ── HERO CLASS TASK ───────────────────────────────────────────────────────────
-// Shows the active or next upcoming class slot's checklist items in the hero card.
-// The attendance toggle in GATE tab is unchanged — this is supplementary info only.
 function updateHeroClassTask(){
   var el=document.getElementById('heroClassTask');if(!el)return;
-  // Find active or soonest upcoming class slot that has items
+  // getTodaySlots() returns raw timetable format: s.sh, s.sm, s.eh, s.em
+  // NOT ALL_SLOTS format (which has s.start[], s.end[])
   var todaySlots=getTodaySlots();
   var nm=nowMins();
   var target=null;
-  // Prefer active class slot first
+  // Helper: is this raw slot active right now?
+  function rawSlotActive(s){
+    var st=s.sh*60+s.sm;
+    var en=s.eh*60+s.em;
+    if(en<st)return nm>=st||nm<en; // midnight crossing
+    return nm>=st&&nm<en;
+  }
+  // Prefer active slot first
   for(var i=0;i<todaySlots.length;i++){
     var s=todaySlots[i];
-    if(s.type!=='class'||!s.items||!s.items.length)continue;
-    if(slotActive(s)){target={slot:s,state:'active'};break;}
+    if((s.type!=='class'&&s.type!=='study')||!s.items||!s.items.length)continue;
+    if(rawSlotActive(s)){target={slot:s,state:'active'};break;}
   }
-  // Fallback: next upcoming class slot today
+  // Fallback: next upcoming slot today
   if(!target){
     var best=null,bestStart=Infinity;
     for(var j=0;j<todaySlots.length;j++){
       var s2=todaySlots[j];
-      if(s2.type!=='class'||!s2.items||!s2.items.length)continue;
-      var st=toM(s2.start[0],s2.start[1]);
-      if(st>nm&&st<bestStart){bestStart=st;best=s2;}
+      if((s2.type!=='class'&&s2.type!=='study')||!s2.items||!s2.items.length)continue;
+      var st2=s2.sh*60+s2.sm;
+      if(st2>nm&&st2<bestStart){bestStart=st2;best=s2;}
     }
     if(best)target={slot:best,state:'upcoming'};
   }
@@ -2920,29 +2926,31 @@ function updateHeroClassTask(){
   var doneCount=0;
   items.forEach(function(_,ii){if(isRoutineDone(slot.id,ii))doneCount++;});
   var remaining=items.length-doneCount;
-  // Badge
+  var isStudy=slot.type==='study';
+  var _bc2=isStudy?'rgba(123,111,255,.12)':'rgba(45,212,160,.12)';
+  var _bcc2=isStudy?'var(--s1)':'var(--s2)';
+  var _bbd2=isStudy?'rgba(123,111,255,.25)':'rgba(45,212,160,.25)';
   var badgeEl=document.getElementById('hctBadge');
   if(badgeEl){
-    badgeEl.textContent=(slot.emoji||'📡')+' '+(target.state==='active'?'Now':'Up Next');
-    badgeEl.style.cssText='font-family:var(--mo);font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;flex-shrink:0;margin-top:1px;background:rgba(45,212,160,.12);color:var(--s2);border:1px solid rgba(45,212,160,.25);white-space:nowrap;';
+    badgeEl.textContent=(slot.emoji||(isStudy?'📚':'📡'))+' '+(target.state==='active'?'Now':'Up Next');
+    badgeEl.style.cssText='font-family:var(--mo);font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;flex-shrink:0;margin-top:1px;background:'+_bc2+';color:'+_bcc2+';border:1px solid '+_bbd2+';white-space:nowrap;';
   }
   var unitEl=document.getElementById('hctUnit');
-  if(unitEl)unitEl.textContent=esc(slot.name)+' · '+pad(slot.sh)+':'+pad(slot.sm);
-  // Items list: show all, checked ones struck through
+  if(unitEl)unitEl.textContent=esc(slot.name)+' \u00b7 '+pad(slot.sh)+':'+pad(slot.sm);
   var itemsEl=document.getElementById('hctItems');
   if(itemsEl){
     var html='';
     items.forEach(function(item,ii){
       var done=isRoutineDone(slot.id,ii);
       html+='<div onclick="toggleRoutineItemNew(\''+slot.id+'\','+ii+')" style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:2px 0;">'
-        +'<div style="width:14px;height:14px;border-radius:3px;border:1.5px solid '+(done?'var(--s2)':'rgba(255,255,255,.2)')+';background:'+(done?'rgba(45,212,160,.2)':'transparent')+';display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--s2);flex-shrink:0;">'+(done?'✓':'')+'</div>'
+        +'<div style="width:14px;height:14px;border-radius:3px;border:1.5px solid '+(done?_bcc2:'rgba(255,255,255,.2)')+';background:'+(done?_bc2:'transparent')+';display:flex;align-items:center;justify-content:center;font-size:9px;color:'+_bcc2+';flex-shrink:0;">'+(done?'\u2713':'')+'</div>'
         +'<span style="font-size:12px;font-weight:'+(done?'400':'600')+';color:'+(done?'var(--mt)':'var(--tx)')+';'+(done?'text-decoration:line-through;':'')+'">'+(item)+'</span>'
         +'</div>';
     });
     itemsEl.innerHTML=html;
   }
   var metaEl=document.getElementById('hctMeta');
-  if(metaEl)metaEl.textContent=doneCount+'/'+items.length+' done'+(remaining>0?' · '+remaining+' left':'  ✓');
+  if(metaEl){metaEl.textContent=doneCount+'/'+items.length+' done'+(remaining>0?' \u00b7 '+remaining+' left':' \u2713');metaEl.style.color=_bcc2;}
   el.style.display='flex';
 }
 
@@ -3303,7 +3311,7 @@ function updateFocusOverlay(){
     if(timerEl) timerEl.textContent = fmtSecs(remSecs);
     if(timerLbl) timerLbl.textContent = 'time remaining';
     if(sessionBadge){
-      var _sTypeLabel = activeSlot.type==='class'?'📡 CLASS':activeSlot.type==='other'?'🗓 ROUTINE':'📚 STUDY';
+      var _sTypeLabel = activeSlot.type==='class'?'📡 RECORDED':activeSlot.type==='other'?'🗓 ROUTINE':'📚 GATE';
       sessionBadge.textContent = _sTypeLabel+' · '+(activeSlot.label||'SESSION').toUpperCase();
     }
     if(sessionName) sessionName.textContent = activeSlot.label||'Study Session';
@@ -3856,7 +3864,16 @@ window.doExportDownload=function(){
   // Shared: Routine summary
   var rSumKey=mode==='morning'?'m_routine_summary':'n_routine_summary';
   if(prefs[rSumKey]!==false){
-    var otherSlotsEx=getTodaySlots().filter(function(s){return s.type==='other'||(s.type==='class'&&s.items&&s.items.length>0);});var rdoneC=Object.keys(_routineDone).length;var rtot=otherSlotsEx.reduce(function(a,s){return a+(s.items&&s.items.length?s.items.length:1);},0);var rpct2=rtot>0?Math.round(rdoneC/rtot*100):0;
+    var otherSlotsEx=getTodaySlots().filter(function(s){return s.type==='other'||(s.type==='class'&&s.items&&s.items.length>0)||(s.type==='study'&&s.items&&s.items.length>0);});
+    var rdoneC=0,rtot=0;
+    otherSlotsEx.forEach(function(s){
+      if(s.items&&s.items.length>0){
+        s.items.forEach(function(_,ii){rtot++;if(isRoutineDone(s.id,ii))rdoneC++;});
+      } else {
+        rtot++;if(isRoutineDone(s.id,-1))rdoneC++;
+      }
+    });
+    var rpct2=rtot>0?Math.round(rdoneC/rtot*100):0;
     var rSumSec=document.createElement('div');rSumSec.style.cssText=sep;
     rSumSec.innerHTML='<div style="'+secLbl+'">🗓 Routine Summary</div>'
       +'<div class="ec-rout-summary">'
@@ -3875,7 +3892,7 @@ window.doExportDownload=function(){
     otherSlotsEx.forEach(function(block){
       var blockDiv=document.createElement('div');blockDiv.style.marginBottom='8px';
       var timeStr=pad(block.sh)+':'+pad(block.sm)+'\u2013'+(block.eh>=24?pad(block.eh-24)+':'+pad(block.em):pad(block.eh)+':'+pad(block.em));
-      var classTag=block.type==='class'?' · CLASS':'';
+      var classTag=block.type==='study'?' · GATE':block.type==='class'?' · RECORDED':'';
       blockDiv.innerHTML='<div class="ec-rtime">'+(block.emoji||'')+'\xa0'+esc(block.name)+classTag+'\xa0\xb7\xa0'+timeStr+'</div>';
       (block.items||[]).forEach(function(item,ii){
         var isDone=isRoutineDone(block.id,ii);
@@ -5251,10 +5268,10 @@ function renderRoutineFromTimetable(){
   // Include 'other' slots always, and 'class' slots that have items — merged by time
   var allSlots=getTodaySlots();
   var routineSlots=allSlots.filter(function(s){
-    return s.type==='other'||(s.type==='class'&&s.items&&s.items.length>0);
+    return s.type==='other'||(s.type==='class'&&s.items&&s.items.length>0)||(s.type==='study'&&s.items&&s.items.length>0);
   });
   if(routineSlots.length===0){
-    list.innerHTML='<div style=\"text-align:center;padding:16px;font-size:12px;color:var(--mt);font-style:italic;\">No routine today. Add Other slots or Class tasks in the Timetable tab.</div>';
+    list.innerHTML='<div style=\"text-align:center;padding:16px;font-size:12px;color:var(--mt);font-style:italic;\">No routine today. Add Routine/Recorded/Gate Lecture tasks in the Timetable tab.</div>';
     var fill=document.getElementById('routineProgFill');if(fill)fill.style.width='0%';
     var sumEl=document.getElementById('routineSummaryTop');if(sumEl)sumEl.textContent='0/0 done';
     return;
@@ -5269,9 +5286,9 @@ function renderRoutineFromTimetable(){
   var sumEl=document.getElementById('routineSummaryTop');if(sumEl)sumEl.textContent=done+'/'+total+' done \u00b7 '+pct+'%';
   var html='';
   routineSlots.forEach(function(s){
-    var isClass=s.type==='class';
-    var headerColor=isClass?'var(--s2)':'var(--am)';
-    var classBadge=isClass?' <span style=\"font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(45,212,160,.12);color:var(--s2);border:1px solid rgba(45,212,160,.25);\">CLASS</span>':'';
+    var isClass=s.type==='class'; var isStudy=s.type==='study';
+    var headerColor=isStudy?'var(--s1)':isClass?'var(--s2)':'var(--am)';
+    var classBadge=isStudy?' <span style=\"font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(123,111,255,.12);color:var(--s1);border:1px solid rgba(123,111,255,.25);\">GATE</span>':isClass?' <span style=\"font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(45,212,160,.12);color:var(--s2);border:1px solid rgba(45,212,160,.25);\">RECORDED</span>':'';
     html+='<div class=\"routine-block\">';
     html+='<div class=\"routine-time\" style=\"color:'+headerColor+';\">'+(s.emoji||'\u26a1')+' '+esc(s.name)+' \u00b7 '+pad(s.sh)+':'+pad(s.sm)+classBadge+'</div>';
     if(!s.items||s.items.length===0){
@@ -5359,7 +5376,7 @@ function makeTTSlotCard(s,i,day,conflicts){
 
   // Head (collapsed view)
   var head=document.createElement('div');head.className='tt-slot-head';
-  var typePill='<span class="tt-type-pill tt-type-'+s.type+'">'+s.type.toUpperCase()+'</span>';
+  var _typeLabel=s.type==='study'?'GATE LECTURES':s.type==='class'?'RECORDED':'ROUTINE'; var typePill='<span class="tt-type-pill tt-type-'+s.type+'">'+_typeLabel+'</span>';
   var endStr=s.eh>=24?pad(s.eh-24)+':'+pad(s.em):pad(s.eh)+':'+pad(s.em);
   var timeStr=pad(s.sh)+':'+pad(s.sm)+'\u2013'+endStr;
   var durStr=dur>=60?Math.floor(dur/60)+'h'+(dur%60?' '+dur%60+'m':''):dur+'m';
@@ -5395,9 +5412,9 @@ function makeTTSlotCard(s,i,day,conflicts){
   body.innerHTML+='<div class="tt-field-row">'
     +'<span class="tt-field-lbl">Type</span>'
     +'<div class="tt-type-toggle">'
-    +'<button class="'+(s.type==='study'?'act-study':'')+'" onclick="ttSetType(\''+s.id+'\',\''+day+'\',\'study\')">Study</button>'
-    +'<button class="'+(s.type==='class'?'act-class':'')+'" onclick="ttSetType(\''+s.id+'\',\''+day+'\',\'class\')">Class</button>'
-    +'<button class="'+(s.type==='other'?'act-other':'')+'" onclick="ttSetType(\''+s.id+'\',\''+day+'\',\'other\')">Other</button>'
+    +'<button class="'+(s.type==='study'?'act-study':'')+'" onclick="ttSetType(\''+s.id+'\',\''+day+'\',\'study\')">Gate Lectures</button>'
+    +'<button class="'+(s.type==='class'?'act-class':'')+'" onclick="ttSetType(\''+s.id+'\',\''+day+'\',\'class\')">Recorded</button>'
+    +'<button class="'+(s.type==='other'?'act-other':'')+'" onclick="ttSetType(\''+s.id+'\',\''+day+'\',\'other\')">Routine</button>'
     +'</div></div>';
 
   // Times
@@ -5413,8 +5430,8 @@ function makeTTSlotCard(s,i,day,conflicts){
     +'</div>';
 
   // Sub-items (Other + Class)
-  if(s.type==='other'||s.type==='class'){
-    var subHtml='<div class="tt-sub-section"><div class="tt-sub-title">'+(s.type==='class'?'📡 Class Tasks':'Checklist Items')+'</div>';
+  if(s.type==='other'||s.type==='class'||s.type==='study'){
+    var subHtml='<div class="tt-sub-section"><div class="tt-sub-title">'+(s.type==='study'?'📚 Gate Lecture Tasks':s.type==='class'?'📡 Recorded Tasks':'🗓 Routine Items')+'</div>';
     (s.items||[]).forEach(function(item,ii){
       subHtml+='<div class="tt-sub-item" id="ttsi_'+s.id+'_'+ii+'">'
         +'<span class="tt-sub-item-drag">\u2807</span>'
