@@ -4745,11 +4745,30 @@ document.addEventListener('keydown',function(e){
 
 // ── MULTI-DEVICE PRESENCE ─────────────────────────────────────────────────────
 window._ffPaused=false;window._tabId=Date.now()+'_'+Math.random().toString(36).slice(2,7);
+var _presenceSurrendered=false;
 function startPresence(fb){
   var PKEY=fbPath('v5_presence');
-  function writeP(){fbWrite('v5_presence',{tabId:window._tabId,ts:Date.now(),ua:navigator.userAgent.slice(0,40)});}
+  function writeP(){
+    if(_presenceSurrendered)return;
+    fbWrite('v5_presence',{tabId:window._tabId,ts:Date.now(),ua:navigator.userAgent.slice(0,40)});
+  }
   writeP();setInterval(writeP,8000);
-  fb.onValue(fb.ref(fb.db,PKEY),function(snap){var val=snap.val();if(!val||!val.tabId)return;if(val.tabId!==window._tabId&&(Date.now()-(val.ts||0))<15000)showMultiDeviceWarning(val);else hideMultiDeviceWarning();});
+  fb.onValue(fb.ref(fb.db,PKEY),function(snap){
+    var val=snap.val();if(!val||!val.tabId)return;
+    var isOther=val.tabId!==window._tabId;
+    var isRecent=(Date.now()-(val.ts||0))<15000;
+    if(isOther&&isRecent){
+      _presenceSurrendered=true;
+      if(!window._ffPaused)window._ffPaused=true;
+      showMultiDeviceWarning(val);
+    } else if(!isOther){
+      _presenceSurrendered=false;
+      hideMultiDeviceWarning();
+    } else {
+      _presenceSurrendered=false;
+      hideMultiDeviceWarning();
+    }
+  });
   window.addEventListener('beforeunload',function(){
     fbWrite('v5_presence',null);
     // Save screen time state immediately on close so data isn't lost
@@ -4757,10 +4776,43 @@ function startPresence(fb){
     localStorage.setItem('v5_focus_'+today,focusSecs);
   });
 }
-function showMultiDeviceWarning(other){var b=document.getElementById('multiDevBanner');if(!b){b=document.createElement('div');b.id='multiDevBanner';b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:8000;background:linear-gradient(135deg,rgba(251,146,60,.15),rgba(239,68,68,.1));border-bottom:1px solid rgba(251,146,60,.4);padding:8px 14px;display:flex;align-items:center;gap:10px;font-family:var(--fn);font-size:12px;color:#fb923c;backdrop-filter:blur(8px);';document.body.appendChild(b);}var paused=window._ffPaused;b.innerHTML='<span>⚠️</span><span style="flex:1;">Dashboard open on another device — screen time may double-count.'+(paused?' <span style="color:#4ade80;font-weight:600;">PAUSED here.</span>':'')+'</span>'+(!paused?'<button onclick="pauseThisDevice()" style="background:rgba(251,146,60,.2);border:1px solid rgba(251,146,60,.4);border-radius:8px;padding:4px 10px;color:#fb923c;font-family:var(--fn);font-size:10px;font-weight:700;cursor:pointer;">Pause</button><button onclick="takeOverDevice()" style="background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.3);border-radius:8px;padding:4px 10px;color:#4ade80;font-family:var(--fn);font-size:10px;font-weight:700;cursor:pointer;">Take Over</button>':'<button onclick="takeOverDevice()" style="background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.3);border-radius:8px;padding:4px 10px;color:#4ade80;font-family:var(--fn);font-size:10px;font-weight:700;cursor:pointer;">Resume</button>');}
-function hideMultiDeviceWarning(){var b=document.getElementById('multiDevBanner');if(b)b.remove();if(window._ffPaused){window._ffPaused=false;showT('✅ Resumed','Screen time counting resumed.');}}
-window.pauseThisDevice=function(){window._ffPaused=true;showT('⏸ Paused','Screen time paused.');showMultiDeviceWarning({});};
-window.takeOverDevice=function(){window._ffPaused=false;fbWrite('v5_presence',{tabId:window._tabId,ts:Date.now(),ua:navigator.userAgent.slice(0,40)});hideMultiDeviceWarning();showT('✅ Took over','Counting active here.');};
+function showMultiDeviceWarning(other){
+  var b=document.getElementById('multiDevBanner');
+  if(!b){b=document.createElement('div');b.id='multiDevBanner';b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:8000;background:linear-gradient(135deg,rgba(251,146,60,.15),rgba(239,68,68,.1));border-bottom:1px solid rgba(251,146,60,.4);padding:8px 14px;display:flex;align-items:center;gap:10px;font-family:var(--fn);font-size:12px;color:#fb923c;backdrop-filter:blur(8px);';document.body.appendChild(b);}
+  var paused=window._ffPaused;
+  var ua=other&&other.ua?other.ua.slice(0,35):'another device';
+  var btns=!paused
+    ?'<button onclick="pauseThisDevice()" style="background:rgba(251,146,60,.2);border:1px solid rgba(251,146,60,.4);border-radius:8px;padding:4px 10px;color:#fb923c;font-family:var(--fn);font-size:10px;font-weight:700;cursor:pointer;flex-shrink:0;">Pause</button>'
+     +'<button onclick="takeOverDevice()" style="background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.3);border-radius:8px;padding:4px 10px;color:#4ade80;font-family:var(--fn);font-size:10px;font-weight:700;cursor:pointer;flex-shrink:0;">Take Over</button>'
+     +'<button onclick="forceKickOther()" style="background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:4px 10px;color:#f87171;font-family:var(--fn);font-size:10px;font-weight:700;cursor:pointer;flex-shrink:0;" title="Force-clear other device and become primary">Kick</button>'
+    :'<button onclick="takeOverDevice()" style="background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.3);border-radius:8px;padding:4px 10px;color:#4ade80;font-family:var(--fn);font-size:10px;font-weight:700;cursor:pointer;flex-shrink:0;">Resume</button>';
+  b.innerHTML='<span>⚠️</span>'
+    +'<span style="flex:1;line-height:1.4;min-width:0;">Open on <strong style="color:#fbbf24;">'+ua+'</strong>'
+    +(paused?' <span style="color:#4ade80;font-weight:600;">— PAUSED here.</span>':' — screen time may double-count.')
+    +'</span>'+btns;
+}
+function hideMultiDeviceWarning(){
+  var b=document.getElementById('multiDevBanner');if(b)b.remove();
+  if(window._ffPaused){window._ffPaused=false;showT('✅ Resumed','Screen time counting resumed.');}
+}
+window.pauseThisDevice=function(){window._ffPaused=true;showT('⏸ Paused','Screen time paused on this device.');showMultiDeviceWarning({ua:'this device'});};
+window.takeOverDevice=function(){
+  _presenceSurrendered=false;
+  window._ffPaused=false;
+  fbWrite('v5_presence',{tabId:window._tabId,ts:Date.now(),ua:navigator.userAgent.slice(0,40)});
+  hideMultiDeviceWarning();
+  showT('✅ Took over','This device is now primary.');
+};
+window.forceKickOther=function(){
+  _presenceSurrendered=false;
+  window._ffPaused=false;
+  fbWrite('v5_presence',null);
+  setTimeout(function(){
+    fbWrite('v5_presence',{tabId:window._tabId,ts:Date.now(),ua:navigator.userAgent.slice(0,40)});
+  },600);
+  hideMultiDeviceWarning();
+  showT('🔴 Kicked','Other device cleared. You are primary.');
+};
 
 
 // ── FREE FOCUS ────────────────────────────────────────────────────────────────
