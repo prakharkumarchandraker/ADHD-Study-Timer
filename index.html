@@ -159,6 +159,88 @@ html,body{background:var(--bg);color:var(--tx);font-family:var(--fn);font-size:1
 .srow-pbar{margin-top:5px;height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;}
 .srow-pfill{height:100%;border-radius:2px;transition:width .6s;}
 
+/* ── REVISION SYSTEM ── */
+.rev-card{background:var(--sf);border-radius:var(--r);padding:14px;margin-bottom:10px;border:1px solid rgba(123,111,255,.25);}
+.rev-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.rev-title{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--s1);}
+.rev-count-badge{font-family:var(--mo);font-size:11px;font-weight:700;background:var(--s3b);color:var(--s3);border-radius:20px;padding:2px 9px;}
+.rev-mode-row{display:flex;gap:5px;margin-bottom:10px;}
+.rev-mode-btn{flex:1;padding:5px;border-radius:7px;border:1px solid var(--bd2);background:var(--sf2);color:var(--mt);font-family:var(--fn);font-size:10px;font-weight:700;cursor:pointer;transition:all .15s;}
+.rev-mode-btn.active{background:var(--s1b);border-color:var(--s1o);color:var(--s1);}
+.rev-section-lbl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mt);margin:8px 0 5px;}
+.rev-item{background:var(--sf2);border-radius:12px;padding:11px 13px;margin-bottom:7px;border:1px solid var(--bd);}
+.rev-item.overdue{border-left:3px solid var(--s3);}
+.rev-item-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;}
+.rev-item-info{flex:1;min-width:0;}
+.rev-item-subj{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rev-item-unit{font-size:10px;color:var(--mt2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rev-item-pass{font-family:var(--mo);font-size:9px;color:var(--s1);background:var(--s1b);border-radius:4px;padding:2px 6px;flex-shrink:0;}
+.rev-item-pass.sweep{color:var(--s2);background:var(--s2b);}
+.rev-rating-row{display:flex;gap:5px;}
+.rev-btn{flex:1;padding:6px 4px;border-radius:8px;border:1px solid;font-family:var(--fn);font-size:10px;font-weight:700;cursor:pointer;text-align:center;}
+.rev-btn.easy{background:rgba(45,212,160,.1);border-color:rgba(45,212,160,.3);color:var(--s2);}
+.rev-btn.hard{background:rgba(245,197,66,.1);border-color:rgba(245,197,66,.3);color:var(--am);}
+.rev-btn.blank{background:rgba(240,111,160,.1);border-color:rgba(240,111,160,.3);color:var(--s3);}
+.rev-btn.snooze{background:var(--sf3);border-color:var(--bd2);color:var(--mt);flex:0;padding:6px 8px;}
+.rev-empty{font-size:12px;color:var(--mt);text-align:center;padding:12px 0;font-style:italic;}
+
+/* ── REVISION CALENDAR ── */
+.rev-cal-wrap{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:14px;margin-bottom:10px;}
+.rev-cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.rev-cal-title{font-size:13px;font-weight:700;color:var(--tx);display:flex;align-items:center;gap:7px;}
+.rev-cal-nav{display:flex;align-items:center;gap:8px;}
+.rev-cal-nav button{background:var(--sf2);border:1px solid var(--bd2);border-radius:7px;color:var(--mt);padding:4px 9px;cursor:pointer;font-family:var(--fn);font-size:11px;}
+.rev-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:12px;}
+.rev-cal-dow{font-size:9px;font-weight:700;text-align:center;color:var(--mt);padding:3px 0;letter-spacing:.06em;}
+.rev-cal-cell{min-height:44px;border-radius:7px;padding:3px;cursor:pointer;position:relative;background:var(--sf2);border:1px solid transparent;transition:border-color .15s;}
+.rev-cal-cell.today{border-color:var(--s1o);background:var(--s1b);}
+.rev-cal-cell.selected{border-color:var(--s2o);background:var(--s2b);}
+.rev-cal-cell.has-rev{border-color:var(--bd2);}
+.rev-cal-cell.empty{background:transparent;border-color:transparent;cursor:default;}
+.rev-cal-date{font-size:9px;font-weight:700;color:var(--mt);text-align:center;margin-bottom:2px;}
+.rev-cal-cell.today .rev-cal-date{color:var(--s1);}
+.rev-cal-dots{display:flex;flex-wrap:wrap;justify-content:center;gap:2px;}
+.rev-cal-dot{width:6px;height:6px;border-radius:50%;}
+.rev-cal-count{font-family:var(--mo);font-size:8px;text-align:center;color:var(--mt);}
+.rev-cal-detail{background:var(--sf2);border-radius:10px;padding:10px 12px;margin-top:4px;}
+.rev-cal-detail-date{font-size:11px;font-weight:700;color:var(--tx);margin-bottom:8px;}
+.rev-cal-detail-item{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--bd);}
+.rev-see-all-wrap{margin-top:8px;text-align:center;}
+.rev-see-all-btn{background:none;border:1px solid var(--bd2);border-radius:8px;color:var(--mt);font-family:var(--fn);font-size:11px;padding:6px 14px;cursor:pointer;}
+
+/* ── REVISION LOG ── */
+.rev-log-wrap{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:14px;margin-bottom:10px;}
+.rev-log-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;cursor:pointer;}
+.rev-log-title{font-size:13px;font-weight:700;color:var(--tx);display:flex;align-items:center;gap:7px;}
+.rev-log-unit{background:var(--sf2);border-radius:10px;padding:10px 12px;margin-bottom:6px;cursor:pointer;}
+.rev-log-unit-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.rev-log-unit-name{flex:1;min-width:0;}
+.rev-log-unit-subj{font-size:10px;font-weight:700;padding:1px 6px;border-radius:5px;flex-shrink:0;}
+.rev-log-unit-title{font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rev-log-unit-meta{font-size:10px;color:var(--mt);}
+.rev-log-dots{display:flex;gap:4px;margin-bottom:5px;}
+.rev-log-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.rev-log-dot.done-easy{background:#2dd4a0;}
+.rev-log-dot.done-hard{background:#f5c542;}
+.rev-log-dot.done-blank{background:#f06fa0;}
+.rev-log-dot.empty{background:var(--bd2);border:1px solid var(--bd);}
+.rev-log-stats{font-size:10px;color:var(--mt);font-family:var(--mo);}
+.rev-log-history{margin-top:8px;border-top:1px solid var(--bd);padding-top:8px;display:none;}
+.rev-log-history.open{display:block;}
+.rev-log-pass-row{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:11px;color:var(--mt2);}
+
+/* ── REVISION SEE ALL TABLE ── */
+.rev-table-wrap{overflow-x:auto;margin-top:8px;}
+.rev-table{width:100%;border-collapse:collapse;font-size:10px;}
+.rev-table th{font-family:var(--mo);font-size:9px;font-weight:700;color:var(--mt);padding:4px 6px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--bd);position:sticky;top:0;background:var(--sf);}
+.rev-table td{padding:4px 6px;border-bottom:1px solid var(--bd);white-space:nowrap;vertical-align:middle;}
+.rev-table tr:hover td{background:var(--sf2);}
+.rev-td-done{color:#2dd4a0;font-weight:700;}
+.rev-td-overdue{color:var(--s3);font-weight:700;}
+.rev-td-today{color:var(--am);font-weight:700;}
+.rev-td-sched{color:var(--mt2);}
+.rev-td-empty{color:var(--bd2);}
+
 /* ── PINNED TASK ── */
 .pin-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
 .pin-label{font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--s1);}
@@ -965,7 +1047,7 @@ window.onerror=function(msg,src,line,col,err){
   <!-- BOTTOM NAV TABS -->
   <div id="bottomNav" role="navigation" aria-label="Main navigation">
     <button class="nav-btn act" id="navToday" role="tab" aria-selected="true" onclick="switchTab('today',this)"><span class="nav-ico" aria-hidden="true">🏠</span><span class="nav-txt">Today</span></button>
-    <button class="nav-btn" id="navGate" role="tab" aria-selected="false" onclick="switchTab('gate',this)"><span class="nav-ico" aria-hidden="true">📚</span><span class="nav-txt">GATE</span></button>
+    <button class="nav-btn" id="navGate" role="tab" aria-selected="false" onclick="switchTab('gate',this)" style="position:relative;"><span class="nav-ico" aria-hidden="true">📚</span><span class="nav-txt">GATE</span><span id="revGateBadge" style="display:none;position:absolute;top:4px;right:4px;background:#f87171;color:#fff;border-radius:10px;font-size:9px;font-weight:700;min-width:16px;height:16px;align-items:center;justify-content:center;font-family:var(--mo);padding:0 3px;pointer-events:none;"></span></button>
     <button class="nav-btn" id="navHabits" role="tab" aria-selected="false" onclick="switchTab('habits',this)"><span class="nav-ico" aria-hidden="true">🔥</span><span class="nav-txt">Habits</span></button>
     <button class="nav-btn" id="navHistory" role="tab" aria-selected="false" onclick="switchTab('history',this)"><span class="nav-ico" aria-hidden="true">🗂️</span><span class="nav-txt">History</span></button>
     <button class="nav-btn" id="navStats" role="tab" aria-selected="false" onclick="switchTab('stats',this)"><span class="nav-ico" aria-hidden="true">📊</span><span class="nav-txt">Stats</span></button>
@@ -982,6 +1064,18 @@ window.onerror=function(msg,src,line,col,err){
 
     <!-- TRANSITION WARNING -->
     <div class="trans-warn hidden" id="transWarn"></div>
+
+    <!-- REVISION CARD (always visible) -->
+    <div id="revCardToday"></div>
+
+    <!-- DONE TODAY LOG (lectures completed today, with undo) -->
+    <div id="doneTodayToday"></div>
+
+    <!-- REVISION CALENDAR (30-day grid) -->
+    <div id="revCalCard"></div>
+
+    <!-- REVISION LOG (unit pass history) -->
+    <div id="revLogCard"></div>
 
     <!-- HERO CARD -->
     <div class="hero" id="heroCard">
@@ -1134,8 +1228,20 @@ window.onerror=function(msg,src,line,col,err){
     <!-- GATE SESSION PLAN (today) -->
     <div id="ses-container"></div>
 
-    <!-- REVISION DUE -->
+
+    <div id="revBlockScreen" style="display:none;" class="card" style="border-color:rgba(240,111,160,.3);margin-bottom:10px;">
+      <div style="text-align:center;padding:8px 0;">
+        <div style="font-size:28px;margin-bottom:8px;">🔁</div>
+        <div style="font-size:15px;font-weight:700;color:var(--s3);margin-bottom:5px;" id="revBlockTitle">Revisions due first</div>
+        <div style="font-size:12px;color:var(--mt2);margin-bottom:14px;" id="revBlockSub">Clear your revision queue before studying new lectures.</div>
+        <button onclick="switchTab('today',document.getElementById('navToday'))" style="background:var(--s1b);border:1px solid var(--s1o);color:var(--s1);border-radius:10px;padding:9px 20px;font-family:var(--fn);font-size:13px;font-weight:700;cursor:pointer;">→ Go to Today tab</button>
+      </div>
+    </div>
     <div id="rev-section"></div>
+    <!-- Done today — completed lectures stay visible here -->
+    <div id="doneTodaySection"></div>
+    <!-- REVISION SEE ALL (full P1-P9 table) -->
+    <div id="revUpcomingSection"></div>
 
     <!-- SUBJECT GRID -->
     <div class="card">
@@ -2020,7 +2126,8 @@ function switchTab(name, btn) {
   if(btn) {btn.classList.add('act');btn.setAttribute('aria-selected','true');}
   // Always scroll to top when switching tabs
   window.scrollTo({top:0, behavior:'instant'});
-  if(name==='gate') { if(typeof renderGate==='function') renderGate(); if(typeof renderCatchUp==='function') renderCatchUp(); }
+  if(name==='gate') { if(typeof renderGate==='function') renderGate(); if(typeof renderCatchUp==='function') renderCatchUp(); if(typeof renderRevCard==='function') renderRevCard(); updateRevBlockScreen(); if(typeof renderRevUpcoming==='function') renderRevUpcoming(); }
+  if(name==='today') { if(typeof buildSchedule==='function') buildSchedule(); if(typeof up==='function') up(); if(typeof renderRevCard==='function') renderRevCard(); if(typeof renderRevCalendar==='function') renderRevCalendar(); if(typeof renderRevLog==='function') renderRevLog(); }
   if(name==='stats') { if(typeof up==='function') up(); if(typeof bh==='function') bh(); if(typeof buildWeekChart==='function') buildWeekChart(); if(typeof renderWaterLogInline==='function') renderWaterLogInline(); if(typeof initWaterIntervalSel==='function') initWaterIntervalSel(); if(typeof buildWeeklyReview==='function') buildWeeklyReview(); }
   if(name==='history') { if(typeof renderHistory==='function') renderHistory(); else setTimeout(function(){if(typeof renderHistory==='function')renderHistory();},200); }
   if(name==='habits') { if(typeof renderHabits==='function') renderHabits(); }
@@ -2044,7 +2151,7 @@ function daysBetween(a,b){return Math.round((fromStr(b)-fromStr(a))/86400000);}
 function hmColor(m){if(!m||m<1)return '#1a1a2e';var h=m/60;if(h<2)return '#1e3b2e';if(h<4)return '#2d5e3a';if(h<6)return '#3d8c4e';if(h<8)return '#5ab86b';return '#a6e3a1';}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 
-function defaultState(){return{done:{},pyqTopics:{},potato:[],viewDate:null,skips:[],expanded:[],flags:{},revisions:{},revDone:{},live:{},subjOrder:null,pinnedNext:null};}
+function defaultState(){return{done:{},pyqTopics:{},potato:[],viewDate:null,skips:[],expanded:[],flags:{},revisions:{},revDone:{},live:{},subjOrder:null,pinnedNext:null,revUnits:{},revSubjects:{},revBlockMode:'B'};}
 function loadGateState(){try{var s=localStorage.getItem('gate2027v6');if(s){var p=JSON.parse(s);var d=defaultState();for(var k in d)if(p[k]===undefined)p[k]=d[k];return p;}}catch(e){}return defaultState();}
 function saveGateState(){
   try{localStorage.setItem('gate2027v6',JSON.stringify(ST));}catch(e){}
@@ -2184,34 +2291,175 @@ function getNextTask(sched){
   }
   return null;
 }
-function getRevsDue(viewDate){
-  var due=[];if(!ST.revisions)return due;
-  Object.keys(ST.revisions).forEach(function(subj){
-    var info=ST.revisions[subj];
-    var chks=info.checkpoints||[];
-    chks.forEach(function(cp,ci){
-      if(ST.revDone&&ST.revDone[subj+'_'+ci])return;
-      if(cp<=viewDate)due.push({subj:subj,label:info.label,checkpoint:cp,idx:ci});
-    });
-  });
-  return due;
-}
-function gateSessionStatus(ses){
-  var nm=nowMins(),st=ses.sh*60+ses.sm,en=ses.eh*60+ses.em;
-  if(en>=1440){var en2=en-1440;if(nm>=st||nm<en2)return 'active';return 'future';}
-  if(nm>=en)return 'past';
-  if(nm>=st)return 'active';
-  return 'future';
+function getRevsDue(viewDate){return[];} // legacy stub — replaced by revGetDueToday
+
+// ── REVISION ENGINE v2 ────────────────────────────────────────────────────────
+var REV_INTERVALS=[1,3,7,14,30];
+var REV_DYN_PCT=[0.40,0.50,0.60,0.70];
+var REV_BATCH=8;
+var REV_CUTOFF='2026-11-30'; // All revisions must complete by this date (2 months before GATE)
+
+function revDaysToGate(fromDate){var from=fromStr(fromDate||getToday());var cutoff=fromStr(REV_CUTOFF);return Math.max(1,Math.round((cutoff-from)/(1000*60*60*24)));}
+function revInterval(fromDate,passIdx,rating){var base;if(passIdx<5){base=REV_INTERVALS[passIdx];}else{var pct=REV_DYN_PCT[Math.min(passIdx-5,3)];base=Math.max(1,Math.round(revDaysToGate(fromDate)*pct));}if(rating==='hard')base=Math.max(1,Math.round(base*0.5));return base;}
+function revNextDate(fromDate,passIdx,rating){if(rating==='blank')return addD(getToday(),1);return addD(fromDate,revInterval(fromDate,passIdx,rating));}
+
+// Calculate how many passes fit between P1 date and REV_CUTOFF
+function revCalcMaxPasses(nextRevision){
+  var REV_INT=[1,3,7,14,30];
+  var REV_DYN=[0.40,0.50,0.60,0.70];
+  var daysAvail=revDaysToGate(nextRevision);
+  var cursor=0;
+  var passes=1; // P1 is at day 0 (nextRevision itself)
+  for(var destPass=1;destPass<9;destPass++){
+    var iv;
+    if(destPass<5){iv=REV_INT[destPass];}
+    else{iv=Math.max(1,Math.round((daysAvail-cursor)*REV_DYN[Math.min(destPass-5,3)]));}
+    cursor+=iv;
+    if(cursor<=daysAvail){passes++;}
+    else{break;}
+  }
+  return Math.max(1,passes);
 }
 
-// ── MARK TASK DONE ──────────────────────────────────────────────────────────
+// Project pass dates up to maxPasses, no compression needed since we stop at the natural cutoff
+function revProjectPassDates(nextRevision, passNumber, maxPasses){
+  var REV_INT=[1,3,7,14,30];
+  var REV_DYN=[0.40,0.50,0.60,0.70];
+  var mp=maxPasses||9;
+  var daysAvail=revDaysToGate(nextRevision);
+  var dates=[];
+  var cursor=nextRevision;
+  dates.push(cursor); // current pass = nextRevision
+  for(var pi=passNumber;pi<mp-1;pi++){ // pi goes from current pass up to maxPasses-1
+    var destPass=pi+1;
+    var iv;
+    if(destPass<5){iv=REV_INT[destPass];}
+    else{iv=Math.max(1,Math.round((daysAvail-daysBetween(nextRevision,cursor))*REV_DYN[Math.min(destPass-5,3)]));}
+    cursor=addD(cursor,iv);
+    if(cursor>REV_CUTOFF)cursor=REV_CUTOFF;
+    dates.push(cursor);
+  }
+  return dates;
+}
+function revBatchKey(subject,unit,batchNum){return (subject+'__'+(unit||'General')+'__B'+batchNum).replace(/[^a-zA-Z0-9_]/g,'_').slice(0,90);}
+function revBatchNum(lecNum){return Math.floor((lecNum-1)/REV_BATCH)+1;}
+function revProjectAllPasses(u){
+  var proj=[];var cursor=u.nextRevision||getToday();
+  (u.passes||[]).forEach(function(p){proj.push({date:p.date,done:true,rating:p.rating,passIdx:p.passNumber});});
+  for(var pi=u.passNumber;pi<9;pi++){
+    if(pi===u.passNumber&&u.nextRevision){proj.push({date:u.nextRevision,done:false,passIdx:pi});cursor=u.nextRevision;}
+    else if(pi>u.passNumber){var iv=revInterval(cursor,pi,'easy');cursor=addD(cursor,iv);proj.push({date:cursor,done:false,passIdx:pi});}
+  }
+  return proj;
+}
+function revScheduleUnit(task){
+  if(task.type!=='lecture')return;
+  if(!ST.revUnits)ST.revUnits={};
+  var today=getToday();
+  var batchNum=revBatchNum(task.num);
+  var key=revBatchKey(task.subject,task.unit,batchNum);
+  var lo=(batchNum-1)*REV_BATCH+1;var hi=batchNum*REV_BATCH;
+  var liveDone=new Set(Object.keys(ST.done).map(Number));liveDone.add(task.id);
+  var batchTasks=ALL_TASKS.filter(function(t){return t.type==='lecture'&&t.subject===task.subject&&t.unit===task.unit&&t.num>=lo&&t.num<=hi;});
+  var doneCount=batchTasks.filter(function(t){return liveDone.has(t.id);}).length;
+  var existing=ST.revUnits[key];
+  if(existing){
+    existing.lectureCount=doneCount;
+    if(today>existing.lastLectureDate){
+      existing.lastLectureDate=today;
+      if(existing.nextRevision>today){existing.nextRevision=addD(today,1);existing.passNumber=0;existing.passes=existing.passes||[];}
+    }
+  } else {
+    var p1Date=addD(today,1);
+    var mp=revCalcMaxPasses(p1Date);
+    ST.revUnits[key]={subject:task.subject,unit:task.unit||'General',batchNum:batchNum,lectureCount:doneCount,lastLectureDate:today,passes:[],nextRevision:p1Date,passNumber:0,subjectGraduated:false,maxPasses:mp};
+  }
+  saveGateState();
+}
+function revScheduleSubject(subject){
+  if(!ST.revSubjects)ST.revSubjects={};if(ST.revSubjects[subject])return;
+  var today=getToday();
+  ST.revSubjects[subject]={subject:subject,graduatedOn:today,sweeps:[],nextSweep:addD(today,7),sweepNumber:0,weakUnits:[]};
+  saveGateState();
+}
+function revGetWeakUnits(subject){
+  if(!ST.revUnits)return[];
+  return Object.keys(ST.revUnits).filter(function(key){var u=ST.revUnits[key];if(u.subject!==subject)return false;return u.passes.filter(function(p){return p.rating==='blank';}).length>0||u.passes.filter(function(p){return p.rating==='hard';}).length>=2;}).map(function(key){return ST.revUnits[key].unit;});
+}
+function revGetDueToday(){
+  if(!ST.revUnits)ST.revUnits={};if(!ST.revSubjects)ST.revSubjects={};
+  var today=getToday();
+  var liveDone=new Set(Object.keys(ST.done).map(Number));
+  Object.keys(ST.revUnits).forEach(function(key){
+    var u=ST.revUnits[key];
+    if(!u.batchNum)u.batchNum=1;
+    var lo=(u.batchNum-1)*REV_BATCH+1;var hi=u.batchNum*REV_BATCH;
+    var batchTasks=ALL_TASKS.filter(function(t){return t.type==='lecture'&&t.subject===u.subject&&t.unit===u.unit&&t.num>=lo&&t.num<=hi;});
+    var actual=batchTasks.filter(function(t){return liveDone.has(t.id);}).length;
+    if(actual===0){delete ST.revUnits[key];return;}
+    if(u.lectureCount!==actual)u.lectureCount=actual;
+  });
+  var items=[];
+  Object.keys(ST.revUnits).forEach(function(key){
+    var u=ST.revUnits[key];
+    var mp=u.maxPasses||9;
+    if(u.subjectGraduated||u.passNumber>=9||u.passNumber>=mp)return;
+    if(!u.nextRevision||u.nextRevision>today)return;
+    var passLbls=['Pass 1','Pass 2','Pass 3','Pass 4','Pass 5','Pass 6','Pass 7','Pass 8','Pass 9'];
+    var lo=(u.batchNum-1)*REV_BATCH+1;var hi=u.batchNum*REV_BATCH;
+    var doneLecs=ALL_TASKS.filter(function(t){return t.type==='lecture'&&t.subject===u.subject&&t.unit===u.unit&&t.num>=lo&&t.num<=hi&&liveDone.has(t.id);});
+    items.push({type:'unit',key:key,subject:u.subject,unit:u.unit,batchNum:u.batchNum,label:u.subject+' \u00b7 '+u.unit,passLabel:passLbls[Math.min(u.passNumber,8)],passNumber:u.passNumber,lectureCount:u.lectureCount,lectures:doneLecs,nextDate:u.nextRevision,isOverdue:u.nextRevision<today,priority:u.nextRevision<today?0:1});
+  });
+  Object.keys(ST.revSubjects).forEach(function(subj){
+    var s=ST.revSubjects[subj];if(s.sweepNumber>=3||!s.nextSweep||s.nextSweep>today)return;
+    var sweepLbls=['Sweep 1 \u2014 Full','Sweep 2 \u2014 Weak units','Sweep 3 \u2014 Final'];
+    items.push({type:'subject',key:subj,subject:subj,label:subj+' \u2014 Full Subject',sweepLabel:sweepLbls[Math.min(s.sweepNumber,2)],sweepNumber:s.sweepNumber,weakUnits:s.sweepNumber>0?revGetWeakUnits(subj):[],nextDate:s.nextSweep,isOverdue:s.nextSweep<today,priority:s.nextSweep<today?0:2});
+  });
+  items.sort(function(a,b){if(a.priority!==b.priority)return a.priority-b.priority;if(a.type===b.type&&a.type==='unit')return a.passNumber-b.passNumber;return 0;});
+  return items;
+}
+function revDueCount(){return revGetDueToday().length;}
+window.revMarkUnit=function(key,rating){
+  if(!ST.revUnits||!ST.revUnits[key])return;
+  var u=ST.revUnits[key];var today=getToday();
+  var mp=u.maxPasses||9;
+  u.passes.push({date:today,rating:rating,passNumber:u.passNumber});
+  if(rating==='blank'){u.passNumber=0;u.nextRevision=addD(today,1);}
+  else{
+    u.passNumber=Math.min(u.passNumber+1,9);
+    if(u.passNumber>=9||u.passNumber>=mp){
+      u.subjectGraduated=true;u.nextRevision=null;
+    }else{
+      u.nextRevision=revNextDate(today,u.passNumber,rating);
+    }
+  }
+  saveGateState();renderRevCard();if(typeof renderRevCalendar==='function')renderRevCalendar();if(typeof renderRevLog==='function')renderRevLog();up();
+  var next=u.nextRevision?fmtShort(u.nextRevision):(u.subjectGraduated?'all done \u2714':'');
+  showT('Revision logged',{easy:'\u2705 Easy! Next: '+next,hard:'\U0001f605 Hard. Next: '+next,blank:'\u274c Blank. Retry tomorrow.'}[rating]||'');
+};
+window.revMarkSubject=function(subj,rating){
+  if(!ST.revSubjects||!ST.revSubjects[subj])return;
+  var s=ST.revSubjects[subj];var today=getToday();
+  s.sweeps.push({date:today,rating:rating,sweepNumber:s.sweepNumber});
+  if(rating==='blank'||rating==='partial'){s.nextSweep=addD(today,3);showT('Redo in 3 days','Keep going!');}
+  else{s.sweepNumber=Math.min(s.sweepNumber+1,3);if(s.sweepNumber>=3){s.nextSweep=null;showT(subj+' mastered!','All sweeps done!');}else{var dLeft=revDaysToGate(today);var pcts=[0.40,0.60];s.nextSweep=addD(today,Math.max(7,Math.round(dLeft*pcts[Math.min(s.sweepNumber-1,1)])));showT('Sweep done!','Next: '+fmtShort(s.nextSweep));}}
+  s.weakUnits=revGetWeakUnits(subj);
+  saveGateState();renderRevCard();if(typeof renderRevCalendar==='function')renderRevCalendar();if(typeof renderRevLog==='function')renderRevLog();up();
+};
+window.revSnooze=function(type,key){
+  var today=getToday();
+  if(type==='unit'&&ST.revUnits&&ST.revUnits[key])ST.revUnits[key].nextRevision=addD(today,1);
+  else if(type==='subject'&&ST.revSubjects&&ST.revSubjects[key])ST.revSubjects[key].nextSweep=addD(today,1);
+  saveGateState();renderRevCard();if(typeof renderRevCalendar==='function')renderRevCalendar();if(typeof renderRevLog==='function')renderRevLog();showT('\U0001f4a4 Snoozed','See you tomorrow.');
+};
+function revGetBlockMode(){return ST.revBlockMode||'B';}
+window.revSetBlockMode=function(mode){ST.revBlockMode=mode;saveGateState();renderRevCard();renderGate();};
+function revIsBlocked(){var mode=revGetBlockMode();if(mode==='A')return false;return revDueCount()>0;}
+window.markRevDone=function(subj,idx){if(!ST.revDone)ST.revDone={};ST.revDone[subj+'_'+idx]=true;saveGateState();renderGate();};
+
 window.markDone=function(id){
   pushUndo();
-  var ts=new Date().toISOString();
-  ST.done[id]=ts;
-  // Auto-clear pinnedNext if this was the pinned task
-  if(ST.pinnedNext!==null&&Number(ST.pinnedNext)===Number(id)){ST.pinnedNext=null;showT('✅ Done! Pin cleared','');}
-  else showT('✅ Done!','');
+  ST.done[id]=new Date().toISOString();
   saveGateState();renderGate();
   // Check if subject complete
   var t=null;for(var i=0;i<ALL_TASKS.length;i++){if(ALL_TASKS[i].id===id){t=ALL_TASKS[i];break;}}
@@ -2219,15 +2467,63 @@ window.markDone=function(id){
     var subjTasks=ALL_TASKS.filter(function(x){return x.subject===t.subject;});
     var done=new Set(Object.keys(ST.done).map(Number));
     var allDone=subjTasks.every(function(x){return done.has(x.id)||isPyqAllDone(x.id);});
-    if(allDone&&!ST.revisions[t.subject]){
-      ST.revisions[t.subject]={label:t.subject,checkpoints:[addD(getToday(),7),addD(getToday(),21),addD(getToday(),45)]};
-      saveGateState();
-      showT('🎓 '+t.subject+' complete!','Revision checkpoints scheduled!');
-      confettiBurst(true);
-    } else {confettiBurst(false);}
+    if(t.type==='lecture'){revScheduleUnit(t);}
+    if(allDone){revScheduleSubject(t.subject);showT('\U0001f393 '+t.subject+' complete!','Subject sweeps scheduled!');confettiBurst(true);}
+    else{confettiBurst(false);}
   }
+  // Show persistent undo banner for 60 seconds
+  if(t)showUndoBanner(t.name,id);
+  if(typeof renderRevCalendar==='function')renderRevCalendar();
+  if(typeof renderRevLog==='function')renderRevLog();
 };
-window.unmarkDone=function(id){pushUndo();delete ST.done[id];saveGateState();renderGate();};
+window.unmarkDone=function(id){
+  pushUndo();
+  // Find the task before deleting so we can recompute its unit's revision
+  var t=null;for(var i=0;i<ALL_TASKS.length;i++){if(ALL_TASKS[i].id===id){t=ALL_TASKS[i];break;}}
+  delete ST.done[id];
+  // Recompute lectureCount for affected unit — remove if now 0
+  if(t&&t.type==='lecture'&&ST.revUnits){
+    var key=revBatchKey(t.subject,t.unit,revBatchNum(t.num));
+    var done2=new Set(Object.keys(ST.done).map(Number));
+    var unitTasks=ALL_TASKS.filter(function(x){return x.type==='lecture'&&x.subject===t.subject&&x.unit===t.unit;});
+    var doneCount=unitTasks.filter(function(x){return done2.has(x.id);}).length;
+    if(doneCount===0){
+      delete ST.revUnits[key]; // no done lectures left — remove revision entirely
+    } else if(ST.revUnits[key]){
+      ST.revUnits[key].lectureCount=doneCount; // update count
+    }
+  }
+  saveGateState();renderGate();
+  if(typeof buildSchedule==='function')buildSchedule();if(typeof renderRevCalendar==='function')renderRevCalendar();if(typeof renderRevLog==='function')renderRevLog();
+  if(typeof renderRevUpcoming==='function')renderRevUpcoming();
+  if(typeof renderRevCard==='function')renderRevCard();
+  hideUndoBanner();
+  showT('↩ Unmarked','Lecture restored to schedule.');
+};
+
+// ── UNDO BANNER — persistent 60s banner after marking a lecture done ───────────
+var _undoBannerTimer=null;var _undoBannerSecs=60;var _undoBannerInterval=null;
+function showUndoBanner(name,id){
+  var b=document.getElementById('undoBanner');
+  if(!b){b=document.createElement('div');b.id='undoBanner';b.style.cssText='position:fixed;bottom:72px;left:10px;right:10px;z-index:7000;background:var(--sf);border:1px solid var(--s2o);border-radius:14px;padding:11px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 4px 24px rgba(0,0,0,.4);font-family:var(--fn);animation:slideUp .2s ease;pointer-events:none;';document.body.appendChild(b);}
+  clearTimeout(_undoBannerTimer);clearInterval(_undoBannerInterval);
+  _undoBannerSecs=60;
+  function render(){
+    b.innerHTML='<div style="flex:1;min-width:0;pointer-events:none;">'
+      +'<div style="font-size:11px;font-weight:700;color:var(--s2);">\u2705 Done: '+esc(name.slice(0,40))+'</div>'
+      +'<div style="font-size:10px;color:var(--mt);">Rescheduled \u2014 undo within '+_undoBannerSecs+'s</div>'
+      +'</div>'
+      +'<button onclick="window.unmarkDone('+id+');hideUndoBanner();" style="pointer-events:auto;background:var(--s3b);border:1px solid var(--s3o);color:var(--s3);border-radius:9px;padding:6px 12px;font-family:var(--fn);font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;">\u21a9 Undo</button>'
+      +'<button onclick="hideUndoBanner();" style="pointer-events:auto;background:none;border:none;color:var(--mt);font-size:18px;cursor:pointer;flex-shrink:0;padding:0 2px;">\u00d7</button>';
+  }
+  render();
+  _undoBannerInterval=setInterval(function(){_undoBannerSecs--;render();if(_undoBannerSecs<=0){hideUndoBanner();}},1000);
+  _undoBannerTimer=setTimeout(hideUndoBanner,61000);
+}
+function hideUndoBanner(){
+  clearTimeout(_undoBannerTimer);clearInterval(_undoBannerInterval);
+  var b=document.getElementById('undoBanner');if(b)b.remove();
+}
 window.markRevDone=function(subj,idx){if(!ST.revDone)ST.revDone={};ST.revDone[subj+'_'+idx]=true;saveGateState();renderGate();showT('📖 Revision done','');};
 
 window.togglePyqTopic=function(taskId,topicIdx){
@@ -2687,22 +2983,49 @@ function renderGate(){
     sesContainer.insertBefore(wrap,sesContainer.firstChild);
   })();
 
+  // Update block screen
+  if(typeof updateRevBlockScreen==='function')updateRevBlockScreen();
   // Gate heatmap — pass potato days so they render distinctly
   renderGateHeatmap(studyDays, new Set(ST.potato||[]));
 
-  // Revisions due
-  var revEl=document.getElementById('rev-section');
-  if(revEl){
-    var revsDue=getRevsDue(viewDate);
-    if(revsDue.length>0){
-      var rHtml='<div class="card" style="border-color:rgba(249,226,175,.3);"><div class="ct" style="color:var(--am);">📖 Revision Due</div>';
-      revsDue.forEach(function(rev){
-        rHtml+='<div style="display:flex;align-items:center;gap:10px;padding:9px 11px;background:rgba(249,226,175,.05);border-radius:9px;border:1px solid rgba(249,226,175,.2);margin-bottom:5px;"><div style="flex:1;"><div style="font-size:13px;font-weight:600;">'+esc(rev.subj)+'</div><div style="font-family:var(--mo);font-size:10px;color:var(--mt);">'+esc(rev.label)+' · due '+fmtShort(rev.checkpoint)+'</div></div><button onclick="markRevDone(\''+rev.subj+'\','+rev.idx+')" style="background:var(--s2b);border:1px solid var(--s2o);color:var(--s2);border-radius:8px;padding:6px 12px;font-family:var(--fn);font-size:11px;font-weight:700;cursor:pointer;">Done ✓</button></div>';
+  // ── DONE TODAY section — shows completed lectures so they don't appear "erased" ──
+  var revEl=document.getElementById('rev-section');if(revEl)revEl.innerHTML='';
+  var doneTodayEl=document.getElementById('doneTodaySection');
+  if(doneTodayEl&&isToday){
+    var doneTodayIds=Object.keys(ST.done).filter(function(tid){
+      var ts=ST.done[tid];return ts&&ts.split('T')[0]===viewDate;
+    }).map(Number);
+    if(doneTodayIds.length){
+      var dtHtml='<div class="card" style="border-color:rgba(45,212,160,.25);margin-top:8px;">'
+        +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">'
+        +'<span style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--s2);">✅ Done today ('+doneTodayIds.length+')</span>'
+        +'</div>';
+      doneTodayIds.forEach(function(tid){
+        var t=ALL_TASKS.find(function(x){return x.id===tid;});if(!t)return;
+        var col=COLORS[t.subject]||'var(--s1)';var lbl=LABELS[t.subject]||t.subject;
+        dtHtml+='<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;background:var(--sf2);margin-bottom:5px;border:1px solid var(--bd);border-left:3px solid '+col+'33;">'
+          +'<div style="width:18px;height:18px;border-radius:4px;background:'+col+'33;border:2px solid '+col+';display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:'+col+';flex-shrink:0;">✓</div>'
+          +'<div style="flex:1;min-width:0;">'
+          +'<div style="font-size:11px;color:var(--mt);font-family:var(--mo);">'+esc(lbl)+' #'+t.num+' · '+esc(t.unit||'')+'</div>'
+          +'<div style="font-size:12px;font-weight:600;color:var(--mt2);text-decoration:line-through;opacity:.7;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+esc(t.name)+'</div>'
+          +'</div>'
+          +'<button onclick="unmarkDone('+tid+')" style="background:none;border:1px solid var(--bd2);border-radius:6px;color:var(--mt);font-family:var(--fn);font-size:9px;cursor:pointer;padding:3px 7px;flex-shrink:0;" title="Undo">undo</button>'
+          +'</div>';
       });
-      rHtml+='</div>';
-      revEl.innerHTML=rHtml;
-    } else revEl.innerHTML='';
-  }
+      dtHtml+='</div>';
+      doneTodayEl.innerHTML=dtHtml;
+    } else {
+      doneTodayEl.innerHTML='';
+    }
+  } else if(doneTodayEl){doneTodayEl.innerHTML='';}
+  if(typeof renderRevUpcoming==='function')renderRevUpcoming();
+}
+
+function gateSessionStatus(ses){
+  var nm=nowMins(),st=ses.sh*60+ses.sm,en=ses.eh*60+ses.em;
+  if(nm>=st&&nm<en)return'active';
+  if(nm>=en)return'past';
+  return'future';
 }
 
 window.toggleSesExpanded=function(idx){
@@ -3117,6 +3440,40 @@ function buildSchedule(){
     sl.appendChild(r);
   });
   var lbl=document.getElementById('screenTimeLbl');if(lbl)lbl.textContent=totalScreen+'min screen time';
+  // ── Done Today log on TODAY tab ───────────────────────────────────────────
+  var dtTodayEl=document.getElementById('doneTodayToday');
+  if(dtTodayEl){
+    var todayStr=getToday();
+    var todayDoneIds=Object.keys(ST.done).filter(function(tid){
+      var ts=ST.done[tid];if(!ts)return false;
+      // Use LOCAL date from the timestamp to match getToday()'s local date
+      var d=new Date(ts);
+      var localDate=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+      return localDate===todayStr;
+    }).map(Number);
+    if(todayDoneIds.length){
+      var dth='<div style="background:var(--sf);border:1px solid rgba(45,212,160,.2);border-radius:var(--r);padding:12px 14px;margin-bottom:10px;">';
+      dth+='<div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--s2);margin-bottom:8px;">\u2705 Done today ('+todayDoneIds.length+')</div>';
+      todayDoneIds.forEach(function(tid){
+        var t=ALL_TASKS.find(function(x){return x.id===tid;});if(!t)return;
+        var col=COLORS[t.subject]||'var(--s1)';var lbl2=LABELS[t.subject]||t.subject;
+        var ts=ST.done[tid];var timeStr='';
+        if(ts){var d=new Date(ts);timeStr=pad(d.getHours())+':'+pad(d.getMinutes());}
+        dth+='<div style="display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:9px;background:var(--sf2);margin-bottom:4px;border:1px solid var(--bd);border-left:3px solid '+col+'44;">';
+        dth+='<div style="width:16px;height:16px;border-radius:4px;background:'+col+'33;border:2px solid '+col+';display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;color:'+col+';flex-shrink:0;">\u2713</div>';
+        dth+='<div style="flex:1;min-width:0;">';
+        dth+='<div style="font-size:10px;color:var(--mt);font-family:var(--mo);">'+esc(lbl2)+' #'+t.num+(timeStr?' \u00b7 '+timeStr:'')+'</div>';
+        dth+='<div style="font-size:12px;font-weight:600;color:var(--mt2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+esc(t.name)+'</div>';
+        dth+='</div>';
+        dth+='<button onclick="window.unmarkDone('+tid+')" style="background:none;border:1px solid var(--bd2);border-radius:7px;color:var(--mt);font-family:var(--fn);font-size:10px;cursor:pointer;padding:4px 9px;flex-shrink:0;">\u21a9 Undo</button>';
+        dth+='</div>';
+      });
+      dth+='</div>';
+      dtTodayEl.innerHTML=dth;
+    } else {
+      dtTodayEl.innerHTML='';
+    }
+  }
 }
 buildSchedule();
 
@@ -3280,7 +3637,7 @@ function buildWeeklyReview(){
     d.setDate(d.getDate()-diff-offsetWeeks*7);d.setHours(0,0,0,0);return d;
   }
   function weekData(startDate){
-    var data={lectures:0,mins:0,hours:0,habits:0,habitTotal:0,water:0,ff:0};
+    var data={lectures:0,mins:0,hours:0,habits:0,habitTotal:0,water:0,ff:0,revFocus:0};
     for(var i=0;i<7;i++){
       var d=new Date(startDate);d.setDate(d.getDate()+i);var ds=toStr(d);
       // Lectures done
@@ -3300,6 +3657,8 @@ function buildWeeklyReview(){
       try{var wl=JSON.parse(localStorage.getItem('v5_wlog_'+ds)||'[]');data.water+=wl.length;}catch(e){}
       // Free focus
       try{var ff=JSON.parse(localStorage.getItem('v5_ff_done_'+ds)||'[]');ff.forEach(function(e){data.ff+=e.mins||0;});}catch(e){}
+      // Revision focus
+      try{var rf=parseInt(localStorage.getItem('v5_revfocus_'+ds)||'0');data.revFocus+=Math.floor(rf/60);}catch(e){}
     }
     data.hours=Math.round(data.mins/6)/10;
     return data;
@@ -3327,10 +3686,578 @@ function buildWeeklyReview(){
     +'</div>'
     +row('📚','Lectures done',thisW.lectures,lastW.lectures,'')
     +row('⏱','Screen time',thisW.hours,lastW.hours,'h')
+    +row('🔁','Revision focus',thisW.revFocus,lastW.revFocus,'m')
     +row('💧','Water glasses',thisW.water,lastW.water,'')
     +row('⚡','Free focus',thisW.ff,lastW.ff,'m')
     +(thisW.habitTotal>0?row('🔥','Habits hit',thisW.habits,lastW.habits,'/'+thisW.habitTotal):'');
 }
+
+// ── REVISION CALENDAR (30-day grid) ─────────────────────────────────────────
+var _revCalOffset=0; // months offset from current
+var _revCalSel=null; // selected date string
+
+function revBuildDateMap(){
+  var map={};
+  var REV_INT=[1,3,7,14,30];
+  var REV_DYN=[0.40,0.50,0.60,0.70];
+  function addToMap(ds,entry){if(!map[ds])map[ds]=[];map[ds].push(entry);}
+  var passLbls=['P1','P2','P3','P4','P5','P6','P7','P8','P9'];
+
+  if(!ST.revUnits)return map;
+  Object.keys(ST.revUnits).forEach(function(key){
+    var u=ST.revUnits[key];
+    if(u.subjectGraduated)return;
+    var col=(typeof COLORS!=='undefined'?COLORS:{})[u.subject]||'var(--s1)';
+    var batchSuffix=(u.batchNum&&u.batchNum>1)?' B'+u.batchNum:'';
+    var unitLabel=u.unit+batchSuffix;
+
+    // Past completed passes
+    (u.passes||[]).forEach(function(p,pi){
+      addToMap(p.date,{key:key,subject:u.subject,unit:unitLabel,
+        passLabel:passLbls[pi],type:'unit',col:col,isDone:true,rating:p.rating});
+    });
+
+    // Project remaining passes using adaptive max passes
+    if(u.passNumber<9&&u.nextRevision){
+      var mp=u.maxPasses||9;
+      if(u.passNumber<mp){
+        var allDates=revProjectPassDates(u.nextRevision,u.passNumber,mp);
+        for(var pi=0;pi<allDates.length;pi++){
+          var absPass=u.passNumber+pi;
+          if(absPass>=mp)break;
+          addToMap(allDates[pi],{key:key,subject:u.subject,unit:unitLabel,
+            passLabel:passLbls[absPass],type:'unit',col:col,isDone:false});
+        }
+      }
+    }
+  });
+
+  if(!ST.revSubjects)return map;
+  Object.keys(ST.revSubjects).forEach(function(subj){
+    var s=ST.revSubjects[subj];
+    if(!s.nextSweep||s.sweepNumber>=3)return;
+    var col=(typeof COLORS!=='undefined'?COLORS:{})[subj]||'var(--s1)';
+    var swLbls=['Sw1','Sw2','Sw3'];
+    var cursor=s.nextSweep;
+    for(var si=s.sweepNumber;si<3;si++){
+      addToMap(cursor,{key:subj,subject:subj,unit:'Full Subject',
+        passLabel:swLbls[si],type:'subject',col:col,isDone:false});
+      var gap=Math.max(7,Math.round(revDaysToGate(cursor)*0.2));
+      cursor=addD(cursor,gap);
+    }
+  });
+  return map;
+}
+
+window.revCalNav=function(dir){_revCalOffset+=dir;renderRevCalendar();};
+window.revCalSelect=function(ds){
+  _revCalSel=(_revCalSel===ds)?null:ds;
+  renderRevCalendar();
+};
+window.revOpenSeeAll=function(){
+  switchTab('gate',document.getElementById('navGate'));
+  setTimeout(function(){
+    var el=document.getElementById('revUpcomingSection');
+    if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+  },300);
+};
+
+function renderRevCalendar(){
+  var el=document.getElementById('revCalCard');if(!el)return;
+  var today=getToday();
+  var now=new Date();
+  var yr=now.getFullYear(), mo=now.getMonth()+_revCalOffset;
+  while(mo>11){mo-=12;yr++;}
+  while(mo<0){mo+=12;yr--;}
+  var firstDay=new Date(yr,mo,1);
+  var lastDay=new Date(yr,mo+1,0);
+  var startDow=firstDay.getDay(); // 0=Sun
+  var MONS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var map=revBuildDateMap();
+
+  var html='<div class="rev-cal-wrap">';
+  html+='<div class="rev-cal-header">';
+  html+='<div class="rev-cal-title"><span>📅</span><span>'+MONS[mo]+' '+yr+'</span></div>';
+  html+='<div class="rev-cal-nav">';
+  html+='<button onclick="revCalNav(-1)">‹</button>';
+  html+='<button onclick="revCalNav(0)" onclick="javascript:void(0)" style="color:var(--s1);" onclick="revCalNav(-_revCalOffset)">Today</button>';
+  html+='<button onclick="revCalNav(1)">›</button>';
+  html+='</div></div>';
+
+  // Day of week headers
+  html+='<div class="rev-cal-grid">';
+  ['S','M','T','W','T','F','S'].forEach(function(d){
+    html+='<div class="rev-cal-dow">'+d+'</div>';
+  });
+
+  // Empty cells before month start
+  for(var i=0;i<startDow;i++){
+    html+='<div class="rev-cal-cell empty"></div>';
+  }
+
+  // Day cells
+  for(var d2=1;d2<=lastDay.getDate();d2++){
+    var ds=yr+'-'+pad(mo+1)+'-'+pad(d2);
+    var isToday=ds===today;
+    var isSel=ds===_revCalSel;
+    var revs=map[ds]||[];
+    var hasRev=revs.length>0;
+    var cellClass='rev-cal-cell'+(isToday?' today':'')+(isSel?' selected':'')+(hasRev?' has-rev':'');
+    html+='<div class="'+cellClass+'" onclick="revCalSelect(\''+ds+'\')">';
+    html+='<div class="rev-cal-date">'+d2+'</div>';
+    if(revs.length){
+      html+='<div class="rev-cal-dots">';
+      revs.slice(0,4).forEach(function(r){
+        html+='<div class="rev-cal-dot" style="background:'+r.col+';" title="'+r.subject+'"></div>';
+      });
+      html+='</div>';
+      if(revs.length>4)html+='<div class="rev-cal-count">+'+( revs.length-4)+'</div>';
+    }
+    html+='</div>';
+  }
+  html+='</div>'; // end grid
+
+  // Selected date detail
+  if(_revCalSel&&(map[_revCalSel]||[]).length){
+    var selRevs=map[_revCalSel];
+    var selD=fromStr(_revCalSel);
+    var selLbl=_revCalSel===today?'Today':fmtShort(_revCalSel)+' ('+weekday(_revCalSel).slice(0,3)+')';
+    html+='<div class="rev-cal-detail">';
+    html+='<div class="rev-cal-detail-date">'+selLbl+' — '+selRevs.length+' revision'+(selRevs.length!==1?'s':'')+'</div>';
+    selRevs.forEach(function(r){
+      var lbl2=(typeof LABELS!=='undefined'?LABELS:{})[r.subject]||r.subject;
+      html+='<div class="rev-cal-detail-item">';
+      html+='<span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:5px;background:'+r.col+'22;color:'+r.col+';flex-shrink:0;">'+esc(lbl2)+'</span>';
+      html+='<span style="flex:1;font-size:11px;color:var(--tx);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+esc(r.unit)+'</span>';
+      var passColor=r.isDone?(r.rating==='easy'?'var(--s2)':r.rating==='hard'?'var(--am)':'var(--s3)'):(r.type==='subject'?'var(--s2)':'var(--s1)');
+      var passBg=r.isDone?(r.rating==='easy'?'var(--s2b)':r.rating==='hard'?'var(--amb)':'var(--s3b)'):(r.type==='subject'?'var(--s2b)':'var(--s1b)');
+      var donePrefix=r.isDone?'✓ ':'';
+      html+='<span style="font-family:var(--mo);font-size:9px;color:'+passColor+';background:'+passBg+';border-radius:4px;padding:2px 6px;">'+donePrefix+esc(r.passLabel)+'</span>';
+      html+='</div>';
+    });
+    html+='</div>';
+  } else if(_revCalSel){
+    html+='<div class="rev-cal-detail"><div style="font-size:11px;color:var(--mt);font-style:italic;">No revisions on '+fmtShort(_revCalSel)+'</div></div>';
+  }
+
+  html+='<div class="rev-see-all-wrap"><button class="rev-see-all-btn" onclick="revOpenSeeAll()">See full schedule (P1–P9 table) →</button></div>';
+  html+='</div>';
+  el.innerHTML=html;
+
+  // Fix Today nav button
+  var todayBtn=el.querySelector('.rev-cal-nav button:nth-child(2)');
+  if(todayBtn)todayBtn.onclick=function(){_revCalOffset=0;renderRevCalendar();};
+}
+
+// ── REVISION LOG (unit pass history) ─────────────────────────────────────────
+var _revLogOpen=true;
+var _revLogExpanded={}; // key -> bool
+
+window.toggleRevLog=function(){_revLogOpen=!_revLogOpen;renderRevLog();};
+window.toggleRevLogUnit=function(key){_revLogExpanded[key]=!_revLogExpanded[key];renderRevLog();};
+
+function renderRevLog(){
+  var el=document.getElementById('revLogCard');if(!el)return;
+  if(!ST.revUnits||!Object.keys(ST.revUnits).length){el.innerHTML='';return;}
+
+  var today=getToday();
+  var units=Object.keys(ST.revUnits).map(function(key){return{key:key,u:ST.revUnits[key]};});
+  // Only show units with at least 1 done lecture
+  var liveDone=new Set(Object.keys(ST.done).map(Number));
+  units=units.filter(function(x){
+    var unitTasks=ALL_TASKS.filter(function(t){return t.type==='lecture'&&t.subject===x.u.subject&&t.unit===x.u.unit;});
+    return unitTasks.some(function(t){return liveDone.has(t.id);});
+  });
+  if(!units.length){el.innerHTML='';return;}
+
+  // Sort by subject order, then unit
+  var subjOrd=typeof getSubjOrder==='function'?getSubjOrder():[];
+  units.sort(function(a,b){
+    var ai=subjOrd.indexOf(a.u.subject),bi=subjOrd.indexOf(b.u.subject);
+    if(ai!==bi)return ai-bi;
+    return a.u.unit.localeCompare(b.u.unit);
+  });
+
+  var html='<div class="rev-log-wrap">';
+  html+='<div class="rev-log-header" onclick="toggleRevLog()">';
+  html+='<div class="rev-log-title"><span>📋</span><span>Revision Log</span><span style="font-family:var(--mo);font-size:10px;color:var(--mt);">'+units.length+' units</span></div>';
+  html+='<span style="font-size:10px;color:var(--mt);">'+(_revLogOpen?'▲':'▼')+'</span>';
+  html+='</div>';
+
+  if(_revLogOpen){
+    units.forEach(function(x){
+      var key=x.key,u=x.u;
+      var COLORS_L=typeof COLORS!=='undefined'?COLORS:{};
+      var LABELS_L=typeof LABELS!=='undefined'?LABELS:{};
+      var col=COLORS_L[u.subject]||'var(--s1)';
+      var lbl=LABELS_L[u.subject]||u.subject;
+      var passCount=u.passes?u.passes.length:0;
+      var passOnNow=u.passNumber;
+      var isExpanded=!!_revLogExpanded[key];
+      var nextStr=u.nextRevision?fmtShort(u.nextRevision):(u.subjectGraduated?'Done!':'—');
+      var lastPass=u.passes&&u.passes.length?u.passes[u.passes.length-1]:null;
+      var lastStr=lastPass?fmtShort(lastPass.date):'—';
+
+      html+='<div class="rev-log-unit" onclick="toggleRevLogUnit(\''+key+'\')">';
+      html+='<div class="rev-log-unit-top">';
+      html+='<span class="rev-log-unit-subj" style="background:'+col+'22;color:'+col+';">'+esc(lbl)+'</span>';
+      html+='<div class="rev-log-unit-name">';
+      var logBatchSuffix=(u.batchNum&&u.batchNum>1)?' · Batch '+u.batchNum:'';
+      html+='<div class="rev-log-unit-title">'+esc(u.unit)+logBatchSuffix+'</div>';
+      html+='<div class="rev-log-unit-meta">'+u.lectureCount+' lecture'+(u.lectureCount!==1?'s':'')+' done</div>';
+      html+='</div>';
+      html+='<div style="font-family:var(--mo);font-size:10px;color:var(--s1);flex-shrink:0;">'+passCount+'/'+(u.maxPasses||9)+'</div>';
+      html+='</div>';
+
+      // Pass dots — only show up to maxPasses
+      var mpDots=u.maxPasses||9;
+      html+='<div class="rev-log-dots">';
+      for(var pi=0;pi<mpDots;pi++){
+        if(pi<(u.passes?u.passes.length:0)){
+          var p=u.passes[pi];
+          var dc=p.rating==='easy'?'done-easy':p.rating==='hard'?'done-hard':'done-blank';
+          var tip='Pass '+(pi+1)+': '+p.rating+' on '+p.date;
+          html+='<div class="rev-log-dot '+dc+'" title="'+esc(tip)+'"></div>';
+        } else {
+          html+='<div class="rev-log-dot empty" title="Pass '+(pi+1)+' pending"></div>';
+        }
+      }
+      if(mpDots<9){
+        html+='<span style="font-size:9px;color:var(--mt);margin-left:4px;" title="Remaining passes not scheduled — started after cutoff">+N/A</span>';
+      }
+      html+='</div>';
+
+      html+='<div class="rev-log-stats">';
+      html+='Next: <span style="color:var(--tx);">'+nextStr+'</span>';
+      if(lastStr!=='—')html+=' · Last: <span style="color:var(--tx);">'+lastStr+'</span>';
+      html+='</div>';
+
+      // Expanded: lecture list + pass history
+      if(isExpanded){
+        html+='<div class="rev-log-history open">';
+        var liveDoneExp=new Set(Object.keys(ST.done).map(Number));
+        var lo2=(u.batchNum?u.batchNum-1:0)*REV_BATCH+1;
+        var hi2=(u.batchNum||1)*REV_BATCH;
+        var batchLecs=ALL_TASKS.filter(function(t){return t.type==='lecture'&&t.subject===u.subject&&t.unit===u.unit&&t.num>=lo2&&t.num<=hi2&&liveDoneExp.has(t.id);});
+        if(batchLecs.length){
+          html+='<div style="font-size:9px;font-weight:700;color:var(--mt);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px;">Lectures in this batch:</div>';
+          batchLecs.forEach(function(lec){
+            html+='<div style="font-size:11px;color:var(--mt2);padding:2px 0;line-height:1.4;">';
+            html+='<span style="font-family:var(--mo);font-size:9px;color:var(--mt);">#'+lec.num+' </span>'+esc(lec.name);
+            html+='</div>';
+          });
+        }
+        if(u.passes&&u.passes.length){
+          html+='<div style="font-size:9px;font-weight:700;color:var(--mt);letter-spacing:.06em;text-transform:uppercase;margin:8px 0 5px;">Pass history:</div>';
+          u.passes.forEach(function(p,pi){
+            var rc=p.rating==='easy'?'var(--s2)':p.rating==='hard'?'var(--am)':'var(--s3)';
+            var emoji=p.rating==='easy'?'✅':p.rating==='hard'?'😅':'❌';
+            html+='<div class="rev-log-pass-row">';
+            html+='<span style="font-family:var(--mo);color:var(--mt);width:36px;flex-shrink:0;">P'+(pi+1)+'</span>';
+            html+='<span style="flex:1;">'+fmtShort(p.date)+'</span>';
+            html+='<span style="color:'+rc+';">'+emoji+' '+p.rating.charAt(0).toUpperCase()+p.rating.slice(1)+'</span>';
+            html+='</div>';
+          });
+        }
+        html+='</div>';
+      }
+      html+='</div>'; // end rev-log-unit
+    });
+  }
+  html+='</div>';
+  el.innerHTML=html;
+}
+
+// ── REVISION SEE ALL TABLE (P1-P9, replaces old renderRevUpcoming) ────────────
+var _revSeeAllOpen=false;
+window.toggleRevSeeAll=function(){_revSeeAllOpen=!_revSeeAllOpen;renderRevUpcoming();};
+
+function renderRevUpcoming(){
+  var elGate=document.getElementById('revUpcomingSection');
+  var elToday=document.getElementById('revUpcomingToday'); // may be removed
+  var el=elGate;
+  if(!el)return;
+
+  var today=getToday();
+  var liveDone=new Set(Object.keys(ST.done).map(Number));
+
+  // Collect all units with done lectures
+  var units=[];
+  if(ST.revUnits){
+    Object.keys(ST.revUnits).forEach(function(key){
+      var u=ST.revUnits[key];
+      var unitTasks=ALL_TASKS.filter(function(t){return t.type==='lecture'&&t.subject===u.subject&&t.unit===u.unit;});
+      if(!unitTasks.some(function(t){return liveDone.has(t.id);}))return;
+      units.push({key:key,u:u});
+    });
+  }
+
+  var subjOrd=typeof getSubjOrder==='function'?getSubjOrder():[];
+  units.sort(function(a,b){
+    var ai=subjOrd.indexOf(a.u.subject),bi=subjOrd.indexOf(b.u.subject);
+    if(ai!==bi)return ai-bi;
+    return a.u.unit.localeCompare(b.u.unit);
+  });
+
+  var html='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:14px;margin-bottom:10px;">';
+  html+='<div class="rev-log-header" onclick="toggleRevSeeAll()">';
+  html+='<div class="rev-log-title"><span>📊</span><span>Full Revision Table (P1–P9)</span></div>';
+  html+='<span style="font-size:10px;color:var(--mt);">'+(_revSeeAllOpen?'▲':'▼')+'</span>';
+  html+='</div>';
+
+  if(_revSeeAllOpen){
+    if(!units.length){
+      html+='<div style="font-size:12px;color:var(--mt);font-style:italic;padding:8px 0;">No units started yet. Mark lectures done to populate.</div>';
+    } else {
+      html+='<div class="rev-table-wrap"><table class="rev-table">';
+      html+='<thead><tr>';
+      html+='<th style="min-width:50px;">Subj</th>';
+      html+='<th style="min-width:120px;">Unit</th>';
+      ['P1','P2','P3','P4','P5','P6','P7','P8','P9'].forEach(function(p){
+        html+='<th>'+p+'</th>';
+      });
+      html+='</tr></thead><tbody>';
+
+      var COLORS_L=typeof COLORS!=='undefined'?COLORS:{};
+      var LABELS_L=typeof LABELS!=='undefined'?LABELS:{};
+
+      units.forEach(function(x){
+        var u=x.u;
+        var col=COLORS_L[u.subject]||'var(--s1)';
+        var lbl=LABELS_L[u.subject]||u.subject;
+        html+='<tr>';
+        html+='<td><span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;background:'+col+'22;color:'+col+';">'+esc(lbl)+'</span></td>';
+        html+='<td style="font-size:10px;color:var(--tx);max-width:140px;overflow:hidden;text-overflow:ellipsis;">'+esc(u.unit.replace(/^Unit \d+ ?:? ?/,''))+'</td>';
+
+        var mp=u.maxPasses||9; // adaptive max passes based on start date
+        // Pre-compute projected dates for remaining passes
+        var projDates=u.nextRevision?revProjectPassDates(u.nextRevision,u.passNumber,mp):[];
+
+        for(var pi=0;pi<9;pi++){
+          // Beyond maxPasses — not applicable
+          if(pi>=mp&&!(u.passes&&u.passes[pi])){
+            html+='<td class="rev-td-empty" title="Not scheduled — started too late for this pass" style="color:var(--mt);font-size:9px;">N/A</td>';
+            continue;
+          }
+          // Did we already do this pass?
+          var pastPass=u.passes&&u.passes[pi];
+          if(pastPass){
+            var pc=pastPass.rating==='easy'?'rev-td-done':pastPass.rating==='hard'?'rev-td-today':'rev-td-overdue';
+            html+='<td class="'+pc+'">'+fmtShort(pastPass.date)+'</td>';
+          } else {
+            var projDate=null;
+            var relIdx=pi-u.passNumber;
+            if(relIdx>=0&&relIdx<projDates.length)projDate=projDates[relIdx];
+            if(projDate){
+              var isOD=projDate<today,isTd=projDate===today;
+              var pc2=isOD?'rev-td-overdue':isTd?'rev-td-today':'rev-td-sched';
+              html+='<td class="'+pc2+'">'+fmtShort(projDate)+'</td>';
+            } else {
+              html+='<td class="rev-td-empty">—</td>';
+            }
+          }
+        }
+        html+='</tr>';
+      });
+      html+='</tbody></table></div>';
+    }
+  }
+  html+='</div>';
+  el.innerHTML=html;
+}
+
+// ── RENDER REVISION CARD ─────────────────────────────────────────────────────
+var _revExpandedItems={};
+function renderRevCard(){
+  var el=document.getElementById('revCardToday');if(!el)return;
+  var items=revGetDueToday();
+  var mode=revGetBlockMode();
+  var COLORS_LOCAL=typeof COLORS!=='undefined'?COLORS:{};
+
+  var html='<div class="rev-card">';
+  html+='<div class="rev-header">';
+  html+='<div class="rev-title">🔁 Revise Today</div>';
+  html+=items.length?'<div class="rev-count-badge">'+items.length+' due</div>':'';
+  html+='</div>';
+  // Mode toggle
+  html+='<div class="rev-mode-row">';
+  ['A','B','C'].forEach(function(m){
+    var lbl={A:'Soft',B:'Hard block',C:'Medium'}[m];
+    html+='<button class="rev-mode-btn'+(mode===m?' active':'')+'" onclick="revSetBlockMode(\'' +m+ '\')">'+lbl+'</button>';
+  });
+  html+='</div>';
+
+  if(!items.length){
+    html+='<div class="rev-empty">✅ No revisions due — keep going!</div></div>';
+    el.innerHTML=html;
+    var badge=document.getElementById('revGateBadge');
+    if(badge)badge.style.display='none';
+    return;
+  }
+
+  var overdue=items.filter(function(it){return it.isOverdue;});
+  var todayItems=items.filter(function(it){return !it.isOverdue;});
+
+  function renderItem(it){
+    var COLORS_L=typeof COLORS!=='undefined'?COLORS:{};
+    var LABELS_L=typeof LABELS!=='undefined'?LABELS:{};
+    var col=COLORS_L[it.subject]||'var(--s1)';
+    var lbl2=LABELS_L[it.subject]||it.subject;
+    var passLbl=it.type==='unit'?it.passLabel:it.sweepLabel;
+    var sweepClass=it.type==='subject'?' sweep':'';
+    var isExp=!!_revExpandedItems[it.key];
+    var batchSuffix=(it.batchNum&&it.batchNum>1)?' · Batch '+it.batchNum:'';
+    var h='<div class="rev-item'+(it.isOverdue?' overdue':'')+'">';
+    h+='<div onclick="(function(){_revExpandedItems[\''+it.key+'\']= !_revExpandedItems[\''+it.key+'\'];renderRevCard();})()" style="cursor:pointer;display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;">';
+    h+='<div style="flex:1;min-width:0;">';
+    h+='<div style="font-size:12px;font-weight:700;color:'+col+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+esc(lbl2)+' · '+esc(it.unit||it.subject)+batchSuffix+'</div>';
+    h+='<div style="font-size:10px;color:var(--mt);margin-top:2px;">'+it.lectureCount+' lecture'+(it.lectureCount!==1?'s':'')+' · '+esc(passLbl)+(it.isOverdue?' — <span style=\"color:var(--s3);\">Overdue</span>':'')+'</div>';
+    if(it.type==='subject'&&it.weakUnits&&it.weakUnits.length&&it.sweepNumber>0)h+='<div style="font-size:9px;color:var(--am);">⚠ Weak: '+it.weakUnits.slice(0,2).map(esc).join(', ')+'</div>';
+    h+='</div>';
+    h+='<div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0;">';
+    h+='<div class="rev-item-pass'+sweepClass+'">'+esc(passLbl)+'</div>';
+    h+='<span style="font-size:9px;color:var(--mt);">'+(isExp?'▲':'▼')+'</span>';
+    h+='</div></div>';
+    if(isExp&&it.type==='unit'&&it.lectures&&it.lectures.length){
+      h+='<div style="border-top:1px solid var(--bd);padding:8px 0 6px;margin-bottom:6px;">';
+      h+='<div style="font-size:9px;font-weight:700;color:var(--mt);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px;">Recall these:</div>';
+      it.lectures.forEach(function(lec,li){
+        var uid='ri'+li+'x'+it.key.slice(-5);
+        h+='<div style="display:flex;align-items:flex-start;gap:7px;padding:3px 0;">';
+        h+='<input type="checkbox" id="'+uid+'" style="margin-top:3px;accent-color:var(--s1);flex-shrink:0;">';
+        h+='<label for="'+uid+'" style="font-size:11px;color:var(--mt2);cursor:pointer;line-height:1.4;">';
+        h+='<span style="font-family:var(--mo);font-size:9px;color:var(--mt);">#'+lec.num+' </span>'+esc(lec.name)+'</label></div>';
+      });
+      h+='</div>';
+    }
+    h+='<button onclick="revEnterFocus(\''+it.type+'\',\''+it.key+'\')" style="width:100%;margin-bottom:7px;padding:7px;background:rgba(123,111,255,.1);border:1px solid rgba(123,111,255,.25);border-radius:8px;color:var(--s1);font-family:var(--fn);font-size:11px;font-weight:700;cursor:pointer;">⚡ Start focused revision</button>';
+    h+='<div class="rev-rating-row">';
+    if(it.type==='unit'){
+      h+='<button class="rev-btn easy" onclick="revMarkUnit(\''+it.key+'\',\'easy\')">✅ Easy</button>';
+      h+='<button class="rev-btn hard" onclick="revMarkUnit(\''+it.key+'\',\'hard\')">😅 Hard</button>';
+      h+='<button class="rev-btn blank" onclick="revMarkUnit(\''+it.key+'\',\'blank\')">❌ Blank</button>';
+    } else {
+      h+='<button class="rev-btn easy" onclick="revMarkSubject(\''+it.key+'\',\'done\')">✅ Done</button>';
+      h+='<button class="rev-btn hard" onclick="revMarkSubject(\''+it.key+'\',\'partial\')">😅 Partial</button>';
+      h+='<button class="rev-btn blank" onclick="revMarkSubject(\''+it.key+'\',\'blank\')">❌ Skip</button>';
+    }
+    h+='<button class="rev-btn snooze" onclick="revSnooze(\''+it.type+'\',\''+it.key+'\')">+1d</button>';
+    h+='</div></div>';
+    return h;
+  }
+
+  if(overdue.length){html+='<div class="rev-section-lbl">🔴 Overdue ('+overdue.length+')</div>';overdue.forEach(function(it){html+=renderItem(it);});}
+  if(todayItems.length){html+='<div class="rev-section-lbl">📅 Due today ('+todayItems.length+')</div>';todayItems.forEach(function(it){html+=renderItem(it);});}
+  html+='</div>';
+  el.innerHTML=html;
+
+  // Fix active class on mode buttons
+  el.querySelectorAll('.rev-mode-btn').forEach(function(btn,i){btn.classList.toggle('active',['A','B','C'][i]===mode);});
+
+  // Badge
+  var badge=document.getElementById('revGateBadge');
+  if(badge){badge.textContent=items.length;badge.style.display=items.length?'flex':'none';}
+}
+
+// ── REVISION FOCUS OVERLAY ────────────────────────────────────────────────────
+window.revEnterFocus=function(type,key){
+  var item=type==='unit'?(ST.revUnits&&ST.revUnits[key]):(ST.revSubjects&&ST.revSubjects[key]);
+  if(!item)return;
+  window._revFocusItem={type:type,key:key,item:item};
+  window._foRevMode=true;
+
+  var sessionBadge=document.getElementById('foSessionBadge');
+  var sessionName=document.getElementById('foSessionName');
+  var sessionRange=document.getElementById('foSessionRange');
+  var taskPill=document.getElementById('foTaskPill');
+  var timerEl=document.getElementById('foTimer');
+  var timerLbl=document.getElementById('foTimerLbl');
+  var subList=document.getElementById('foSubList');
+  var progressFill=document.getElementById('foProgressFill');
+
+  if(sessionBadge){sessionBadge.textContent='🔁 REVISION';sessionBadge.style.cssText='background:rgba(240,111,160,.2);color:var(--s3);';}
+
+  var revMins=type==='unit'?15:60;
+  var revSecs=revMins*60;
+
+  if(type==='unit'){
+    var passLbl2=['Pass 1','Pass 2','Pass 3','Pass 4','Pass 5','Pass 6','Pass 7','Pass 8','Pass 9'][Math.min(item.passNumber,8)];
+    if(sessionName)sessionName.textContent=item.subject+' · '+item.unit;
+    if(sessionRange)sessionRange.textContent=passLbl2+' · '+item.lectureCount+' lectures';
+    if(taskPill){taskPill.style.display='block';taskPill.textContent='📝 Recall everything from this unit';}
+  } else {
+    var swLbl=['Sweep 1 — Full review','Sweep 2 — Weak units','Sweep 3 — Final'][Math.min(item.sweepNumber,2)];
+    if(sessionName)sessionName.textContent=item.subject+' — Full Subject';
+    if(sessionRange)sessionRange.textContent=swLbl;
+    if(taskPill){taskPill.style.display='block';taskPill.textContent='📚 Review all units of '+item.subject;}
+  }
+
+  if(timerEl)timerEl.textContent=pad(revMins)+':00';
+  if(timerLbl)timerLbl.textContent='revision time';
+  if(progressFill)progressFill.style.width='0%';
+
+  // Checklist: lectures in this unit
+  if(subList){
+    subList.style.display='block';subList.innerHTML='';
+    if(type==='unit'){
+      var done=new Set(Object.keys(ST.done).map(Number));
+      ALL_TASKS.filter(function(t){return t.type==='lecture'&&t.subject===item.subject&&t.unit===item.unit&&done.has(t.id);})
+      .forEach(function(t,i){
+        var row=document.createElement('div');row.className='fo-sub-item';
+        row.innerHTML='<input type="checkbox" id="rck'+i+'" style="margin-right:8px;accent-color:var(--s1);" onchange="this.parentNode.classList.toggle(\'done\',this.checked)">'
+          +'<label for="rck'+i+'" style="font-size:12px;cursor:pointer;">#'+t.num+' '+esc(t.name)+'</label>';
+        subList.appendChild(row);
+      });
+    }
+  }
+
+  clearInterval(window._revFocusTimer);
+  var started=Date.now();
+  var _revFocusDay=getToday();
+  window._revFocusTimer=setInterval(function(){
+    var elapsed=(Date.now()-started)/1000;var rem=Math.max(0,revSecs-elapsed);
+    if(timerEl)timerEl.textContent=pad(Math.floor(rem/60))+':'+pad(Math.floor(rem%60));
+    if(progressFill)progressFill.style.width=Math.min(100,Math.round(elapsed/revSecs*100))+'%';
+    // Track revision focus time separately
+    var revSoFar=parseInt(localStorage.getItem('v5_revfocus_'+_revFocusDay)||'0')+1;
+    localStorage.setItem('v5_revfocus_'+_revFocusDay,revSoFar);
+    if(rem<=0){clearInterval(window._revFocusTimer);showT('⏰ Time up!','Rate your revision below.');}
+  },1000);
+
+  enterFocusOverlay();
+};
+
+// Wrap exitFocusOverlay to show rating prompt after revision focus
+(function(){
+  var _origExit=window.exitFocusOverlay;
+  window.exitFocusOverlay=function(){
+    clearInterval(window._revFocusTimer);
+    if(window._foRevMode&&window._revFocusItem){
+      var it=window._revFocusItem;
+      window._foRevMode=false;window._revFocusItem=null;
+      if(typeof _origExit==='function')_origExit();
+      // Show rating prompt bottom sheet
+      var old=document.getElementById('revRatingModal');if(old)old.remove();
+      var modal=document.createElement('div');modal.id='revRatingModal';
+      modal.style.cssText='position:fixed;bottom:0;left:0;right:0;z-index:9999;background:var(--sf);border-top:1px solid var(--bd);border-radius:20px 20px 0 0;padding:20px;font-family:var(--fn);animation:slideUp .25s ease;';
+      modal.innerHTML='<div style="font-size:14px;font-weight:700;margin-bottom:4px;">🤔 How did that go?</div>'
+        +'<div style="font-size:11px;color:var(--mt);margin-bottom:14px;">This schedules your next revision automatically.</div>'
+        +'<div style="display:flex;gap:8px;">'
+        +(it.type==='unit'
+          ?'<button onclick="revMarkUnit(\''+it.key+'\',\'easy\');document.getElementById(\'revRatingModal\').remove();" style="flex:1;padding:12px;background:rgba(45,212,160,.1);border:1px solid rgba(45,212,160,.3);color:var(--s2);border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fn);">✅ Easy</button>'
+           +'<button onclick="revMarkUnit(\''+it.key+'\',\'hard\');document.getElementById(\'revRatingModal\').remove();" style="flex:1;padding:12px;background:rgba(245,197,66,.1);border:1px solid rgba(245,197,66,.3);color:var(--am);border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fn);">😅 Hard</button>'
+           +'<button onclick="revMarkUnit(\''+it.key+'\',\'blank\');document.getElementById(\'revRatingModal\').remove();" style="flex:1;padding:12px;background:rgba(240,111,160,.1);border:1px solid rgba(240,111,160,.3);color:var(--s3);border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fn);">❌ Blank</button>'
+          :'<button onclick="revMarkSubject(\''+it.key+'\',\'done\');document.getElementById(\'revRatingModal\').remove();" style="flex:1;padding:12px;background:rgba(45,212,160,.1);border:1px solid rgba(45,212,160,.3);color:var(--s2);border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fn);">✅ Done</button>'
+           +'<button onclick="revMarkSubject(\''+it.key+'\',\'partial\');document.getElementById(\'revRatingModal\').remove();" style="flex:1;padding:12px;background:rgba(245,197,66,.1);border:1px solid rgba(245,197,66,.3);color:var(--am);border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fn);">😅 Partial</button>'
+           +'<button onclick="revMarkSubject(\''+it.key+'\',\'blank\');document.getElementById(\'revRatingModal\').remove();" style="flex:1;padding:12px;background:rgba(240,111,160,.1);border:1px solid rgba(240,111,160,.3);color:var(--s3);border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fn);">❌ Skipped</button>'
+        )+'</div>';
+      document.body.appendChild(modal);
+    } else {
+      window._foRevMode=false;
+      if(typeof _origExit==='function')_origExit();
+    }
+  };
+})();
 
 // ── HERO GATE TASK ────────────────────────────────────────────────────────────
 function updateHeroGateTask(nextTask){
@@ -3714,6 +4641,40 @@ function tick(){
   if(s===0){buildSchedule();up();renderGate();}
 }
 tick();setInterval(tick,1000);
+
+// ── REVISION CARD INIT ────────────────────────────────────────────────────────
+function updateRevBlockScreen(){
+  var screen=document.getElementById('revBlockScreen');
+  var sesContainer=document.getElementById('ses-container');
+  var upNext=document.getElementById('up-next');
+  if(!screen)return;
+  var blocked=typeof revIsBlocked==='function'&&revIsBlocked();
+  var mode=typeof revGetBlockMode==='function'?revGetBlockMode():'B';
+  var count=typeof revDueCount==='function'?revDueCount():0;
+  screen.style.display=blocked?'block':'none';
+  if(mode==='B'){
+    if(sesContainer)sesContainer.style.display=blocked?'none':'block';
+    if(upNext)upNext.style.display=blocked?'none':'block';
+  } else if(mode==='C'){
+    // Show session plan but mark all checkboxes disabled
+    if(sesContainer)sesContainer.style.display='block';
+    if(upNext)upNext.style.display='block';
+    sesContainer&&sesContainer.querySelectorAll('.chk-btn').forEach(function(btn){
+      btn.style.opacity=blocked?'.3':'';btn.style.pointerEvents=blocked?'none':'';
+    });
+  }
+  if(blocked){
+    var title=document.getElementById('revBlockTitle');
+    var sub=document.getElementById('revBlockSub');
+    if(title)title.textContent=count+' revision'+(count!==1?'s':'')+' due first';
+    if(sub)sub.textContent=mode==='C'?'New lecture marks are paused until revisions are done.':'Clear your revision queue on the Today tab before studying new lectures.';
+  }
+}
+// Initial render
+if(typeof renderRevCard==='function')renderRevCard();
+if(typeof renderRevCalendar==='function')renderRevCalendar();
+if(typeof renderRevLog==='function')renderRevLog();
+if(typeof renderRevUpcoming==='function')renderRevUpcoming();
 
 // ── SWIPE GESTURE — tab navigation ───────────────────────────────────────────
 // Horizontal swipe on mainWrap switches tabs. Minimum 60px horizontal, less than 80px vertical.
@@ -4710,6 +5671,9 @@ function startSync(){
       ST.potato=mergedPotato;ST.skips=mergedSkips;
       // Take other fields from remote if they're more recent
       if(val.revisions)ST.revisions=val.revisions;
+      if(val.revUnits)ST.revUnits=val.revUnits;
+      if(val.revSubjects)ST.revSubjects=val.revSubjects;
+      if(val.revBlockMode)ST.revBlockMode=val.revBlockMode;
       if(val.revDone)ST.revDone=val.revDone;
       if(remoteSubjOrder)ST.subjOrder=remoteSubjOrder; // sync subject order
       var d=defaultState();for(var k in d)if(ST[k]===undefined)ST[k]=d[k];
@@ -5578,29 +6542,75 @@ function haptic(pattern){
 function getSubjectVelocity(){
   var today=getToday();
   var done=new Set(Object.keys(ST.done).map(Number));
-  // Count tasks done per subject in last 7 days
+
+  // Count tasks done per subject in last 7 days (to detect active subject)
   var recent={};
-  var cutoff=addD(today,-7);
+  var cutoff7=addD(today,-7);
   Object.keys(ST.done).forEach(function(tid){
     var ts=ST.done[tid];
     var date=ts.split('T')[0];
-    if(date>=cutoff){
+    if(date>=cutoff7){
       var t=null;for(var i=0;i<ALL_TASKS.length;i++){if(ALL_TASKS[i].id===Number(tid)){t=ALL_TASKS[i];break;}}
       if(t){recent[t.subject]=(recent[t.subject]||0)+1;}
     }
   });
-  var TARGET=GATE_DATE; // Use the global GATE date constant (2027-02-01)
-  var dLeft=daysBetween(today,TARGET);
+
+  // Find the active subject (most recently worked on with remaining tasks)
+  var subjOrder=getSubjOrder();
+  var activeSubj=null;
+  var activeRate=0;
+  subjOrder.forEach(function(subj){
+    if(recent[subj]&&recent[subj]>0){
+      var tasks=ALL_TASKS.filter(function(t){return t.subject===subj;});
+      var rem=tasks.filter(function(t){return !done.has(t.id)&&!isPyqAllDone(t.id);}).length;
+      if(rem>0&&recent[subj]>activeRate){activeSubj=subj;activeRate=recent[subj];}
+    }
+  });
+
+  // Use active subject's rate, or fall back to GATE schedule pace (tasks/day needed overall)
+  var totalRemaining=0;
+  subjOrder.forEach(function(subj){
+    var tasks=ALL_TASKS.filter(function(t){return t.subject===subj;});
+    totalRemaining+=tasks.filter(function(t){return !done.has(t.id)&&!isPyqAllDone(t.id);}).length;
+  });
+  var daysToGate=daysBetween(today,GATE_DATE);
+  var overallPace=daysToGate>0?totalRemaining/daysToGate:1; // tasks/day needed to finish by GATE
+
+  // Pace to use for sequential projection
+  var projPace=activeRate>0?(activeRate/7):Math.max(overallPace,0.5);
+
+  // Sequential chain: project each subject finishing one after another
   var result=[];
-  getSubjOrder().forEach(function(subj){
+  var cursor=today; // when the next subject can start
+  subjOrder.forEach(function(subj){
     var tasks=ALL_TASKS.filter(function(t){return t.subject===subj;});
     var remaining=tasks.filter(function(t){return !done.has(t.id)&&!isPyqAllDone(t.id);}).length;
-    if(remaining===0){result.push({subj:subj,remaining:0,rate7:recent[subj]||0,needed:0,eta:today,status:'done'});return;}
-    var rate7=(recent[subj]||0)/7; // tasks per day in last 7d
-    var needed=dLeft>0?remaining/dLeft:0; // tasks per day needed
-    var eta=rate7>0?addD(today,Math.ceil(remaining/rate7)):TARGET;
-    var status=rate7>=needed?'ok':rate7>=needed*0.6?'warn':'behind';
-    result.push({subj:subj,remaining:remaining,rate7:rate7,needed:needed,eta:eta,status:status});
+    var total=tasks.length;
+    var doneCount=total-remaining;
+
+    if(remaining===0){
+      result.push({subj:subj,remaining:0,rate7:recent[subj]||0,eta:today,status:'done',pct:100});
+      return;
+    }
+
+    // For the active subject use actual rate, for future ones use projPace
+    var pace=subj===activeSubj&&activeRate>0?(activeRate/7):projPace;
+    var daysNeeded=Math.ceil(remaining/pace);
+    var eta=addD(cursor,daysNeeded);
+    // Cap at GATE date — don't project beyond it
+    var cappedEta=eta>GATE_DATE?GATE_DATE:eta;
+    cursor=cappedEta; // next subject starts when this one ends (capped)
+
+    var pct=total>0?Math.round(doneCount/total*100):0;
+    var status;
+    if(subj===activeSubj){
+      var needed=daysToGate>0?remaining/daysToGate:0;
+      var rate7=activeRate/7;
+      status=rate7>=needed?'ok':rate7>=needed*0.6?'warn':'behind';
+    } else {
+      status=eta<=GATE_DATE?'ok':'behind'; // use real uncapped eta for honest status
+    }
+    result.push({subj:subj,remaining:remaining,rate7:recent[subj]?recent[subj]/7:0,eta:eta,status:status,pct:pct,isFuture:subj!==activeSubj});
   });
   return result;
 }
@@ -5614,23 +6624,26 @@ function renderVelocity(){
   if(summary)summary.textContent=onTrack+'/'+data.length+' on track';
   var html='';
   data.forEach(function(d){
+    var col=COLORS[d.subj]||'#7b6fff';
     if(d.status==='done'){
-      html+='<div class="vel-row"><span class="vel-lbl" style="background:rgba(45,212,160,.12);color:var(--s2);">'+esc(LABELS[d.subj]||d.subj)+'</span>'
+      html+='<div class="vel-row">'
+        +'<span class="vel-lbl" style="background:rgba(45,212,160,.12);color:var(--s2);">'+esc(LABELS[d.subj]||d.subj)+'</span>'
         +'<span class="vel-subj">'+esc(d.subj)+'</span>'
         +'<span class="vel-bar-wrap"><span class="vel-bar-fill" style="width:100%;background:var(--s2);"></span></span>'
         +'<span class="vel-eta vel-ok">✓ Done</span></div>';
       return;
     }
-    var col=COLORS[d.subj]||'#7b6fff';
-    var pct=d.needed>0?Math.min(100,Math.round((d.rate7/d.needed)*100)):0;
     var cls=d.status==='ok'?'vel-ok':d.status==='warn'?'vel-warn':'vel-behind';
-    var etaStr=d.eta<=getToday()?'Overdue':fmtShort(d.eta);
-    var rateStr=d.rate7>0?(Math.round(d.rate7*10)/10)+'/d':'0/d';
-    html+='<div class="vel-row">'
+    var etaStr=d.eta>GATE_DATE?'After GATE':d.eta<=getToday()?'Overdue':fmtShort(d.eta);
+    // Dim future subjects slightly
+    var opacity=d.isFuture?'opacity:.6;':'';
+    var rateStr=d.rate7>0?(Math.round(d.rate7*10)/10)+'/d':'—';
+    var tip=d.remaining+' tasks left'+(d.isFuture?' · sequential (starts after previous subject)':' · pace '+rateStr);
+    html+='<div class="vel-row" style="'+opacity+'">'
       +'<span class="vel-lbl" style="background:'+col+'18;color:'+col+';">'+esc(LABELS[d.subj]||d.subj)+'</span>'
       +'<span class="vel-subj">'+esc(d.subj)+'</span>'
-      +'<span class="vel-bar-wrap"><span class="vel-bar-fill" style="width:'+pct+'%;background:'+col+';"></span></span>'
-      +'<span class="vel-eta '+cls+'" title="'+d.remaining+' tasks left · need '+Math.round(d.needed*10)/10+'/d · doing '+rateStr+'">'+etaStr+'</span>'
+      +'<span class="vel-bar-wrap"><span class="vel-bar-fill" style="width:'+d.pct+'%;background:'+col+';"></span></span>'
+      +'<span class="vel-eta '+cls+'" title="'+tip+'">'+etaStr+'</span>'
       +'</div>';
   });
   grid.innerHTML=html||'<div style="font-size:11px;color:var(--mt);text-align:center;padding:10px;">Start marking tasks done to see velocity.</div>';
