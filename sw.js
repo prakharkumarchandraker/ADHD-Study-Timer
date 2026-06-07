@@ -1,6 +1,7 @@
 // ── Study OS · Service Worker ──────────────────────────────────────────────
-// Cache name — bump this string whenever you deploy to force all devices to update
-const CACHE = 'studyos-v5';
+// DEPLOY CHECKLIST: bump CACHE string on every deploy to force cache refresh on all devices.
+// Format: studyos-vN or studyos-YYYYMMDD. Current: bumped 2026-06-07, v7 on re-deploy.
+const CACHE = 'studyos-v7';
 
 // Static assets that are safe to cache forever (fonts, CDN libraries)
 // index.html is intentionally NOT cached here — it uses network-first below
