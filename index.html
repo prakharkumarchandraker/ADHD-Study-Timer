@@ -2196,8 +2196,8 @@ window.ttUndo=function(){
   _ttOpenSlot=null;
   localStorage.setItem(TT_KEY,JSON.stringify(_timetable));
   if(window._fb&&window._fb.ready&&typeof fbPath==='function'){
-    var _undoDays={};TT_DAYS.forEach(function(d){var slots=_timetable[d]||[];_undoDays[d]=slots.length>0?slots:{_empty:1};});
-    window._fb.set(window._fb.ref(window._fb.db,fbPath(TT_KEY)),{_data:_undoDays,_ts:Date.now()}).catch(function(){});
+    var _undoPayload=_buildTTPayload();_ttLastWrittenJSON=JSON.stringify(_undoPayload);_ttLastWriteTs=_undoPayload._ts;
+    window._fb.set(window._fb.ref(window._fb.db,fbPath(TT_KEY)),_undoPayload).catch(function(){});
   }
   rebuildFromTimetable();
   if(typeof buildSchedule==='function')buildSchedule();
@@ -2214,6 +2214,7 @@ var _ttTemplates=(function(){try{return JSON.parse(localStorage.getItem(TT_TEMPL
 function _saveTTTemplates(){
   localStorage.setItem(TT_TEMPLATES_KEY,JSON.stringify(_ttTemplates));
   if(window._fb&&window._fb.ready&&typeof fbPath==='function'){
+    _ttTplLastWrittenJSON=JSON.stringify(_ttTemplates);
     window._fb.set(window._fb.ref(window._fb.db,fbPath(TT_TEMPLATES_KEY)),_ttTemplates).catch(function(){});
   }
 }
@@ -2258,20 +2259,21 @@ window.addEventListener('fbReady',function(){
   fb.onValue(fb.ref(fb.db,fbPath(TT_TEMPLATES_KEY)),function(snap){
     var val=snap.val();
     if(val===null){
-      // Firebase has no templates. If we have local ones, seed Firebase (first install).
+      // Firebase empty — seed if we have local templates
       if(Object.keys(_ttTemplates).length){
+        _ttTplLastWrittenJSON=JSON.stringify(_ttTemplates);
         fb.set(fb.ref(fb.db,fbPath(TT_TEMPLATES_KEY)),_ttTemplates).catch(function(){});
       }
       return;
     }
     if(typeof val!=='object')return;
-    // Remote is always authoritative. Apply directly — supports deletions.
-    var remote=JSON.stringify(val),local=JSON.stringify(_ttTemplates);
-    if(remote===local)return; // already in sync
+    // Echo detection: skip if this is exactly what we last wrote
+    var receivedJSON=JSON.stringify(val);
+    if(_ttTplLastWrittenJSON&&receivedJSON===_ttTplLastWrittenJSON)return;
+    // Apply remote (authoritative — supports deletions)
     _ttTemplates=val;
     localStorage.setItem(TT_TEMPLATES_KEY,JSON.stringify(_ttTemplates));
     renderTimetableTemplates();
-    // If active template was deleted remotely, clear the indicator
     var active=localStorage.getItem(TT_ACTIVE_TPL_KEY);
     if(active&&!_ttTemplates[active]){
       localStorage.removeItem(TT_ACTIVE_TPL_KEY);
@@ -2357,22 +2359,24 @@ window.ttClearAllSlots=function(){
   );
 };
 
-var _ttLastWriteTs=0; // timestamp of last local write — used to skip own-write echo in onValue
+var _ttLastWriteTs=0;
+var _ttLastWrittenJSON=null; // fingerprint of what we last wrote to Firebase (echo detection)
+var _ttTplLastWrittenJSON=null; // echo fingerprint for templates
+function _buildTTPayload(){
+  var days={};
+  TT_DAYS.forEach(function(d){
+    var slots=_timetable[d]||[];
+    days[d]=slots.length>0?slots:{_empty:1};
+  });
+  return {_data:days,_ts:Date.now()};
+}
 function saveTimetable(){
-  ttPushUndo(); // always push undo before saving
-  var nowTs=Date.now();
+  ttPushUndo();
   localStorage.setItem(TT_KEY,JSON.stringify(_timetable));
-  localStorage.setItem(TT_KEY+'_ts',String(nowTs)); // store write timestamp locally
   if(window._fb&&window._fb.ready&&typeof fbPath==='function'){
-    _ttLastWriteTs=nowTs;
-    // Wrap timetable with _ts so other devices can do timestamp-based conflict resolution.
-    // Wrapping also preserves empty arrays: {mon:{_empty:1}} survives Firebase storage.
-    var days={};
-    TT_DAYS.forEach(function(d){
-      var slots=_timetable[d]||[];
-      days[d]=slots.length>0?slots:{_empty:1}; // sentinel for empty day
-    });
-    var payload={_data:days,_ts:nowTs};
+    var payload=_buildTTPayload();
+    _ttLastWrittenJSON=JSON.stringify(payload);
+    _ttLastWriteTs=payload._ts;
     window._fb.set(window._fb.ref(window._fb.db,fbPath(TT_KEY)),payload).catch(function(){});
   }
   rebuildFromTimetable();
@@ -7961,52 +7965,36 @@ function renderFoSubItems(){
   });
 }
 
-// Firebase sync for timetable — timestamp-based conflict resolution
+// Firebase sync for timetable — simple fingerprint echo detection
 window.addEventListener('fbReady',function(){
   var fb=window._fb;if(!fb||!fb.ready)return;
   fb.onValue(fb.ref(fb.db,fbPath(TT_KEY)),function(snap){
     var val=snap.val();
+
+    // Nothing in Firebase yet — seed it with our local timetable
     if(!val||typeof val!=='object'){
-      // Null = Firebase has no timetable. Seed with local if we have one.
-      // Only seed if we ourselves haven't written recently (avoid false null during reconnect).
-      var sinceWrite=Date.now()-_ttLastWriteTs;
-      if(sinceWrite>10000&&Object.keys(_timetable).length){
-        var days={};
-        TT_DAYS.forEach(function(d){
-          var slots=_timetable[d]||[];
-          days[d]=slots.length>0?slots:{_empty:1};
-        });
-        var seedTs=Date.now();
-        _ttLastWriteTs=seedTs;
-        fb.set(fb.ref(fb.db,fbPath(TT_KEY)),{_data:days,_ts:seedTs}).catch(function(){});
+      if(Date.now()-_ttLastWriteTs>8000){ // don't re-seed if we just wrote
+        var p=_buildTTPayload();
+        _ttLastWrittenJSON=JSON.stringify(p);
+        _ttLastWriteTs=p._ts;
+        fb.set(fb.ref(fb.db,fbPath(TT_KEY)),p).catch(function(){});
       }
       return;
     }
 
-    // New format: {_data:{...}, _ts:number}  Old format (no _ts): raw timetable
-    var remoteTs=val._ts||0;
+    // Echo detection: skip if received data is exactly what we last wrote
+    var receivedJSON=JSON.stringify(val);
+    if(_ttLastWrittenJSON&&receivedJSON===_ttLastWrittenJSON)return;
 
-    // Skip only if this is EXACTLY our own write echoing back
-    if(remoteTs>0&&remoteTs===_ttLastWriteTs)return;
-
-    // Accept remote if it's newer than what we last wrote to Firebase.
-    // _ttLastWriteTs=0 means we never wrote → always accept remote.
-    // This correctly handles Firebase SDK firing stale cached data first,
-    // because stale data has remoteTs=0 which is never > _ttLastWriteTs=0... 
-    // wait that's equal not greater. Use >= 0 for first-ever-load.
-    if(remoteTs>0&&remoteTs<_ttLastWriteTs)return; // remote is older than our last write
-
-    // Unwrap data: handle both new {_data,_ts} and old raw format
+    // Unwrap: new format {_data,_ts} or old raw format
     var rawDays=val._data||val;
     var normalized={};
     TT_DAYS.forEach(function(d){
-      var dayVal=rawDays[d];
-      if(Array.isArray(dayVal))normalized[d]=dayVal;       // normal slots
-      else if(dayVal&&dayVal._empty)normalized[d]=[];       // sentinel for cleared day
-      else normalized[d]=[];                                // missing = cleared
+      var v=rawDays[d];
+      normalized[d]=Array.isArray(v)?v:(v&&v._empty?[]:[]);
     });
 
-    // Apply remote timetable
+    // Apply
     _timetable=normalized;
     localStorage.setItem(TT_KEY,JSON.stringify(normalized));
     rebuildFromTimetable();
