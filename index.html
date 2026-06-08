@@ -7403,19 +7403,34 @@ function renderDailyMinimum(){
 
   var done=new Set(Object.keys(ST.done).map(Number));
 
-  // ── 1x tier: read directly from today's live schedule (source of truth) ──
-  var minTasks=[];
-  var seenIds=new Set();
+  // ── 1x tier: read from today's live schedule, summing chunks across sessions ──
+  // A lecture split across Session 1 and Session 2 within the same day is NOT partial —
+  // it fully completes today. Only mark partial if isLast===false (spills into tomorrow).
+  var chunkMap={};   // taskId → {task, totalChunk, completesToday}
   dayPlan.sessions.forEach(function(ses){
     (ses.items||[]).forEach(function(item){
-      if(!seenIds.has(item.taskId)){
-        seenIds.add(item.taskId);
+      if(!chunkMap[item.taskId]){
         var t=null;
         for(var i=0;i<ALL_TASKS.length;i++){if(ALL_TASKS[i].id===item.taskId){t=ALL_TASKS[i];break;}}
-        if(t)minTasks.push({task:t,chunk:Math.round(item.chunk*10)/10,isPartial:item.isSplit&&item.isFirst});
+        if(t)chunkMap[item.taskId]={task:t,totalChunk:0,completesToday:false};
+      }
+      if(chunkMap[item.taskId]){
+        chunkMap[item.taskId].totalChunk+=item.chunk;
+        // isLast===true means this is the final chunk of the lecture (finishes today)
+        if(item.isLast)chunkMap[item.taskId].completesToday=true;
       }
     });
   });
+  var minTasks=Object.keys(chunkMap).map(function(tid){
+    var entry=chunkMap[tid];
+    return{
+      task:entry.task,
+      chunk:Math.round(entry.totalChunk*10)/10,
+      isPartial:!entry.completesToday
+    };
+  });
+  // Sort by task id to maintain schedule order
+  minTasks.sort(function(a,b){return a.task.id-b.task.id;});
 
   if(!minTasks.length){
     el.innerHTML='<div style="font-size:12px;color:var(--mt);font-style:italic;text-align:center;padding:10px 0;">No tasks assigned today — rest day or potato day.</div>';
