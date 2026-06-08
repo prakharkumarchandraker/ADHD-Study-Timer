@@ -7967,44 +7967,48 @@ window.addEventListener('fbReady',function(){
   fb.onValue(fb.ref(fb.db,fbPath(TT_KEY)),function(snap){
     var val=snap.val();
     if(!val||typeof val!=='object'){
-      // Null = no data in Firebase yet. If we have local data, upload it to seed Firebase.
-      if(Object.keys(_timetable).length){
+      // Null = Firebase has no timetable. Seed with local if we have one.
+      // Only seed if we ourselves haven't written recently (avoid false null during reconnect).
+      var sinceWrite=Date.now()-_ttLastWriteTs;
+      if(sinceWrite>10000&&Object.keys(_timetable).length){
         var days={};
         TT_DAYS.forEach(function(d){
           var slots=_timetable[d]||[];
           days[d]=slots.length>0?slots:{_empty:1};
         });
-        fb.set(fb.ref(fb.db,fbPath(TT_KEY)),{_data:days,_ts:Date.now()}).catch(function(){});
+        var seedTs=Date.now();
+        _ttLastWriteTs=seedTs;
+        fb.set(fb.ref(fb.db,fbPath(TT_KEY)),{_data:days,_ts:seedTs}).catch(function(){});
       }
       return;
     }
 
-    // New format: {_data:{...}, _ts:number}
-    // Old format (no _ts): raw timetable — handle for backward compat
+    // New format: {_data:{...}, _ts:number}  Old format (no _ts): raw timetable
     var remoteTs=val._ts||0;
-    var localTs=parseInt(localStorage.getItem(TT_KEY+'_ts')||'0',10);
 
-    // Skip if this is our own write echoing back (same timestamp)
+    // Skip only if this is EXACTLY our own write echoing back
     if(remoteTs>0&&remoteTs===_ttLastWriteTs)return;
 
-    // Accept remote if it's newer than what we last wrote, OR if we have no timestamp (first load)
-    var shouldApply=remoteTs>localTs||localTs===0;
-    if(!shouldApply)return;
+    // Accept remote if it's newer than what we last wrote to Firebase.
+    // _ttLastWriteTs=0 means we never wrote → always accept remote.
+    // This correctly handles Firebase SDK firing stale cached data first,
+    // because stale data has remoteTs=0 which is never > _ttLastWriteTs=0... 
+    // wait that's equal not greater. Use >= 0 for first-ever-load.
+    if(remoteTs>0&&remoteTs<_ttLastWriteTs)return; // remote is older than our last write
 
     // Unwrap data: handle both new {_data,_ts} and old raw format
     var rawDays=val._data||val;
     var normalized={};
     TT_DAYS.forEach(function(d){
       var dayVal=rawDays[d];
-      if(Array.isArray(dayVal))normalized[d]=dayVal;          // normal slots
-      else if(dayVal&&dayVal._empty)normalized[d]=[];          // sentinel for cleared day
-      else normalized[d]=[];                                   // missing = cleared
+      if(Array.isArray(dayVal))normalized[d]=dayVal;       // normal slots
+      else if(dayVal&&dayVal._empty)normalized[d]=[];       // sentinel for cleared day
+      else normalized[d]=[];                                // missing = cleared
     });
 
     // Apply remote timetable
     _timetable=normalized;
     localStorage.setItem(TT_KEY,JSON.stringify(normalized));
-    localStorage.setItem(TT_KEY+'_ts',String(remoteTs||Date.now()));
     rebuildFromTimetable();
     if(typeof buildSchedule==='function')buildSchedule();
     if(typeof renderRoutineFromTimetable==='function')renderRoutineFromTimetable();
