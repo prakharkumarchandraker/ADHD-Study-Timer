@@ -2275,12 +2275,23 @@ window.addEventListener('fbReady',function(){
       }
     }
   });
-  // First-time setup only: if Firebase has NO templates yet but we have local ones, seed it
-  fb.get(fb.ref(fb.db,fbPath(TT_TEMPLATES_KEY))).then(function(snap){
+  // First-time setup only: if Firebase returns null (no templates ever saved),
+  // seed it with local templates. We detect this via the first onValue fire above —
+  // if _ttTemplates is still empty after the first snap, nothing to seed.
+  // The onValue listener above already handles the null case correctly (normalizes to {}).
+  // Seeding is handled: if remote was null, normalized={} matches local only if local
+  // is also empty. If local has templates and remote is null, remote!==local → we apply
+  // remote (empty) to local... which would wipe local. We need the opposite for first install.
+  // Fix: track whether Firebase has ever had templates using a flag.
+  var _ttSeeded=false;
+  var _ttSeedUnsubscribe=fb.onValue(fb.ref(fb.db,fbPath(TT_TEMPLATES_KEY)),function(snap){
+    if(_ttSeeded)return;
+    _ttSeeded=true;
     if(snap.val()===null&&Object.keys(_ttTemplates).length){
+      // Firebase is empty but we have local templates — this is a first install, seed Firebase
       fb.set(fb.ref(fb.db,fbPath(TT_TEMPLATES_KEY)),_ttTemplates).catch(function(){});
     }
-  }).catch(function(){});
+  },{onlyOnce:true});
 },{once:true});
 function renderTimetableTemplates(){
   var el=document.getElementById('ttTemplateList');if(!el)return;
