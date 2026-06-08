@@ -11,6 +11,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="StudyOS">
+<link rel="apple-touch-icon" href="./icon-512.png">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://*.googleapis.com https://*.gstatic.com https://cdnjs.cloudflare.com https://*.firebaseio.com wss://*.firebaseio.com https://firebaseinstallations.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://*.gstatic.com; img-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://firebaseinstallations.googleapis.com;">
 <!-- Viewport height fix: use dvh where supported so mobile browser chrome doesn't eat space -->
 <style>:root{--vh:1vh;}@supports(height:100dvh){:root{--vh:1dvh;}}</style>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -36,10 +38,44 @@ body.light{
   --s3:#d44d80;--s3b:rgba(212,77,128,.1);--s3o:rgba(212,77,128,.3);
   --am:#c8920a;--amb:rgba(200,146,10,.1);--amo:rgba(200,146,10,.3);
 }
-body.light #bottomNav{background:rgba(244,244,248,.94);}
+body.light #sideDrawer{background:rgba(244,244,248,.98);}
 body.light .tt-slot,.light .card{box-shadow:0 1px 3px rgba(0,0,0,.06);}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{background:var(--bg);color:var(--tx);font-family:var(--fn);font-size:15px;overflow-x:hidden;min-height:100vh;}
+
+/* ── EXAM SETTINGS MODAL ── */
+#examSettingsOverlay{display:none;position:fixed;inset:0;z-index:9500;align-items:center;justify-content:center;}
+#examSettingsOverlay.open{display:flex;}
+.es-bg{position:absolute;inset:0;background:rgba(8,8,14,.7);backdrop-filter:blur(6px);}
+.es-modal{position:relative;z-index:1;background:var(--sf);border:1px solid var(--bd2);border-radius:20px;width:min(420px,94vw);max-height:88vh;overflow-y:auto;padding:24px;}
+.es-title{font-size:15px;font-weight:700;color:var(--tx);margin-bottom:18px;display:flex;align-items:center;gap:8px;}
+.es-section{margin-bottom:18px;}
+.es-label{font-family:var(--mo);font-size:10px;color:var(--mt);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;}
+.es-inp{width:100%;background:var(--sf2);border:1px solid var(--bd2);border-radius:10px;padding:9px 12px;font-family:var(--fn);font-size:13px;color:var(--tx);outline:none;transition:border-color .15s;}
+.es-inp:focus{border-color:var(--s1o);}
+.es-row{display:flex;gap:8px;align-items:flex-end;}
+.es-row .es-inp{flex:1;}
+.es-extra-list{display:flex;flex-direction:column;gap:6px;margin-bottom:8px;}
+.es-extra-item{display:flex;gap:6px;align-items:center;}
+.es-extra-item .es-inp{flex:1;}
+.es-rm-btn{background:none;border:1px solid var(--bd2);color:var(--mt);border-radius:8px;padding:6px 8px;cursor:pointer;font-size:12px;flex-shrink:0;}
+.es-rm-btn:hover{border-color:var(--s3o);color:var(--s3);}
+.es-add-btn{background:none;border:1px dashed var(--bd2);color:var(--mt2);border-radius:10px;padding:7px 12px;font-family:var(--fn);font-size:12px;cursor:pointer;width:100%;text-align:left;}
+.es-add-btn:hover{border-color:var(--s1o);color:var(--s1);}
+.es-actions{display:flex;gap:8px;margin-top:20px;}
+.es-save{flex:1;background:var(--s1);border:none;color:#fff;border-radius:12px;padding:11px;font-family:var(--fn);font-size:13px;font-weight:700;cursor:pointer;}
+.es-recal{flex:1;background:var(--s2b);border:1px solid var(--s2o);color:var(--s2);border-radius:12px;padding:11px;font-family:var(--fn);font-size:12px;font-weight:700;cursor:pointer;}
+.es-cancel{background:var(--sf2);border:1px solid var(--bd2);color:var(--mt2);border-radius:12px;padding:11px 16px;font-family:var(--fn);font-size:12px;cursor:pointer;}
+.es-hint{font-size:10px;color:var(--mt);margin-top:4px;line-height:1.4;}
+.es-divider{border:none;border-top:1px solid var(--bd);margin:16px 0;}
+/* Countdown mode pill in banner */
+.cd-mode-hint{font-family:var(--mo);font-size:9px;color:var(--mt);margin-top:3px;}
+
+/* ── OFFLINE BANNER ── */
+#offlineBanner{display:none;position:fixed;top:0;left:0;right:0;z-index:99998;background:#b45309;color:#fff;font-family:var(--mo);font-size:11px;text-align:center;padding:6px 12px;letter-spacing:.04em;}
+#offlineBanner.show{display:block;}
+/* Push content down when offline banner shows */
+body.offline #mainWrap{padding-top:34px;}
 
 /* ── PIN LOCK ── */
 #pinLock{display:none;position:fixed;inset:0;z-index:99999;background:var(--bg);align-items:center;justify-content:center;flex-direction:column;}
@@ -58,7 +94,7 @@ html,body{background:var(--bg);color:var(--tx);font-family:var(--fn);font-size:1
 .pin-key.del{font-size:16px;color:var(--mt2);}
 
 /* ── LAYOUT ── */
-#mainWrap{max-width:740px;margin:0 auto;padding:12px 12px 90px;}
+#mainWrap{max-width:740px;margin:0 auto;padding:12px 12px max(24px,env(safe-area-inset-bottom));}
 
 /* ── TOPBAR ── */
 .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px;}
@@ -132,12 +168,29 @@ html,body{background:var(--bg);color:var(--tx);font-family:var(--fn);font-size:1
 .hfr-sub{font-size:8px;color:var(--mt);font-style:italic;}
 
 /* ── BOTTOM NAV ── */
-#bottomNav{position:fixed;bottom:0;left:0;right:0;z-index:5000;background:rgba(13,13,16,.92);backdrop-filter:blur(12px);border-top:1px solid var(--bd);display:flex;justify-content:space-around;padding:8px 0 max(8px,env(safe-area-inset-bottom));}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;color:var(--mt);font-family:var(--fn);font-size:8px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:6px 4px 4px;transition:color .15s;min-width:44px;touch-action:manipulation;-webkit-tap-highlight-color:transparent;overflow:visible;}
-.nav-btn .nav-ico{font-size:20px;line-height:1;display:block;}
-.nav-btn.act{color:var(--s1);}
-.nav-btn.act .nav-ico{filter:drop-shadow(0 0 6px rgba(123,111,255,.5));}
-.nav-btn.act::after{content:'';display:block;width:18px;height:2px;background:var(--s1);border-radius:2px;margin:2px auto 0;}
+/* ── DRAWER NAV ── */
+#drawerOverlay{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.55);backdrop-filter:blur(3px);}
+#drawerOverlay.open{display:block;}
+#sideDrawer{position:fixed;top:0;left:0;bottom:0;z-index:9001;width:260px;background:var(--sf);border-right:1px solid var(--bd2);display:flex;flex-direction:column;padding:max(16px,env(safe-area-inset-top,16px)) 0 max(16px,env(safe-area-inset-bottom,16px));transform:translateX(-100%);transition:transform .25s cubic-bezier(.4,0,.2,1);will-change:transform;overflow:hidden;}
+#sideDrawer.open{transform:translateX(0);}
+.drawer-head{display:flex;align-items:center;gap:10px;padding:4px 20px 20px;border-bottom:1px solid var(--bd);}
+.drawer-logo{font-size:22px;line-height:1;}
+.drawer-title{font-family:var(--mo);font-size:11px;color:var(--mt);letter-spacing:.06em;}
+.drawer-nav{flex:1;overflow-y:auto;padding:10px 0;}
+.drawer-item{display:flex;align-items:center;gap:14px;width:100%;background:none;border:none;padding:13px 20px;cursor:pointer;font-family:var(--fn);font-size:13px;font-weight:600;color:var(--mt2);transition:all .15s;text-align:left;position:relative;-webkit-tap-highlight-color:transparent;}
+.drawer-item:hover{background:var(--sf2);color:var(--tx);}
+.drawer-item.act{color:var(--s1);background:var(--s1b);}
+.drawer-item.act::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:3px;background:var(--s1);border-radius:0 3px 3px 0;}
+.drawer-item .di-ico{font-size:18px;line-height:1;width:24px;text-align:center;flex-shrink:0;}
+.drawer-item .di-badge{margin-left:auto;background:#f87171;color:#fff;border-radius:10px;font-size:9px;font-weight:700;min-width:16px;height:16px;display:none;align-items:center;justify-content:center;font-family:var(--mo);padding:0 3px;}
+.drawer-foot{padding:14px 20px 4px;border-top:1px solid var(--bd);display:flex;flex-direction:column;gap:8px;}
+.drawer-util{display:flex;align-items:center;gap:10px;font-family:var(--fn);font-size:11px;font-weight:600;color:var(--mt2);}
+.btn-hamburger{background:none;border:1px solid var(--bd2);border-radius:var(--rs);padding:5px 9px;font-size:16px;cursor:pointer;line-height:1;color:var(--tx);transition:all .15s;-webkit-tap-highlight-color:transparent;flex-shrink:0;}
+.btn-hamburger:hover{background:var(--sf2);border-color:var(--s1o);}
+/* current tab indicator in topbar brand area */
+.topbar-tab-label{font-family:var(--mo);font-size:10px;color:var(--s1);letter-spacing:.05em;margin-left:4px;opacity:.8;}
+body.light #sideDrawer{background:var(--sf);}
+/* .nav-btn class kept for JS querySelector compat — visual styles handled by .drawer-item */
 
 /* ── TABS ── */
 .tab-panel{display:none;}
@@ -410,6 +463,12 @@ html,body{background:var(--bg);color:var(--tx);font-family:var(--fn);font-size:1
 /* ── GATE TAB ── */
 /* GATE Banner */
 #gate-banner{background:linear-gradient(135deg,var(--s1b),rgba(137,180,250,.08));border:1px solid var(--s1o);border-radius:12px;padding:9px 16px;margin-bottom:12px;font-size:12px;font-weight:700;color:var(--s1);text-align:center;}
+.cd-main{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;}
+.cd-sub{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:5px;}
+.cd-primary{font-size:13px;font-weight:700;color:var(--s1);letter-spacing:.01em;}
+.cd-since{font-family:var(--mo);font-size:9px;color:var(--mt2);background:var(--sf2);border:1px solid var(--bd2);border-radius:6px;padding:2px 7px;letter-spacing:.05em;}
+.cd-prep{font-family:var(--mo);font-size:10px;color:var(--mt2);}
+.cd-chip{background:var(--s3b);border:1px solid var(--s3o);color:var(--s3);border-radius:8px;padding:2px 8px;font-size:10px;font-weight:600;font-family:var(--mo);}
 /* Progress ring */
 #ring-wrap{position:relative;width:56px;height:56px;flex-shrink:0;}
 #ring-wrap svg{width:56px;height:56px;transform:rotate(-90deg);}
@@ -667,7 +726,7 @@ html,body{background:var(--bg);color:var(--tx);font-family:var(--fn);font-size:1
 ::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--sf3);border-radius:2px;}
 /* ── OLD FOCUS MODE (kept for compatibility) ── */
 body.focus-mode #mainWrap{padding:0;}
-body.focus-mode .tab-panel,body.focus-mode #bottomNav,body.focus-mode .qwrap,body.focus-mode .trans-warn{display:none!important;}
+body.focus-mode .tab-panel,body.focus-mode #drawerOverlay,body.focus-mode #sideDrawer,body.focus-mode .qwrap,body.focus-mode .trans-warn{display:none!important;}
 body.focus-mode .hero{border-radius:0;border-left:none;border-right:none;border-bottom:none;margin-bottom:0;padding:40px 24px;}
 body.focus-mode .hero-cd{font-size:96px!important;letter-spacing:-4px;}
 
@@ -750,9 +809,7 @@ body.focus-mode .hero-cd{font-size:96px!important;letter-spacing:-4px;}
 
 
 @media(max-width:540px){
-  .nav-btn .nav-txt{display:none;}
-  .nav-btn{padding:8px 2px 6px;}
-  .nav-btn .nav-ico{font-size:22px;}
+  /* nav-btn is now inside drawer - no responsive overrides needed */
 }
 
 /* ── MOBILE GATE TAB LAYOUT FIXES ── */
@@ -878,7 +935,7 @@ body.focus-mode .hero-cd{font-size:96px!important;letter-spacing:-4px;}
 .fo-sub-txt.done{text-decoration:line-through;color:rgba(255,255,255,.3);}
 
 /* ── PWA INSTALL BANNER ── */
-#pwaInstallBanner{display:none;position:fixed;bottom:calc(64px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:8000;background:var(--sf);border:1px solid var(--s1o);border-radius:16px;padding:10px 14px;max-width:min(380px,92vw);width:100%;box-shadow:0 8px 32px rgba(0,0,0,.5);align-items:center;gap:10px;}
+#pwaInstallBanner{display:none;position:fixed;bottom:calc(16px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:8000;background:var(--sf);border:1px solid var(--s1o);border-radius:16px;padding:10px 14px;max-width:min(380px,92vw);width:100%;box-shadow:0 8px 32px rgba(0,0,0,.5);align-items:center;gap:10px;}
 #pwaInstallBanner.show{display:flex;}
 .pwa-banner-text{flex:1;font-size:11px;color:var(--tx);line-height:1.4;}
 .pwa-banner-text strong{color:var(--s1);}
@@ -1005,6 +1062,52 @@ window.onerror=function(msg,src,line,col,err){
 <div id="focusCountdown" style="display:none;"><div class="fc-num" id="fcNum">3</div><div class="fc-lbl">Focus time</div></div>
 
 <!-- PIN LOCK -->
+<div id="offlineBanner">📡 Offline — data saves locally until reconnected</div>
+
+<!-- ═══════════════════════════ EXAM SETTINGS MODAL ═══ -->
+<div id="examSettingsOverlay">
+  <div class="es-bg" onclick="closeExamSettings()"></div>
+  <div class="es-modal">
+    <div class="es-title">⚙️ Exam Settings</div>
+
+    <div class="es-section">
+      <div class="es-label">Primary Exam Name</div>
+      <input class="es-inp" id="esPrimaryName" type="text" maxlength="40" placeholder="e.g. GATE 2027">
+    </div>
+
+    <div class="es-section">
+      <div class="es-label">Exam Date</div>
+      <input class="es-inp" id="esPrimaryDate" type="date">
+      <div class="es-hint">The actual exam day. Drives the main countdown.</div>
+    </div>
+
+    <div class="es-section">
+      <div class="es-label">Prep Target Date</div>
+      <input class="es-inp" id="esPrepTarget" type="date">
+      <div class="es-hint">Finish-syllabus deadline. Usually a few weeks before exam. Drives pace calculation.</div>
+    </div>
+
+    <div class="es-section">
+      <div class="es-label">Study Start Date</div>
+      <input class="es-inp" id="esStartDate" type="date">
+      <div class="es-hint">Sets the heatmap origin and "Day N" counter.</div>
+    </div>
+
+    <hr class="es-divider">
+
+    <div class="es-section">
+      <div class="es-label">Additional Exams (shown as countdown chips)</div>
+      <div class="es-extra-list" id="esExtraList"></div>
+      <button class="es-add-btn" onclick="esAddExtra()">+ Add another exam</button>
+    </div>
+
+    <div class="es-actions">
+      <button class="es-cancel" onclick="closeExamSettings()">Cancel</button>
+      <button class="es-save" onclick="esSave(false)">Save</button>
+      <button class="es-recal" onclick="esSave(true)" title="Recalculates pace targets for new dates">↺ Save & Recalibrate</button>
+    </div>
+  </div>
+</div>
 <div id="pinLock">
   <div class="pin-box">
     <div class="pin-logo">📚</div>
@@ -1031,9 +1134,40 @@ window.onerror=function(msg,src,line,col,err){
 </div>
 
 <div id="mainWrap">
+  <!-- DRAWER OVERLAY + PANEL -->
+  <div id="drawerOverlay" onclick="closeDrawer()"></div>
+  <nav id="sideDrawer" aria-label="Main navigation" role="navigation">
+    <div class="drawer-head">
+      <span class="drawer-logo">📚</span>
+      <span class="drawer-title exam-name-label">study os · gate 2027</span>
+    </div>
+    <div class="drawer-nav">
+      <button class="drawer-item nav-btn act" id="navToday" role="tab" aria-selected="true" onclick="switchTab('today',this);closeDrawer()"><span class="di-ico">🏠</span>Today</button>
+      <button class="drawer-item nav-btn" id="navGate" role="tab" aria-selected="false" onclick="switchTab('gate',this);closeDrawer()"><span class="di-ico">📚</span>GATE<span id="revGateBadge" class="di-badge"></span></button>
+      <button class="drawer-item nav-btn" id="navHabits" role="tab" aria-selected="false" onclick="switchTab('habits',this);closeDrawer()"><span class="di-ico">🔥</span>Habits</button>
+      <button class="drawer-item nav-btn" id="navHistory" role="tab" aria-selected="false" onclick="switchTab('history',this);closeDrawer()"><span class="di-ico">🗂️</span>History</button>
+      <button class="drawer-item nav-btn" id="navStats" role="tab" aria-selected="false" onclick="switchTab('stats',this);closeDrawer()"><span class="di-ico">📊</span>Stats</button>
+      <button class="drawer-item nav-btn" id="navTimetable" role="tab" aria-selected="false" onclick="switchTab('timetable',this);closeDrawer()"><span class="di-ico">📅</span>Plan</button>
+    </div>
+    <div class="drawer-foot">
+      <div class="drawer-util">
+        <button class="focus-btn" id="themeBtnDrawer" onclick="toggleTheme()" title="Toggle dark/light mode" style="font-size:13px;padding:3px 8px;">☀️</button>
+        <span style="font-size:11px;color:var(--mt);">Theme</span>
+        <button class="focus-btn" onclick="openExamSettings();closeDrawer();" title="Exam settings" style="margin-left:auto;">⚙️ Exam</button>
+        <button class="focus-btn" id="focusBtnDrawer" onclick="toggleFocus();closeDrawer()">⛶</button>
+      </div>
+      <div class="drawer-util" style="font-family:var(--mo);font-size:10px;color:var(--mt);">
+        <span class="sync-dot" id="syncDotDrawer"></span>
+        <span id="syncLblDrawer">local</span>
+        <span style="margin-left:auto;" id="clockDispDrawer">—</span>
+      </div>
+    </div>
+  </nav>
+
   <!-- TOPBAR -->
   <div class="topbar">
-    <span class="brand">📚 study os</span>
+    <button class="btn-hamburger" id="hamburgerBtn" onclick="openDrawer()" aria-label="Open navigation menu">☰</button>
+    <span class="brand">📚 <span id="tabLabel" class="topbar-tab-label">Today</span></span>
     <div class="topbar-right">
       <span class="sync-row" id="syncRow"><span class="sync-dot" id="syncDot"></span><span id="syncLbl">local</span></span>
       <span id="waterCount" title="Water log" onclick="toggleWaterLog()">💧 <span id="waterCountVal">0</span></span>
@@ -1044,15 +1178,7 @@ window.onerror=function(msg,src,line,col,err){
     </div>
   </div>
 
-  <!-- BOTTOM NAV TABS -->
-  <div id="bottomNav" role="navigation" aria-label="Main navigation">
-    <button class="nav-btn act" id="navToday" role="tab" aria-selected="true" onclick="switchTab('today',this)"><span class="nav-ico" aria-hidden="true">🏠</span><span class="nav-txt">Today</span></button>
-    <button class="nav-btn" id="navGate" role="tab" aria-selected="false" onclick="switchTab('gate',this)" style="position:relative;"><span class="nav-ico" aria-hidden="true">📚</span><span class="nav-txt">GATE</span><span id="revGateBadge" style="display:none;position:absolute;top:4px;right:4px;background:#f87171;color:#fff;border-radius:10px;font-size:9px;font-weight:700;min-width:16px;height:16px;align-items:center;justify-content:center;font-family:var(--mo);padding:0 3px;pointer-events:none;"></span></button>
-    <button class="nav-btn" id="navHabits" role="tab" aria-selected="false" onclick="switchTab('habits',this)"><span class="nav-ico" aria-hidden="true">🔥</span><span class="nav-txt">Habits</span></button>
-    <button class="nav-btn" id="navHistory" role="tab" aria-selected="false" onclick="switchTab('history',this)"><span class="nav-ico" aria-hidden="true">🗂️</span><span class="nav-txt">History</span></button>
-    <button class="nav-btn" id="navStats" role="tab" aria-selected="false" onclick="switchTab('stats',this)"><span class="nav-ico" aria-hidden="true">📊</span><span class="nav-txt">Stats</span></button>
-    <button class="nav-btn" id="navTimetable" role="tab" aria-selected="false" onclick="switchTab('timetable',this)"><span class="nav-ico" aria-hidden="true">📅</span><span class="nav-txt">Plan</span></button>
-  </div>
+  <!-- Navigation is now in #sideDrawer (slide-in drawer) -->
 
   <!-- ═══════════════════════════════════════════ TAB: TODAY ═══ -->
   <div class="tab-panel act" id="tab-today">
@@ -1168,6 +1294,7 @@ window.onerror=function(msg,src,line,col,err){
 
     <!-- GATE COUNTDOWN BANNER -->
     <div id="gate-banner">🎯 Loading GATE countdown…</div>
+    <div class="cd-mode-hint" id="cdModeHint" style="text-align:center;margin-top:-8px;margin-bottom:4px;"></div>
 
     <!-- HEADER ROW: ring + pace + actions -->
     <div class="card">
@@ -1811,7 +1938,7 @@ window.onerror=function(msg,src,line,col,err){
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getDatabase, ref, onValue, set, update } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
 const FIREBASE_CONFIG={apiKey:"AIzaSyBiR56BExZjtmmpjOHn2YHqlnjJNkggReY",authDomain:"adhd-timer-27e1b.firebaseapp.com",databaseURL:"https://adhd-timer-27e1b-default-rtdb.firebaseio.com",projectId:"adhd-timer-27e1b",storageBucket:"adhd-timer-27e1b.firebasestorage.app",messagingSenderId:"1081377208233",appId:"1:1081377208233:web:6671afd64e30a4b8fff6b8"};
-function setSyncStatus(state,label){const dot=document.getElementById('syncDot');const lbl=document.getElementById('syncLbl');if(dot)dot.className='sync-dot '+(state==='ok'?'ok':state==='err'?'err':'');if(lbl)lbl.textContent=label;}
+function setSyncStatus(state,label){['syncDot','syncDotDrawer'].forEach(function(id){var dot=document.getElementById(id);if(dot)dot.className='sync-dot '+(state==='ok'?'ok':state==='err'?'err':'');});['syncLbl','syncLblDrawer'].forEach(function(id){var lbl=document.getElementById(id);if(lbl)lbl.textContent=label;});}
 try{
   const app=initializeApp(FIREBASE_CONFIG);
   const db=getDatabase(app);
@@ -1855,18 +1982,150 @@ function getSubjOrder(){
   if(ST&&ST.subjOrder&&Array.isArray(ST.subjOrder)&&ST.subjOrder.length===SUBJ.length)return ST.subjOrder;
   return SUBJ.slice();
 }
-const FIXED_START_DATE='2026-05-21';
-// TARGET_DATE auto-extends: if today is past Dec 31 prep target, slide to GATE date so
-// the heatmap, schedule, and velocity tracker never break with negative day counts.
-const _RAW_TARGET='2026-12-31';
-const GATE_DATE='2027-02-01';
-const TARGET_DATE=(function(){
-  var raw=new Date(_RAW_TARGET+'T00:00:00');
-  var gate=new Date(GATE_DATE+'T00:00:00');
+// FIXED_START_DATE is now set dynamically from exam config above
+// ── EXAM CONFIG SYSTEM ───────────────────────────────────────────────────────
+// All dates/names previously hardcoded are now read from localStorage
+// with the original values as defaults. Editable via the Settings panel.
+var _EC_DEFAULTS={
+  primaryName:'GATE 2027',
+  primaryDate:'2027-02-01',
+  prepTarget:'2026-12-31',
+  startDate:'2026-05-21',
+  extraExams:[] // [{name,date}]
+};
+function loadExamConfig(){
+  try{
+    var s=localStorage.getItem('v5_exam_config');
+    if(s){var p=JSON.parse(s);return Object.assign({},_EC_DEFAULTS,p);}
+  }catch(e){}
+  return Object.assign({},_EC_DEFAULTS);
+}
+function saveExamConfig(cfg){
+  localStorage.setItem('v5_exam_config',JSON.stringify(cfg));
+  if(window._fb&&window._fb.ready&&typeof fbPath==='function')
+    window._fb.set(window._fb.ref(window._fb.db,fbPath('v5_exam_config')),cfg).catch(function(){});
+}
+var _examCfg=loadExamConfig();
+
+// Dynamic constants — reassigned when config changes
+var GATE_DATE=_examCfg.primaryDate;
+var FIXED_START_DATE=_examCfg.startDate;
+// TARGET_DATE auto-extends: if today is past prep target, slide to exam date
+var TARGET_DATE=(function(){
   var now=new Date();now.setHours(0,0,0,0);
-  if(now>raw) return GATE_DATE;   // prep window passed — extend to exam date
-  return _RAW_TARGET;
+  var raw=new Date(_examCfg.prepTarget+'T00:00:00');
+  if(now>raw)return _examCfg.primaryDate;
+  return _examCfg.prepTarget;
 })();
+
+// Call this after any config change to recalculate TARGET_DATE and refresh UI
+function applyExamConfig(newCfg,recalibrate){
+  _examCfg=newCfg;
+  saveExamConfig(newCfg);
+  GATE_DATE=newCfg.primaryDate;
+  FIXED_START_DATE=newCfg.startDate;
+  var now=new Date();now.setHours(0,0,0,0);
+  var raw=new Date(newCfg.prepTarget+'T00:00:00');
+  TARGET_DATE=now>raw?newCfg.primaryDate:newCfg.prepTarget;
+  // Update all UI labels carrying the exam name
+  document.querySelectorAll('.exam-name-label').forEach(function(el){el.textContent=newCfg.primaryName;});
+  if(typeof renderGate==='function')renderGate();
+  if(typeof buildHeatmap==='function')buildHeatmap();
+  if(typeof up==='function')up();
+  if(recalibrate)showT('✅ Saved & recalibrated','Pace targets updated for new dates.');
+  else showT('✅ Saved','Exam config updated.');
+}
+
+// Set dynamic page title from exam config on load
+document.title='Study OS · '+_examCfg.primaryName;
+
+// ── COUNTDOWN MODE CYCLING ────────────────────────────────────────────────────
+function cycleCountdownMode(){
+  var modes=['days','weeks','pct','bar'];
+  var cur=localStorage.getItem('v5_cd_mode')||'days';
+  var next=modes[(modes.indexOf(cur)+1)%modes.length];
+  localStorage.setItem('v5_cd_mode',next);
+  if(typeof renderGate==='function')renderGate();
+  if(typeof up==='function')up();
+}
+
+// ── EXAM SETTINGS MODAL JS ───────────────────────────────────────────────────
+function openExamSettings(){
+  var cfg=_examCfg;
+  document.getElementById('esPrimaryName').value=cfg.primaryName||'';
+  document.getElementById('esPrimaryDate').value=cfg.primaryDate||'';
+  document.getElementById('esPrepTarget').value=cfg.prepTarget||'';
+  document.getElementById('esStartDate').value=cfg.startDate||'';
+  esRenderExtraList(cfg.extraExams||[]);
+  document.getElementById('examSettingsOverlay').classList.add('open');
+}
+function closeExamSettings(){
+  document.getElementById('examSettingsOverlay').classList.remove('open');
+}
+function esRenderExtraList(extras){
+  var list=document.getElementById('esExtraList');
+  if(!list)return;
+  list.innerHTML=extras.map(function(ex,i){
+    return '<div class="es-extra-item">'
+      +'<input class="es-inp es-extra-name" type="text" maxlength="30" placeholder="Exam name" value="'+esc(ex.name||'')+'">'
+      +'<input class="es-inp es-extra-date" type="date" value="'+(ex.date||'')+'" style="width:140px;flex:none;">'
+      +'<button class="es-rm-btn" onclick="esRemoveExtra('+i+')">✕</button>'
+      +'</div>';
+  }).join('');
+}
+function esAddExtra(){
+  var extras=esGetCurrentExtras();
+  extras.push({name:'',date:''});
+  esRenderExtraList(extras);
+}
+function esRemoveExtra(idx){
+  var extras=esGetCurrentExtras();
+  extras.splice(idx,1);
+  esRenderExtraList(extras);
+}
+function esGetCurrentExtras(){
+  var names=document.querySelectorAll('.es-extra-name');
+  var dates=document.querySelectorAll('.es-extra-date');
+  var out=[];
+  for(var i=0;i<names.length;i++){
+    var n=names[i].value.trim(),d=dates[i].value.trim();
+    if(n||d)out.push({name:n,date:d});
+  }
+  return out;
+}
+function esSave(recalibrate){
+  var name=document.getElementById('esPrimaryName').value.trim();
+  var date=document.getElementById('esPrimaryDate').value.trim();
+  var prep=document.getElementById('esPrepTarget').value.trim();
+  var start=document.getElementById('esStartDate').value.trim();
+  if(!name||!date||!prep||!start){showT('⚠ Missing fields','Fill in all four main fields.');return;}
+  if(date<prep){showT('⚠ Date conflict','Exam date must be after prep target.');return;}
+  if(start>date){showT('⚠ Date conflict','Start date must be before exam date.');return;}
+  var extras=esGetCurrentExtras().filter(function(ex){return ex.name&&ex.date;});
+  var newCfg={primaryName:name,primaryDate:date,prepTarget:prep,startDate:start,extraExams:extras};
+  closeExamSettings();
+  // Update page title and brand labels
+  document.title='Study OS · '+name;
+  document.querySelectorAll('.drawer-title').forEach(function(el){el.textContent='study os · '+name.toLowerCase();});
+  applyExamConfig(newCfg,recalibrate);
+}
+// Escape closes settings
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'&&document.getElementById('examSettingsOverlay').classList.contains('open')){closeExamSettings();}
+});
+// Sync Firebase exam config on startup
+window.addEventListener('fbReady',function(){
+  var fb=window._fb;if(!fb||!fb.ready)return;
+  fb.onValue(fb.ref(fb.db,fbPath('v5_exam_config')),function(snap){
+    var val=snap.val();if(!val||typeof val!=='object')return;
+    var merged=Object.assign({},_EC_DEFAULTS,val);
+    // Only apply if meaningfully different (avoid overwriting mid-edit)
+    if(JSON.stringify(merged)!==JSON.stringify(_examCfg)){
+      applyExamConfig(merged,false);
+      showT('📡 Exam config synced','Settings updated from another device.');
+    }
+  });
+},{once:true});
 
 // ── TIMETABLE (single source of truth) ───────────────────────────────────────
 var TT_KEY='v5_timetable_v1';
@@ -2124,6 +2383,9 @@ function switchTab(name, btn) {
   var panel = document.getElementById('tab-'+name);
   if(panel) panel.classList.add('act');
   if(btn) {btn.classList.add('act');btn.setAttribute('aria-selected','true');}
+  // Update topbar tab label
+  var labelMap={today:'Today',gate:'GATE',habits:'Habits',history:'History',stats:'Stats',timetable:'Plan'};
+  var lbl=document.getElementById('tabLabel');if(lbl)lbl.textContent=labelMap[name]||name.charAt(0).toUpperCase()+name.slice(1);
   // Always scroll to top when switching tabs
   window.scrollTo({top:0, behavior:'instant'});
   if(name==='gate') { if(typeof renderGate==='function') renderGate(); if(typeof renderCatchUp==='function') renderCatchUp(); if(typeof renderRevCard==='function') renderRevCard(); updateRevBlockScreen(); if(typeof renderRevUpcoming==='function') renderRevUpcoming(); }
@@ -2134,6 +2396,49 @@ function switchTab(name, btn) {
   if(name==='timetable') { if(typeof renderTimetable==='function') renderTimetable(); if(typeof renderTimetableTemplates==='function') renderTimetableTemplates(); }
 }
 window.switchTab = switchTab;
+
+// ── DRAWER OPEN / CLOSE ──────────────────────────────────────────────────────
+function openDrawer(){
+  document.getElementById('sideDrawer').classList.add('open');
+  document.getElementById('drawerOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeDrawer(){
+  document.getElementById('sideDrawer').classList.remove('open');
+  document.getElementById('drawerOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+window.openDrawer=openDrawer;
+window.closeDrawer=closeDrawer;
+
+// Keyboard: Alt+M opens drawer; letter shortcuts for tabs when drawer is open and not in input
+document.addEventListener('keydown',function(e){
+  var inInput=e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.isContentEditable;
+  if(e.altKey&&e.key==='m'){e.preventDefault();openDrawer();return;}
+  if(e.key==='Escape'&&document.getElementById('sideDrawer').classList.contains('open')){closeDrawer();return;}
+});
+
+// Swipe left to close drawer
+(function(){
+  var startX=0,startY=0,dragging=false;
+  document.addEventListener('touchstart',function(e){
+    if(!document.getElementById('sideDrawer').classList.contains('open'))return;
+    startX=e.touches[0].clientX;startY=e.touches[0].clientY;dragging=true;
+  },{passive:true});
+  document.addEventListener('touchend',function(e){
+    if(!dragging)return;dragging=false;
+    var dx=e.changedTouches[0].clientX-startX;
+    var dy=e.changedTouches[0].clientY-startY;
+    if(dx<-50&&Math.abs(dy)<60)closeDrawer();
+  },{passive:true});
+}());
+
+// Sync clock + sync status to drawer
+// _setSyncStatus is handled by setSyncStatus in Firebase init
+function _syncClock(txt){
+  ['clockDisp','clockDispDrawer'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=txt;});
+}
+
 function switchTabById(id) {
   var btn = document.getElementById('nav'+id.charAt(0).toUpperCase()+id.slice(1));
   switchTab(id, btn||null);
@@ -2153,21 +2458,26 @@ function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').repl
 
 function defaultState(){return{done:{},pyqTopics:{},potato:[],viewDate:null,skips:[],expanded:[],flags:{},revisions:{},revDone:{},live:{},subjOrder:null,pinnedNext:null,revUnits:{},revSubjects:{},revBlockMode:'B'};}
 function loadGateState(){try{var s=localStorage.getItem('gate2027v6');if(s){var p=JSON.parse(s);var d=defaultState();for(var k in d)if(p[k]===undefined)p[k]=d[k];return p;}}catch(e){}return defaultState();}
+var _saveGateTimer=null;
 function saveGateState(){
+  // Always write to localStorage immediately (fast, local)
   try{localStorage.setItem('gate2027v6',JSON.stringify(ST));}catch(e){}
-  // Write to Firebase with retry — GATE state is important
-  var fb=window._fb;
-  if(fb&&fb.ready){
-    fb.set(fb.ref(fb.db,fbPath('gate_state')),ST)
-      .then(function(){if(window._setSyncStatus)window._setSyncStatus('ok','synced');})
-      .catch(function(e){
-        console.warn('GATE sync failed, retrying...',e);
-        setTimeout(function(){if(window._fb&&window._fb.ready)window._fb.set(window._fb.ref(window._fb.db,fbPath('gate_state')),ST).catch(function(){});},3000);
-        if(window._setSyncStatus)window._setSyncStatus('err','sync err');
-      });
-  }
-  // Auto-update snapshot on every GATE save
-  setTimeout(function(){if(typeof saveSnapshot==='function')saveSnapshot(false);},200);
+  // Debounce Firebase write to ~600ms — prevents write storm on rapid checkbox interactions
+  clearTimeout(_saveGateTimer);
+  _saveGateTimer=setTimeout(function(){
+    var fb=window._fb;
+    if(fb&&fb.ready){
+      fb.set(fb.ref(fb.db,fbPath('gate_state')),ST)
+        .then(function(){if(window._setSyncStatus)window._setSyncStatus('ok','synced');})
+        .catch(function(e){
+          console.warn('GATE sync failed, retrying...',e);
+          setTimeout(function(){if(window._fb&&window._fb.ready)window._fb.set(window._fb.ref(window._fb.db,fbPath('gate_state')),ST).catch(function(){});},3000);
+          if(window._setSyncStatus)window._setSyncStatus('err','sync err');
+        });
+    }
+    // Auto-update snapshot after GATE save settles
+    setTimeout(function(){if(typeof saveSnapshot==='function')saveSnapshot(false);},200);
+  },600);
 }
 var ST=loadGateState();
 
@@ -2762,8 +3072,40 @@ function renderGate(){
   var nextTask=getNextTask(sched);
 
   // GATE banner
+  // ── Gate banner: multi-exam chips + countdown mode + days since start ──
   var gateEl=document.getElementById('gate-banner');
-  if(gateEl){var dLeft=daysBetween(today,GATE_DATE);var dPrep=daysBetween(today,TARGET_DATE);gateEl.textContent='🎯 '+dLeft+' days to GATE 2027 · '+dPrep+' days to prep target';}
+  if(gateEl){
+    var dLeft=daysBetween(today,GATE_DATE);
+    var dPrep=daysBetween(today,TARGET_DATE);
+    var dSince=daysBetween(FIXED_START_DATE,today);
+    var totalPrep=daysBetween(FIXED_START_DATE,GATE_DATE);
+    var pctUsed=totalPrep>0?Math.round(dSince/totalPrep*100):0;
+    var weeksDays=Math.floor(dLeft/7);
+    var remDays=dLeft%7;
+    // Countdown mode
+    var mode=localStorage.getItem('v5_cd_mode')||'days';
+    var primaryTxt='';
+    if(mode==='days'){primaryTxt=dLeft+' days to '+_examCfg.primaryName;}
+    else if(mode==='weeks'){primaryTxt=(weeksDays>0?weeksDays+'w '+(remDays>0?remDays+'d ':''): dLeft+'d')+' to '+_examCfg.primaryName;}
+    else if(mode==='pct'){primaryTxt=pctUsed+'% of prep used · '+dLeft+'d left';}
+    else if(mode==='bar'){
+      var filled=Math.round(pctUsed/10);
+      primaryTxt='['+('█'.repeat(filled)+'░'.repeat(10-filled))+'] '+dLeft+'d';
+    }
+    // Build chips for extra exams
+    var extraHtml='';
+    (_examCfg.extraExams||[]).forEach(function(ex){
+      var dl=daysBetween(today,ex.date);
+      if(dl>=0)extraHtml+='<span class="cd-chip">'+esc(ex.name)+' · '+dl+'d</span>';
+    });
+    // Days-since-start tag
+    var sinceTag='<span class="cd-since">Day '+Math.max(0,dSince)+'</span>';
+    // Prep target
+    var prepTag=dPrep>0&&dPrep!==dLeft?'<span class="cd-prep">📋 prep target · '+dPrep+'d</span>':'';
+    gateEl.innerHTML='<div class="cd-main"><span class="cd-primary" onclick="cycleCountdownMode()" title="Tap to change display mode" style="cursor:pointer;">🎯 '+primaryTxt+'</span>'+sinceTag+'</div>'+(prepTag||extraHtml?'<div class="cd-sub">'+prepTag+extraHtml+'</div>':'');
+    var modeHint=document.getElementById('cdModeHint');
+    if(modeHint){var modeLabels={days:'tap to switch → weeks',weeks:'tap to switch → % used',pct:'tap to switch → progress bar',bar:'tap to switch → days'};modeHint.textContent=modeLabels[mode]||'';}
+  }
 
   // Progress ring
   var pct=prog.overall;var arc=document.getElementById('ring-arc');var ringPct=document.getElementById('ring-pct');
@@ -3080,6 +3422,29 @@ function renderGateHeatmap(studyDays,potatoSet){
     d.setDate(d.getDate()+1);cellCount++;
   }
   grid.innerHTML=cells;
+
+  // Post-render: highlight milestone dates (exam, prep target, extra exams)
+  var _msStart=new Date(fromStr(FIXED_START_DATE));
+  while(_msStart.getDay()!==1&&_msStart.getDay()!==0)_msStart.setDate(_msStart.getDate()-1);
+  var _msList=[
+    {date:_examCfg.primaryDate,label:'🎯 '+_examCfg.primaryName,color:'#7b6fff'},
+    {date:_examCfg.prepTarget,label:'📋 Prep target',color:'#f5c542'}
+  ];
+  (_examCfg.extraExams||[]).forEach(function(ex){_msList.push({date:ex.date,label:'🎯 '+ex.name,color:'#f06fa0'});});
+  var _cells=grid.querySelectorAll('.hm-cell');
+  _msList.forEach(function(ms){
+    try{
+      var msD=new Date(ms.date+'T00:00:00');
+      var diff=Math.round((msD-_msStart)/86400000);
+      if(diff>=0&&diff<_cells.length){
+        var c=_cells[diff];
+        c.style.outline='2px solid '+ms.color;
+        c.style.outlineOffset='-1px';
+        c.style.borderRadius='3px';
+        c.title=(c.title?c.title+' | ':'')+ms.label;
+      }
+    }catch(e){}
+  });
   // Month labels
   if(months){
     var totalCols=Math.ceil(cellCount/7);
@@ -3233,7 +3598,7 @@ var slotFocusSecs=(function(){
       var defIds=['d_mon_0','d_mon_1','d_mon_2','d_mon_3','d_mon_4','d_mon_5','d_mon_6','d_mon_7'];
       var migrated={};
       keys.forEach(function(k){var v=raw[k];var i=parseInt(k);if(defIds[i]&&typeof v==='number'&&v>=0)migrated[defIds[i]]=v;});
-      localStorage.setItem('v5_sft_'+today,JSON.stringify(migrated));
+      localStorage.setItem('v5_sft_'+getToday(),JSON.stringify(migrated));
       return migrated;
     }
     var clean={};keys.forEach(function(k){var v=raw[k];if(typeof v==='number'&&v>=0&&isFinite(v))clean[k]=v;});
@@ -3311,7 +3676,7 @@ function checkWaterClock(){
 }
 
 // Water log
-function saveWaterLog(){localStorage.setItem('v5_wlog_'+today,JSON.stringify(waterLog));fbWrite('v5_wlog_'+today,waterLog);setTimeout(function(){if(typeof saveSnapshot==='function')saveSnapshot(false);},200);}
+function saveWaterLog(){localStorage.setItem('v5_wlog_'+getToday(),JSON.stringify(waterLog));fbWrite('v5_wlog_'+today,waterLog);setTimeout(function(){if(typeof saveSnapshot==='function')saveSnapshot(false);},200);}
 function updateWaterBadge(){var el=document.getElementById('waterCountVal');if(el)el.textContent=waterLog.length;var el2=document.getElementById('waterLogCount');if(el2)el2.textContent=waterLog.length+' glass'+(waterLog.length!==1?'es':'');}
 // ── WATER INTERVAL SETTING ───────────────────────────────────────────────────
 function waterIntervalMs(){return (parseInt(localStorage.getItem('v5_water_interval')||'30'))*60*1000;}
@@ -3402,7 +3767,7 @@ renderTodos();
 // ── PRE-DECLARE FREE FOCUS VARS (used inside buildSchedule) ─────────────────
 var freeFocusSession = null;
 var freeFocusDone = [];
-var FF_KEY = 'v5_ff_done_' + today;
+var FF_KEY = 'v5_ff_done_' + getToday();
 try { freeFocusDone = JSON.parse(localStorage.getItem(FF_KEY)||'[]'); } catch(e){}
 
 // ── SCHEDULE + SCREEN TIME ───────────────────────────────────────────────────
@@ -3487,7 +3852,7 @@ function tickSlotFocus(){
   ALL_SLOTS.forEach(function(s,i){
     if(slotActive(s)){slotFocusSecs[s.id]=(slotFocusSecs[s.id]||0)+1;}
   });
-  if(focusSecs%30===0){localStorage.setItem('v5_sft_'+today,JSON.stringify(slotFocusSecs));fbWrite('v5_sft_'+today,slotFocusSecs);}
+  if(focusSecs%30===0){localStorage.setItem('v5_sft_'+getToday(),JSON.stringify(slotFocusSecs));fbWrite('v5_sft_'+today,slotFocusSecs);}
 }
 function startFocusClock(){
   if(focusInterval)clearInterval(focusInterval); // always clear first — safe to restart
@@ -3496,7 +3861,7 @@ function startFocusClock(){
       // Guard against day rollover: if localStorage day key changed, reset in-memory counter
       var storedSecs=parseInt(localStorage.getItem('v5_focus_'+today)||'0');
       if(storedSecs<focusSecs-2) focusSecs=storedSecs; // another device reset it
-      focusSecs++;localStorage.setItem('v5_focus_'+today,focusSecs);
+      focusSecs++;localStorage.setItem('v5_focus_'+getToday(),focusSecs);
       if(focusSecs%30===0)fbWrite('v5_focus_'+today,focusSecs);
     }
   },1000);
@@ -3563,13 +3928,12 @@ function showConfirm(btn,label,cb){
 window.toggleTheme=function(){
   var isLight=document.body.classList.toggle('light');
   localStorage.setItem('v5_theme',isLight?'light':'dark');
-  var btn=document.getElementById('themeBtn');
-  if(btn)btn.textContent=isLight?'🌙':'☀️';
+  ['themeBtn','themeBtnDrawer'].forEach(function(id){var btn=document.getElementById(id);if(btn)btn.textContent=isLight?'🌙':'☀️';});
 };
-// Init button icon on load
+// Init button icons on load
 document.addEventListener('DOMContentLoaded',function(){
-  var btn=document.getElementById('themeBtn');
-  if(btn)btn.textContent=document.body.classList.contains('light')?'🌙':'☀️';
+  var isLight=document.body.classList.contains('light');
+  ['themeBtn','themeBtnDrawer'].forEach(function(id){var btn=document.getElementById(id);if(btn)btn.textContent=isLight?'🌙':'☀️';});
 });
 
 function showT(title,body){
@@ -4570,7 +4934,7 @@ var rems={water:true,break:true,notif:true};
 function tick(){
   tickSlotFocus();checkWaterClock();
   var n=new Date(),h=n.getHours(),m=n.getMinutes(),s=n.getSeconds(),mins=toM(h,m);
-  var clockEl=document.getElementById('clockDisp');if(clockEl)clockEl.textContent=pad(h)+':'+pad(m)+':'+pad(s);
+  _syncClock(pad(h)+':'+pad(m)+':'+pad(s));
   var ai=-1,ni=-1;
   for(var i=0;i<ALL_SLOTS.length;i++){if(slotActive(ALL_SLOTS[i])){ai=i;break;}var st2b=toM(ALL_SLOTS[i].start[0],ALL_SLOTS[i].start[1]);if(st2b>mins&&ni===-1)ni=i;}
   var hc=document.getElementById('heroCard');
@@ -4641,6 +5005,23 @@ function tick(){
   if(s===0){buildSchedule();up();renderGate();}
 }
 tick();setInterval(tick,1000);
+
+// ── NETWORK STATUS ───────────────────────────────────────────────────────────
+(function initNetworkStatus(){
+  var banner=document.getElementById('offlineBanner');
+  function setOffline(offline){
+    if(!banner)return;
+    if(offline){banner.classList.add('show');document.body.classList.add('offline');}
+    else{banner.classList.remove('show');document.body.classList.remove('offline');}
+    if(window._setSyncStatus){
+      if(offline)window._setSyncStatus('err','offline');
+      // Don't reset to 'ok' here — let Firebase writes confirm sync status on reconnect
+    }
+  }
+  if(!navigator.onLine)setOffline(true);
+  window.addEventListener('online',function(){setOffline(false);});
+  window.addEventListener('offline',function(){setOffline(true);});
+}());
 
 // ── REVISION CARD INIT ────────────────────────────────────────────────────────
 function updateRevBlockScreen(){
@@ -5553,8 +5934,8 @@ function startSync(){
 
   // ── Daily session checks (chk) ─────────────────────────────────────────
   // Upload local value first so other devices get it, then listen for remote changes.
-  fb.set(fb.ref(fb.db,fbPath('v5_chk_'+today)),chk).catch(function(){});
-  fb.onValue(fb.ref(fb.db,fbPath('v5_chk_'+today)),function(snap){
+  fb.set(fb.ref(fb.db,fbPath('v5_chk_'+getToday())),chk).catch(function(){});
+  fb.onValue(fb.ref(fb.db,fbPath('v5_chk_'+getToday())),function(snap){
     var val=snap.val();
     var incoming=val===null?[]:fbToIntArr(val).sort(function(a,b){return a-b;});
     var cur=[...chk].sort(function(a,b){return a-b;});
@@ -5566,9 +5947,9 @@ function startSync(){
   // ── Session history (hist) ─────────────────────────────────────────────
   // Upload local hist first, then listen.
   if(Object.keys(hist).length>0){
-    fb.set(fb.ref(fb.db,fbPath('v5_hist_'+today)),hist).catch(function(){});
+    fb.set(fb.ref(fb.db,fbPath('v5_hist_'+getToday())),hist).catch(function(){});
   }
-  fb.onValue(fb.ref(fb.db,fbPath('v5_hist_'+today)),function(snap){
+  fb.onValue(fb.ref(fb.db,fbPath('v5_hist_'+getToday())),function(snap){
     var val=snap.val();
     var incoming=(val&&typeof val==='object')?val:{};
     // Merge: union of local and remote keys (both are treated as additive logs)
@@ -5621,16 +6002,16 @@ function startSync(){
   // heat
   fb.onValue(fb.ref(fb.db,fbPath('v5_heat')),function(snap){var val=snap.val();if(val&&typeof val==='object'&&!Array.isArray(val)){var changed=false;Object.keys(val).forEach(function(k){if((val[k]||0)>(heat[k]||0)){heat[k]=val[k];changed=true;}});if(changed){localStorage.setItem('v5_heat',JSON.stringify(heat));renderHeatmap();}}});
   // focus secs
-  fb.onValue(fb.ref(fb.db,fbPath('v5_focus_'+today)),function(snap){var val=snap.val();if(typeof val==='number'&&val>focusSecs){focusSecs=val;localStorage.setItem('v5_focus_'+today,focusSecs);up();}});
+  fb.onValue(fb.ref(fb.db,fbPath('v5_focus_'+getToday())),function(snap){var val=snap.val();if(typeof val==='number'&&val>focusSecs){focusSecs=val;localStorage.setItem('v5_focus_'+getToday(),focusSecs);up();}});
   // slot focus
-  fb.onValue(fb.ref(fb.db,fbPath('v5_sft_'+today)),function(snap){var val=snap.val();if(val&&typeof val==='object'){var changed=false;Object.entries(val).forEach(function(e){var k=e[0];var v=e[1];if(typeof v==='number'&&v>0&&v>(slotFocusSecs[k]||0)){slotFocusSecs[k]=v;changed=true;}});if(changed){localStorage.setItem('v5_sft_'+today,JSON.stringify(slotFocusSecs));buildSchedule();up();}}});
+  fb.onValue(fb.ref(fb.db,fbPath('v5_sft_'+getToday())),function(snap){var val=snap.val();if(val&&typeof val==='object'){var changed=false;Object.entries(val).forEach(function(e){var k=e[0];var v=e[1];if(typeof v==='number'&&v>0&&v>(slotFocusSecs[k]||0)){slotFocusSecs[k]=v;changed=true;}});if(changed){localStorage.setItem('v5_sft_'+getToday(),JSON.stringify(slotFocusSecs));buildSchedule();up();}}});
   // water log
-  fb.onValue(fb.ref(fb.db,fbPath('v5_wlog_'+today)),function(snap){var val=snap.val();if(val&&Array.isArray(val)){if(JSON.stringify(val)!==JSON.stringify(waterLog)){waterLog=val;waterCount=waterLog.length;localStorage.setItem('v5_wlog_'+today,JSON.stringify(waterLog));updateWaterBadge();renderWaterLog();renderWaterLogInline();}}});
+  fb.onValue(fb.ref(fb.db,fbPath('v5_wlog_'+getToday())),function(snap){var val=snap.val();if(val&&Array.isArray(val)){if(JSON.stringify(val)!==JSON.stringify(waterLog)){waterLog=val;waterCount=waterLog.length;localStorage.setItem('v5_wlog_'+getToday(),JSON.stringify(waterLog));updateWaterBadge();renderWaterLog();renderWaterLogInline();}}});
   // notes
   fb.onValue(fb.ref(fb.db,fbPath('v5_notes')),function(snap){var val=snap.val();if(typeof val==='string'){var na2=document.getElementById('na');if(na2&&na2.value!==val){na2.value=val;localStorage.setItem('v5_notes',val);}}})
 
   // ── Free Focus sessions sync ──────────────────────────────────────────────
-  fb.onValue(fb.ref(fb.db,fbPath(FF_KEY)),function(snap){
+  fb.onValue(fb.ref(fb.db,fbPath('v5_ff_done_'+getToday())),function(snap){
     var val=snap.val();
     if(!val||!Array.isArray(val))return;
     var remoteStr=JSON.stringify(val),localStr=JSON.stringify(freeFocusDone);
@@ -5692,10 +6073,10 @@ if(window._fb&&window._fb.ready)startSync();else window.addEventListener('fbRead
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape'){
     ['reorderOverlay','potatoOverlay','pinStartOverlay','exportCustomizerOverlay',
-     'addHabitOverlay','habitDetailOverlay','emojiPickerOverlay'].forEach(function(id){
+     'addHabitOverlay','habitDetailOverlay','emojiPickerOverlay','examSettingsOverlay'].forEach(function(id){
       var el=document.getElementById(id);
-      if(el&&(el.classList.contains('show')||el.style.display==='flex')){
-        el.classList.remove('show');el.style.display='none';
+      if(el&&(el.classList.contains('show')||el.classList.contains('open')||el.style.display==='flex')){
+        el.classList.remove('show');el.classList.remove('open');el.style.display='none';
       }
     });
     var sheet=document.getElementById('emojiPickerSheet');
@@ -5704,6 +6085,8 @@ document.addEventListener('keydown',function(e){
     if(ds){ds.style.transform='translateY(100%)';}
     var hds=document.getElementById('habitDetailSheet');
     if(hds){hds.style.transform='translateY(100%)';}
+    // Also close the side drawer
+    if(document.getElementById('sideDrawer').classList.contains('open')){closeDrawer();}
   }
 });
 
@@ -5733,11 +6116,14 @@ function startPresence(fb){
       hideMultiDeviceWarning();
     }
   });
+  function _clearPresence(){fbWrite('v5_presence',null);}
+  window.addEventListener('beforeunload',_clearPresence);
+  window.addEventListener('pagehide',_clearPresence);
   window.addEventListener('beforeunload',function(){
     fbWrite('v5_presence',null);
     // Save screen time state immediately on close so data isn't lost
-    localStorage.setItem('v5_sft_'+today,JSON.stringify(slotFocusSecs));
-    localStorage.setItem('v5_focus_'+today,focusSecs);
+    localStorage.setItem('v5_sft_'+getToday(),JSON.stringify(slotFocusSecs));
+    localStorage.setItem('v5_focus_'+getToday(),focusSecs);
   });
 }
 function showMultiDeviceWarning(other){
@@ -5781,7 +6167,7 @@ window.forceKickOther=function(){
 
 // ── FREE FOCUS ────────────────────────────────────────────────────────────────
 // freeFocusSession already declared above
-FF_KEY='v5_ff_done_'+today;
+FF_KEY='v5_ff_done_'+getToday();
 try { freeFocusDone=JSON.parse(localStorage.getItem(FF_KEY)||'[]'); } catch(e){}
 var ffSelDur=0;
 
@@ -5828,7 +6214,7 @@ function tickFF(){
   if(!freeFocusSession)return;var fs=freeFocusSession;
   var realActive=ALL_SLOTS.some(function(s){return slotActive(s);});
   if(realActive){endFF(false);return;}
-  if(document.visibilityState==='visible'){fs.secs++;focusSecs++;localStorage.setItem('v5_focus_'+today,focusSecs);}
+  if(document.visibilityState==='visible'){fs.secs++;focusSecs++;localStorage.setItem('v5_focus_'+getToday(),focusSecs);}
   var totalSecs=fs.durationMins*60;var rem=totalSecs-fs.secs;
   if(!fs.warnFired&&rem<=120&&rem>115){fs.warnFired=true;playAlertWarn();showT('⚡ Wrapping up',fs.label+' ends in 2 min');}
   if(fs.secs>=totalSecs){endFF(true);return;}
@@ -5915,6 +6301,41 @@ var HAB_EMOJIS = ['🌅','💪','📖','🧘','🚿','😴','📵','📝','🚶'
 
 // Storage key
 var HAB_KEY = 'v5_habits_v1';
+// ── localStorage daily-key pruning (keeps last 60 days, prevents quota overflow) ───
+(function pruneOldDailyKeys(){
+  try{
+    var cutoff=new Date();cutoff.setDate(cutoff.getDate()-60);
+    var cutStr=cutoff.toISOString().slice(0,10);
+    var prefixes=['v5_chk_','v5_hist_','v5_focus_','v5_sft_','v5_wlog_','v5_ff_done_',
+                  'v5_revfocus_','v5_ld_','v5_rdone_','v5_snap_'];
+    var removed=0;
+    for(var i=localStorage.length-1;i>=0;i--){
+      var k=localStorage.key(i);if(!k)continue;
+      for(var p=0;p<prefixes.length;p++){
+        if(k.startsWith(prefixes[p])){
+          var datePart=k.slice(prefixes[p].length);
+          // Only prune keys that end with a YYYY-MM-DD date
+          if(/^\d{4}-\d{2}-\d{2}$/.test(datePart)&&datePart<cutStr){
+            localStorage.removeItem(k);removed++;
+          }
+          break;
+        }
+      }
+    }
+    if(removed>0)console.log('[Prune] Removed',removed,'old daily localStorage keys');
+  }catch(e){}
+}());
+
+// One-time migration: v5_habits → v5_habits_v1
+(function migrateHabits(){
+  try{
+    if(!localStorage.getItem(HAB_KEY)&&localStorage.getItem('v5_habits')){
+      localStorage.setItem(HAB_KEY,localStorage.getItem('v5_habits'));
+      localStorage.removeItem('v5_habits');
+      console.log('[Migrate] v5_habits → v5_habits_v1 done');
+    }
+  }catch(e){}
+}());
 
 // Load habits
 var _habits = (function(){
@@ -6450,15 +6871,18 @@ var _pwaPrompt=null;
     window._swReg=reg;
     console.log('[SW] registered, scope:',reg.scope);
 
-    // Listen for a new SW installing — when it activates, reload to get fresh HTML
+    // Listen for a new SW installing
     reg.addEventListener('updatefound', function(){
       var newWorker = reg.installing;
       if(!newWorker) return;
       newWorker.addEventListener('statechange', function(){
-        if(newWorker.state === 'activated'){
-          // New SW activated — reload to get the fresh index.html from network
-          console.log('[SW] New version activated — reloading for fresh content');
-          window.location.reload();
+        if(newWorker.state === 'installed'){
+          // New SW installed and waiting — if no other tabs open, skip waiting
+          if(navigator.serviceWorker.controller){
+            // There's already a controller; new SW is waiting
+            // skipWaiting will trigger controllerchange → reload once
+            if(reg.waiting) reg.waiting.postMessage({type:'SKIP_WAITING'});
+          }
         }
       });
     });
@@ -6470,9 +6894,12 @@ var _pwaPrompt=null;
     console.warn('[SW] registration failed:',err);
   });
 
-  // When the controlling SW changes (e.g. after skipWaiting), reload
+  // Single reload point: controllerchange fires when new SW takes control
+  var _swReloading=false;
   navigator.serviceWorker.addEventListener('controllerchange', function(){
-    console.log('[SW] Controller changed — reloading');
+    if(_swReloading) return; // guard against double-reload
+    _swReloading=true;
+    console.log('[SW] Controller changed — reloading for fresh content');
     window.location.reload();
   });
 
@@ -6854,13 +7281,25 @@ function pushScheduleAllAlarms(){
   if(scheduled>0)console.log('[Push] Scheduled',scheduled,'alarms for today.');
 }
 
+// Reschedule alarms when page becomes visible again (SW setTimeout gets killed when SW sleeps)
+document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState==='visible'){
+    if(typeof Notification!=='undefined'&&Notification.permission==='granted'){
+      pushScheduleAllAlarms();
+    }
+  }
+});
+
 // Init push UI and schedule alarms on load
 document.addEventListener('DOMContentLoaded',function(){
   pushUpdateUI();
-  // Guard: Notification API may not exist on file:// or some mobile browsers
-  if(typeof Notification!=='undefined'&&Notification.permission==='granted'){
-    pushScheduleAllAlarms();
-  }
+  // Alarms are scheduled after Firebase timetable sync in startSync (see pushScheduleAllAlarms call there)
+  // Also schedule on load from localStorage as a best-effort fallback
+  setTimeout(function(){
+    if(typeof Notification!=='undefined'&&Notification.permission==='granted'){
+      pushScheduleAllAlarms();
+    }
+  }, 2000); // 2s delay gives Firebase timetable sync time to run first
   // FIX: Handle ?tab=gate (and other tabs) from manifest shortcuts
   try{
     var urlTab=new URLSearchParams(window.location.search).get('tab');

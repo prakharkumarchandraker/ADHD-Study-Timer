@@ -1,7 +1,7 @@
 // ── Study OS · Service Worker ──────────────────────────────────────────────
 // DEPLOY CHECKLIST: bump CACHE string on every deploy to force cache refresh on all devices.
 // Format: studyos-vN or studyos-YYYYMMDD. Current: bumped 2026-06-07, v7 on re-deploy.
-const CACHE = 'studyos-v7';
+const CACHE = 'studyos-v8';
 
 // Static assets that are safe to cache forever (fonts, CDN libraries)
 // index.html is intentionally NOT cached here — it uses network-first below
@@ -173,6 +173,11 @@ self.addEventListener('notificationclick', function(e) {
 
 // ── MESSAGE: schedule local alarm from main thread ────────────────────────
 self.addEventListener('message', function(e) {
+  // Allow main thread to trigger SW activation (fixes SW waiting bug)
+  if (e.data && e.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+    return;
+  }
   if (!e.data || e.data.type !== 'SCHEDULE_ALARM') return;
   var delay = parseInt(e.data.delayMs, 10) || 0;
   if (delay <= 0) return;
