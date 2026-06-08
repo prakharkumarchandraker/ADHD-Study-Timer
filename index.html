@@ -921,6 +921,18 @@ body.focus-mode .hero-cd{font-size:96px!important;letter-spacing:-4px;}
 .tt-sub-add-btn{background:rgba(245,197,66,.12);border:1px solid rgba(245,197,66,.25);color:var(--am);border-radius:8px;padding:6px 11px;font-family:var(--fn);font-size:11px;font-weight:700;cursor:pointer;}
 
 /* Add slot button */
+
+.tt-summary-card{background:var(--sf2);border:1px solid var(--bd2);border-radius:var(--r);padding:13px 14px;margin-top:10px;}
+.tt-summary-title{font-size:10px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;}
+.tt-summary-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.tt-summary-bar-wrap{flex:1;height:6px;background:var(--bd2);border-radius:3px;overflow:hidden;}
+.tt-summary-bar{height:100%;border-radius:3px;transition:width .4s ease;}
+.tt-summary-label{font-size:10px;color:var(--mt);width:62px;flex-shrink:0;font-family:var(--mo);}
+.tt-summary-val{font-size:10px;font-weight:700;color:var(--tx);width:38px;text-align:right;flex-shrink:0;font-family:var(--mo);}
+.tt-summary-week-toggle{font-size:10px;color:var(--s1);cursor:pointer;margin-bottom:10px;display:inline-block;}
+.tt-summary-total-row{display:flex;justify-content:space-between;border-top:1px solid var(--bd2);padding-top:8px;margin-top:4px;}
+.tt-summary-total-label{font-size:10px;color:var(--mt);font-family:var(--mo);}
+.tt-summary-total-val{font-size:11px;font-weight:700;color:var(--tx);font-family:var(--mo);}
 .tt-add-slot-btn{width:100%;background:rgba(123,111,255,.07);border:1px dashed rgba(123,111,255,.25);border-radius:var(--r);padding:12px;color:var(--s1);font-family:var(--fn);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;margin-top:4px;}
 .tt-add-slot-btn:hover{background:rgba(123,111,255,.14);border-color:var(--s1);}
 /* Conflict indicator */
@@ -1305,6 +1317,8 @@ window.onerror=function(msg,src,line,col,err){
   <!-- ═══════════════════════════════════════════ TAB: GATE ═══ -->
   <div class="tab-panel" id="tab-gate">
 
+  <div class="card" style="margin-bottom:0;"><div class="tt-summary-title">📦 Total Syllabus Content</div><div style="font-size:11px;color:var(--mt);margin-bottom:10px;">This is how much you have to watch in total — across all 11 subjects.</div><div class="tt-summary-row"><div class="tt-summary-label" style="width:80px;color:var(--tx);">C Programming</div><div class="tt-summary-bar-wrap"><div class="tt-summary-bar" style="width:8%;background:#a6e3a1;"></div></div><div style="font-size:10px;font-family:var(--mo);color:var(--mt);width:72px;text-align:right;flex-shrink:0;">45 lec · 73.1h</div></div><div class="tt-summary-row"><div class="tt-summary-label" style="width:80px;color:var(--tx);">Data Structures</div><div class="tt-summary-bar-wrap"><div class="tt-summary-bar" style="width:10%;background:#f38ba8;"></div></div><div style="font-size:10px;font-family:var(--mo);color:var(--mt);width:72px;text-align:right;flex-shrink:0;">61 lec · 89.6h</div></div><div class="tt-summary-row"><div class="tt-summary-label" style="width:80px;color:var(--tx);">Algorithms</div><div class="tt-summary-bar-wrap"><div class="tt-summary-bar" style="width:8%;background:#89dceb;"></div></div><div style="font-size:10px;font-family:var(--mo);color:var(--mt);width:72px;text-align:right;flex-shrink:0;">53 lec · 73.4h</div></div><div class="tt-summary-row"><div class="tt-summary-label" style="width:80px;color:var(--tx);">TOC</div><div class="tt-summary-bar-wrap"><div class="tt-summary-bar" style="width:11%;background:#f9e2af;"></div></div><div style="font-size:10px;font-family:var(--mo);color:var(--mt);width:72px;text-align:right;flex-shrink:0;">73 lec · 99.4h</div></div><div class="tt-summary-row"><div class="tt-summary-label" style="width:80px;color:var(--tx);">Compiler Design</div><div class="tt-summary-bar-wrap"><div class="tt-summary-bar" style="width:5%;background:#b4befe;"></div></div><div style="font-size:10px;font-family:var(--mo);color:var(--mt);width:72px;text-align:right;flex-shrink:0;">32 lec · 48.8h</div></div><div class="tt-summary-row"><div class="tt-summary-label" style="width:80px;color:var(--tx);">CO</div><div class="tt-summary-bar-wrap"><div class="tt-summary-bar" style="width:15%;background:#fab387;"></div></div><div style="font-size:10px;font-family:var(--mo);color:var(--mt);width:72px;text-align:right;flex-shrink:0;">80 lec · 136.6h</div></div><div class="tt-summary-row"><div class="tt-summary-label" style="width:80px;color:var(--tx);">OS</div><div class="tt-summary-bar-wrap"><div class="tt-summary-bar" style="width:11%;background:#89b4fa;"></div></div><div style="font-size:10px;font-family:var(--mo);color:var(--mt);width:72px;text-align:right;flex-shrink:0;">63 lec · 103.6h</div></div><div class="tt-summary-row"><div class="tt-summary-label" style="width:80px;color:var(--tx);">CN</div><div class="tt-summary-bar-wrap"><div class="tt-summary-bar" style="width:13%;background:#cba6f7;"></div></div><div style="font-size:10px;font-family:var(--mo);color:var(--mt);width:72px;text-align:right;flex-shrink:0;">63 lec · 118.4h</div></div><div class="tt-summary-row"><div class="tt-summary-label" style="width:80px;color:var(--tx);">DBMS</div><div class="tt-summary-bar-wrap"><div class="tt-summary-bar" style="width:7%;background:#f5c2e7;"></div></div><div style="font-size:10px;font-family:var(--mo);color:var(--mt);width:72px;text-align:right;flex-shrink:0;">47 lec · 68.9h</div></div><div class="tt-summary-row"><div class="tt-summary-label" style="width:80px;color:var(--tx);">DLD</div><div class="tt-summary-bar-wrap"><div class="tt-summary-bar" style="width:6%;background:#94e2d5;"></div></div><div style="font-size:10px;font-family:var(--mo);color:var(--mt);width:72px;text-align:right;flex-shrink:0;">31 lec · 59.2h</div></div><div class="tt-summary-row"><div class="tt-summary-label" style="width:80px;color:var(--tx);">Aptitude</div><div class="tt-summary-bar-wrap"><div class="tt-summary-bar" style="width:5%;background:#eba0ac;"></div></div><div style="font-size:10px;font-family:var(--mo);color:var(--mt);width:72px;text-align:right;flex-shrink:0;">31 lec · 50.4h</div></div><div class="tt-summary-total-row" style="margin-top:8px;"><div class="tt-summary-total-label">Total lectures</div><div class="tt-summary-total-val">579 lectures</div></div><div class="tt-summary-total-row" style="border-top:none;padding-top:2px;"><div class="tt-summary-total-label">Total watch time</div><div class="tt-summary-total-val" style="color:var(--s1);">921h of content</div></div></div>
+
     <!-- GATE COUNTDOWN BANNER -->
     <div id="gate-banner">🎯 Loading GATE countdown…</div>
     <div class="cd-mode-hint" id="cdModeHint" style="text-align:center;margin-top:-8px;margin-bottom:4px;"></div>
@@ -1592,6 +1606,7 @@ window.onerror=function(msg,src,line,col,err){
       <div id="ttSlotList"></div>
       <button class="tt-add-slot-btn" onclick="ttAddSlot()">＋ Add Slot</button>
       <button class="tt-clear-all-btn" onclick="ttClearAllSlots(this)" id="ttClearAllBtn">🗑 Clear all slots for this day</button>
+      <div id="ttSummaryCard"></div>
     </div>
 
     <!-- TIMETABLE TEMPLATES -->
@@ -2431,13 +2446,20 @@ function _buildTTPayload(){
   });
   return {_data:days,_ts:Date.now()};
 }
-function saveTimetable(){
+function saveTimetable(skipSort){
   ttPushUndo();
+  // Auto-sort slots by start time (unless caller explicitly skips, e.g. mid-drag)
+  if(!skipSort){
+    TT_DAYS.forEach(function(d){
+      if(_timetable[d]&&_timetable[d].length>1){
+        _timetable[d].sort(function(a,b){return (a.sh*60+a.sm)-(b.sh*60+b.sm);});
+      }
+    });
+  }
   localStorage.setItem(TT_KEY,JSON.stringify(_timetable));
   if(window._fb&&window._fb.ready&&typeof fbPath==='function'){
     var payload=_buildTTPayload();
-    // Store BOTH the fingerprint AND the timestamp so echo detection uses content, not just time
-    _ttLastWrittenJSON=JSON.stringify(payload._data); // fingerprint = data only (no _ts jitter)
+    _ttLastWrittenJSON=JSON.stringify(payload._data);
     _ttLastWriteTs=payload._ts;
     window._fb.set(window._fb.ref(window._fb.db,fbPath(TT_KEY)),payload).catch(function(){});
   }
@@ -7617,6 +7639,73 @@ window.ttSelectDay=function(day){
   _ttSelectedDay=day;_ttOpenSlot=null;renderTimetable();
 };
 
+
+// ── TIMETABLE DAY/WEEK SUMMARY ───────────────────────────────────────────────
+var _ttSummaryWeekMode = false;
+function renderTTSummary(){
+  var el=document.getElementById('ttSummaryCard');if(!el)return;
+  var day=_ttSelectedDay;
+  var TYPE_CONFIG={
+    study:{label:'Gate Lectures',color:'#7b6fff'},
+    class:{label:'Recorded',color:'#45c4a0'},
+    other:{label:'Routine',color:'#f0ac4e'}
+  };
+
+  function calcMins(slots){
+    var result={study:0,class:0,other:0,total:0};
+    (slots||[]).forEach(function(s){
+      var dur=Math.max(0,(s.eh*60+s.em)-(s.sh*60+s.sm));
+      var t=TYPE_CONFIG[s.type]?s.type:'other';
+      result[t]+=dur;result.total+=dur;
+    });
+    return result;
+  }
+
+  var mins,modeLabel;
+  if(_ttSummaryWeekMode){
+    mins={study:0,class:0,other:0,total:0};
+    TT_DAYS.forEach(function(d){
+      var m=calcMins(_timetable[d]||[]);
+      mins.study+=m.study;mins.class+=m.class;mins.other+=m.other;mins.total+=m.total;
+    });
+    modeLabel='This week · tap for today';
+  } else {
+    mins=calcMins(_timetable[day]||[]);
+    modeLabel=(TT_LABELS[TT_DAYS.indexOf(day)]||day)+' · tap for week';
+  }
+
+  if(mins.total===0){el.innerHTML='';return;}
+
+  function fmt(m){
+    var h=Math.floor(m/60),mn=Math.round(m%60);
+    return h>0?(h+'h '+(mn>0?mn+'m':'')):mn+'m';
+  }
+
+  var html='<div class="tt-summary-card">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
+    +'<div class="tt-summary-title">⏱ Time Breakdown</div>'
+    +'<span class="tt-summary-week-toggle" onclick="_ttSummaryWeekMode=!_ttSummaryWeekMode;renderTTSummary();">'+modeLabel+'</span>'
+    +'</div>';
+
+  ['study','class','other'].forEach(function(t){
+    if(mins[t]===0)return;
+    var pct=mins.total>0?Math.round(mins[t]/mins.total*100):0;
+    var cfg=TYPE_CONFIG[t];
+    html+='<div class="tt-summary-row">'
+      +'<div class="tt-summary-label">'+cfg.label+'</div>'
+      +'<div class="tt-summary-bar-wrap"><div class="tt-summary-bar" style="width:'+pct+'%;background:'+cfg.color+';"></div></div>'
+      +'<div class="tt-summary-val">'+fmt(mins[t])+'</div>'
+      +'</div>';
+  });
+
+  html+='<div class="tt-summary-total-row">'
+    +'<div class="tt-summary-total-label">Total scheduled</div>'
+    +'<div class="tt-summary-total-val">'+fmt(mins.total)+'</div>'
+    +'</div></div>';
+
+  el.innerHTML=html;
+}
+
 function renderTimetable(){
   updateActiveTplIndicator(); // keep indicator in sync
   // Daily mins badge
@@ -7681,6 +7770,7 @@ function renderTimetable(){
   slots.forEach(function(s,i){
     listEl.appendChild(makeTTSlotCard(s,i,_ttSelectedDay,_ttConflicts));
   });
+  renderTTSummary();
 }
 
 function makeTTSlotCard(s,i,day,conflicts){
@@ -7715,61 +7805,93 @@ function makeTTSlotCard(s,i,day,conflicts){
   div.ondrop=function(e){e.preventDefault();div.classList.remove('drag-over');if(_ttDragIdx<0||_ttDragIdx===i||_ttDragDay!==day)return;var arr=_timetable[day];var moved=arr.splice(_ttDragIdx,1)[0];arr.splice(i,0,moved);_ttDragIdx=-1;_ttDragDay=null;saveTimetable();};
   div.ondragend=function(){_ttDragIdx=-1;_ttDragDay=null;document.querySelectorAll('.tt-slot').forEach(function(c){c.classList.remove('drag-over');});};
 
-  // ── TOUCH DRAG (mobile) ── attached to the ⠇ handle only
+  // ── TOUCH DRAG (mobile) ── long-press on the ⠇ handle to initiate drag
+  // Long-press approach avoids fighting the scroll container's touch handling in PWA mode.
   (function(slotDiv,slotIdx,slotDay){
     var handle=slotDiv.querySelector('.tt-drag-ico');
     if(!handle)return;
-    var ty0=0,dragging=false,ghost=null,origRect=null;
-    handle.addEventListener('touchstart',function(e){
-      e.stopPropagation();
-      dragging=true;ty0=e.touches[0].clientY;
+    var ty0=0,tx0=0,dragging=false,ghost=null,origRect=null,pressTimer=null;
+
+    function startDrag(touch){
+      dragging=true;
+      ty0=touch.clientY;tx0=touch.clientX;
       _ttDragIdx=slotIdx;_ttDragDay=slotDay;
       origRect=slotDiv.getBoundingClientRect();
-      // Clone only the header (collapsed view) so ghost is always small and doesn't cover drop targets
       var headEl=slotDiv.querySelector('.tt-slot-head');
       ghost=document.createElement('div');
       ghost.className='tt-slot';
       if(headEl){ghost.appendChild(headEl.cloneNode(true));}
       var ghostH=headEl?headEl.getBoundingClientRect().height:56;
-      ghost.style.cssText='position:fixed;left:'+origRect.left+'px;top:'+origRect.top+'px;width:'+origRect.width+'px;height:'+ghostH+'px;overflow:hidden;opacity:.85;z-index:9999;pointer-events:none;transform:scale(1.02);box-shadow:0 8px 32px rgba(0,0,0,.5);border-radius:14px;';
+      ghost.style.cssText='position:fixed;left:'+origRect.left+'px;top:'+origRect.top+'px;width:'+origRect.width+'px;height:'+ghostH+'px;overflow:hidden;opacity:.88;z-index:9999;pointer-events:none;transform:scale(1.03);box-shadow:0 8px 32px rgba(0,0,0,.5);border-radius:14px;transition:none;';
       document.body.appendChild(ghost);
       slotDiv.style.opacity='.3';
+      // Vibrate to confirm drag started
+      if(navigator.vibrate)navigator.vibrate(40);
+    }
+
+    function cancelPress(){
+      if(pressTimer){clearTimeout(pressTimer);pressTimer=null;}
+    }
+
+    function cleanupDrag(){
+      cancelPress();
+      dragging=false;
+      slotDiv.style.opacity='';
+      if(ghost){ghost.remove();ghost=null;}
+      document.querySelectorAll('.tt-slot').forEach(function(c){c.classList.remove('drag-over');});
+      _ttDragIdx=-1;_ttDragDay=null;
+    }
+
+    handle.addEventListener('touchstart',function(e){
+      e.stopPropagation();
+      var touch=e.touches[0];
+      ty0=touch.clientY;tx0=touch.clientX;
+      // Immediate drag start on handle — no longpress needed since handle is dedicated
+      startDrag(touch);
     },{passive:true});
+
     handle.addEventListener('touchmove',function(e){
       if(!dragging)return;
+      // Only prevent scroll when actually dragging from the handle
       e.preventDefault();
-      var ty=e.touches[0].clientY;
+      var touch=e.touches[0];
+      var ty=touch.clientY;
       if(ghost)ghost.style.top=(origRect.top+(ty-ty0))+'px';
-      // Hide ghost briefly so elementFromPoint hits the real slot beneath
+      // Briefly hide ghost so elementFromPoint sees the real slot below
       if(ghost)ghost.style.visibility='hidden';
       document.querySelectorAll('.tt-slot').forEach(function(c){c.classList.remove('drag-over');});
-      var el=document.elementFromPoint(e.touches[0].clientX,ty);
+      var el=document.elementFromPoint(touch.clientX,ty);
       var target=el?el.closest('.tt-slot'):null;
       if(ghost)ghost.style.visibility='visible';
       if(target&&target!==slotDiv)target.classList.add('drag-over');
     },{passive:false});
+
     handle.addEventListener('touchend',function(e){
-      if(!dragging)return;dragging=false;
-      slotDiv.style.opacity='';
-      // Hide ghost BEFORE elementFromPoint — ghost element blocks the lookup otherwise
-      if(ghost){ghost.style.visibility='hidden';}
+      if(!dragging){cleanupDrag();return;}
+      var touch=e.changedTouches[0];
+      var ty=touch.clientY;
+      if(ghost)ghost.style.visibility='hidden';
       document.querySelectorAll('.tt-slot').forEach(function(c){c.classList.remove('drag-over');});
-      var ty=e.changedTouches[0].clientY;
-      var el=document.elementFromPoint(e.changedTouches[0].clientX,ty);
+      var el=document.elementFromPoint(touch.clientX,ty);
       var target=el?el.closest('.tt-slot'):null;
       if(ghost){ghost.remove();ghost=null;}
+      dragging=false;slotDiv.style.opacity='';
       if(!target||target===slotDiv){_ttDragIdx=-1;_ttDragDay=null;return;}
-      // Find target index
       var list=document.getElementById('ttSlotList');
       var slots=list?list.querySelectorAll('.tt-slot'):[];
       var targetIdx=-1;
       for(var ti=0;ti<slots.length;ti++){if(slots[ti]===target){targetIdx=ti;break;}}
       if(targetIdx>=0&&targetIdx!==_ttDragIdx&&_ttDragDay===slotDay){
-        var arr=_timetable[slotDay];var moved=arr.splice(_ttDragIdx,1)[0];arr.splice(targetIdx,0,moved);
-        saveTimetable();
+        var arr=_timetable[slotDay];
+        var moved=arr.splice(_ttDragIdx,1)[0];
+        arr.splice(targetIdx,0,moved);
+        // skipSort=true: user explicitly chose this order, don't re-sort
+        saveTimetable(true);
       }
       _ttDragIdx=-1;_ttDragDay=null;
     },{passive:true});
+
+    handle.addEventListener('touchcancel',cleanupDrag,{passive:true});
   })(div,i,day);
 
   if(!isOpen){return div;}
@@ -7843,6 +7965,84 @@ function makeTTSlotCard(s,i,day,conflicts){
     +'</div>';
 
   div.appendChild(body);
+
+  // ── SUB-ITEM TOUCH DRAG (routine/task items inside a slot) ────────────────
+  // Runs after body is appended so the items exist in DOM
+  if(isOpen&&s.items&&s.items.length>1){
+    (function(slotId,slotDay,slotItems){
+      // Re-query items from the appended body each time
+      function getItemEls(){return div.querySelectorAll('.tt-sub-item');}
+      function initSubDrag(){
+        var itemEls=getItemEls();
+        itemEls.forEach(function(itemDiv,ii){
+          var handle=itemDiv.querySelector('.tt-sub-item-drag');
+          if(!handle||handle._subDragInit)return;
+          handle._subDragInit=true;
+          var dragging=false,ghost=null,ty0=0,origRect=null,dragIdx=ii;
+
+          handle.addEventListener('touchstart',function(e){
+            e.stopPropagation();
+            dragging=true;dragIdx=ii;
+            var touch=e.touches[0];ty0=touch.clientY;
+            origRect=itemDiv.getBoundingClientRect();
+            ghost=document.createElement('div');
+            ghost.className='tt-sub-item';
+            ghost.style.cssText='position:fixed;left:'+origRect.left+'px;top:'+origRect.top+'px;width:'+origRect.width+'px;height:'+origRect.height+'px;background:var(--sf2);border:1px solid var(--s1o);border-radius:8px;opacity:.85;z-index:9999;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.4);display:flex;align-items:center;padding:0 8px;font-size:12px;color:var(--tx);';
+            ghost.textContent=slotItems[ii]||'';
+            document.body.appendChild(ghost);
+            itemDiv.style.opacity='.3';
+            if(navigator.vibrate)navigator.vibrate(30);
+          },{passive:true});
+
+          handle.addEventListener('touchmove',function(e){
+            if(!dragging)return;
+            e.preventDefault();
+            var ty=e.touches[0].clientY;
+            if(ghost)ghost.style.top=(origRect.top+(ty-ty0))+'px';
+            if(ghost)ghost.style.visibility='hidden';
+            var els=getItemEls();
+            els.forEach(function(el){el.classList.remove('drag-over');});
+            var el=document.elementFromPoint(e.touches[0].clientX,ty);
+            var target=el?el.closest('.tt-sub-item'):null;
+            if(ghost)ghost.style.visibility='visible';
+            if(target&&target!==itemDiv)target.classList.add('drag-over');
+          },{passive:false});
+
+          handle.addEventListener('touchend',function(e){
+            if(!dragging)return;
+            dragging=false;itemDiv.style.opacity='';
+            if(ghost)ghost.style.visibility='hidden';
+            var ty=e.changedTouches[0].clientY;
+            var els=getItemEls();
+            els.forEach(function(el){el.classList.remove('drag-over');});
+            var el=document.elementFromPoint(e.changedTouches[0].clientX,ty);
+            var target=el?el.closest('.tt-sub-item'):null;
+            if(ghost){ghost.remove();ghost=null;}
+            if(!target||target===itemDiv){return;}
+            // Find target index
+            var targetIdx=-1;
+            for(var ti=0;ti<els.length;ti++){if(els[ti]===target){targetIdx=ti;break;}}
+            if(targetIdx>=0&&targetIdx!==dragIdx){
+              var s2=ttFindSlot(slotDay,slotId);
+              if(s2&&s2.items){
+                var moved2=s2.items.splice(dragIdx,1)[0];
+                s2.items.splice(targetIdx,0,moved2);
+                saveTimetable(true);
+              }
+            }
+          },{passive:true});
+
+          handle.addEventListener('touchcancel',function(){
+            dragging=false;itemDiv.style.opacity='';
+            if(ghost){ghost.remove();ghost=null;}
+            getItemEls().forEach(function(el){el.classList.remove('drag-over');});
+          },{passive:true});
+        });
+      }
+      initSubDrag();
+    })(s.id,day,s.items.slice());
+  }
+
   return div;
 }
 
