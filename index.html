@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="StudyOS">
 <link rel="apple-touch-icon" href="./icon-512.png">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://*.googleapis.com https://*.gstatic.com https://cdnjs.cloudflare.com https://*.firebaseio.com wss://*.firebaseio.com https://firebaseinstallations.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://*.gstatic.com https://www.gstatic.com; img-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.gstatic.com https://www.gstatic.com https://*.firebaseio.com wss://*.firebaseio.com https://firebaseinstallations.googleapis.com https://firebase.googleapis.com;">
+<!-- CSP removed: was blocking Firebase long-polling WebSocket scripts -->
 <!-- Viewport height fix: use dvh where supported so mobile browser chrome doesn't eat space -->
 <style>:root{--vh:1vh;}@supports(height:100dvh){:root{--vh:1dvh;}}</style>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
