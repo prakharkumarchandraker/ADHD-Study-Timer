@@ -2214,7 +2214,10 @@ var _ttTemplates=(function(){try{return JSON.parse(localStorage.getItem(TT_TEMPL
 function _saveTTTemplates(){
   localStorage.setItem(TT_TEMPLATES_KEY,JSON.stringify(_ttTemplates));
   if(window._fb&&window._fb.ready&&typeof fbPath==='function'){
-    _ttTplLastWrittenJSON=JSON.stringify(_ttTemplates);
+    // Don't try to fingerprint templates — they contain nested arrays that Firebase
+    // converts to objects, making fingerprint comparison unreliable.
+    // Instead use a simple write-timestamp to suppress own-echo for 10 seconds.
+    _ttTplWriteTs=Date.now();
     window._fb.set(window._fb.ref(window._fb.db,fbPath(TT_TEMPLATES_KEY)),_ttTemplates).catch(function(){});
   }
 }
@@ -2254,31 +2257,32 @@ window.ttDeleteTemplate=function(name){
 };
 
 // Sync templates from Firebase on connect
+function _applyRemoteTemplates(val){
+  if(!val||typeof val!=='object'){
+    // Firebase empty — seed if we have local templates and didn't just write
+    if(Object.keys(_ttTemplates).length&&Date.now()-_ttTplWriteTs>8000){
+      _ttTplWriteTs=Date.now();
+      var fb=window._fb;
+      if(fb&&fb.ready)fb.set(fb.ref(fb.db,fbPath(TT_TEMPLATES_KEY)),_ttTemplates).catch(function(){});
+    }
+    return;
+  }
+  // Suppress own-echo: skip if we wrote within last 10 seconds
+  if(Date.now()-_ttTplWriteTs<10000)return;
+  // Apply remote — remote is always authoritative (supports deletions)
+  _ttTemplates=val;
+  localStorage.setItem(TT_TEMPLATES_KEY,JSON.stringify(_ttTemplates));
+  renderTimetableTemplates();
+  var active=localStorage.getItem(TT_ACTIVE_TPL_KEY);
+  if(active&&!_ttTemplates[active]){
+    localStorage.removeItem(TT_ACTIVE_TPL_KEY);
+    if(typeof updateActiveTplIndicator==='function')updateActiveTplIndicator();
+  }
+}
 window.addEventListener('fbReady',function(){
   var fb=window._fb;if(!fb||!fb.ready)return;
   fb.onValue(fb.ref(fb.db,fbPath(TT_TEMPLATES_KEY)),function(snap){
-    var val=snap.val();
-    if(val===null){
-      // Firebase empty — seed if we have local templates
-      if(Object.keys(_ttTemplates).length){
-        _ttTplLastWrittenJSON=JSON.stringify(_ttTemplates);
-        fb.set(fb.ref(fb.db,fbPath(TT_TEMPLATES_KEY)),_ttTemplates).catch(function(){});
-      }
-      return;
-    }
-    if(typeof val!=='object')return;
-    // Echo detection: skip if this is exactly what we last wrote
-    var receivedJSON=JSON.stringify(val);
-    if(_ttTplLastWrittenJSON&&receivedJSON===_ttTplLastWrittenJSON)return;
-    // Apply remote (authoritative — supports deletions)
-    _ttTemplates=val;
-    localStorage.setItem(TT_TEMPLATES_KEY,JSON.stringify(_ttTemplates));
-    renderTimetableTemplates();
-    var active=localStorage.getItem(TT_ACTIVE_TPL_KEY);
-    if(active&&!_ttTemplates[active]){
-      localStorage.removeItem(TT_ACTIVE_TPL_KEY);
-      if(typeof updateActiveTplIndicator==='function')updateActiveTplIndicator();
-    }
+    _applyRemoteTemplates(snap.val());
   });
 },{once:true});
 function renderTimetableTemplates(){
@@ -2361,7 +2365,8 @@ window.ttClearAllSlots=function(){
 
 var _ttLastWriteTs=0;
 var _ttLastWrittenJSON=null; // fingerprint of what we last wrote to Firebase (echo detection)
-var _ttTplLastWrittenJSON=null; // echo fingerprint for templates
+var _ttTplLastWrittenJSON=null;
+var _ttTplWriteTs=0; // timestamp of last template write
 function _buildTTPayload(){
   var days={};
   TT_DAYS.forEach(function(d){
@@ -7381,6 +7386,21 @@ function pushScheduleAllAlarms(){
   if(scheduled>0)console.log('[Push] Scheduled',scheduled,'alarms for today.');
 }
 
+// Re-read Firebase for timetable and templates when page becomes visible
+// (Android kills Firebase WebSocket in background; this recovers sync on foreground)
+document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState!=='visible')return;
+  var fb=window._fb;if(!fb||!fb.ready)return;
+  // Re-read timetable
+  fb.onValue(fb.ref(fb.db,fbPath(TT_KEY)),function(snap){
+    _applyRemoteTimetable(snap.val());
+  },{onlyOnce:true});
+  // Re-read templates
+  fb.onValue(fb.ref(fb.db,fbPath(TT_TEMPLATES_KEY)),function(snap){
+    _applyRemoteTemplates(snap.val());
+  },{onlyOnce:true});
+});
+
 // Reschedule alarms when page becomes visible again (SW setTimeout gets killed when SW sleeps)
 document.addEventListener('visibilitychange',function(){
   if(document.visibilityState==='visible'){
@@ -7974,46 +7994,36 @@ function renderFoSubItems(){
   });
 }
 
-// Firebase sync for timetable — simple fingerprint echo detection
+function _applyRemoteTimetable(val){
+  var fb=window._fb;
+  if(!val||typeof val!=='object'){
+    if(Date.now()-_ttLastWriteTs>8000){
+      var p=_buildTTPayload();_ttLastWriteTs=p._ts;
+      if(fb&&fb.ready)fb.set(fb.ref(fb.db,fbPath(TT_KEY)),p).catch(function(){});
+    }
+    return;
+  }
+  if(Date.now()-_ttLastWriteTs<10000)return; // suppress own echo
+  var rawDays=val._data||val;
+  var normalized={};
+  TT_DAYS.forEach(function(d){
+    var v=rawDays[d];
+    normalized[d]=(v&&v._empty)?[]:fbToArrSlots(v);
+  });
+  _timetable=normalized;
+  localStorage.setItem(TT_KEY,JSON.stringify(normalized));
+  rebuildFromTimetable();
+  if(typeof buildSchedule==='function')buildSchedule();
+  if(typeof renderRoutineFromTimetable==='function')renderRoutineFromTimetable();
+  if(typeof renderTimetable==='function')renderTimetable();
+  if(typeof up==='function')up();
+}
+
+// Firebase sync for timetable
 window.addEventListener('fbReady',function(){
   var fb=window._fb;if(!fb||!fb.ready)return;
   fb.onValue(fb.ref(fb.db,fbPath(TT_KEY)),function(snap){
-    var val=snap.val();
-
-    // Nothing in Firebase yet — seed it with our local timetable
-    if(!val||typeof val!=='object'){
-      if(Date.now()-_ttLastWriteTs>8000){ // don't re-seed if we just wrote
-        var p=_buildTTPayload();
-        _ttLastWrittenJSON=JSON.stringify(p);
-        _ttLastWriteTs=p._ts;
-        fb.set(fb.ref(fb.db,fbPath(TT_KEY)),p).catch(function(){});
-      }
-      return;
-    }
-
-    // Echo detection: skip if received data is exactly what we last wrote
-    var receivedJSON=JSON.stringify(val);
-    if(_ttLastWrittenJSON&&receivedJSON===_ttLastWrittenJSON)return;
-
-    // Unwrap: new format {_data,_ts} or old raw format
-    // IMPORTANT: Firebase converts arrays to numeric-keyed objects on storage.
-    // fbToArr() handles both real arrays and Firebase-serialised arrays.
-    var rawDays=val._data||val;
-    var normalized={};
-    TT_DAYS.forEach(function(d){
-      var v=rawDays[d];
-      if(v&&v._empty){normalized[d]=[];}        // cleared-day sentinel
-      else{normalized[d]=fbToArrSlots(v);}       // handles Array + Firebase {0:..,1:..} + nested items
-    });
-
-    // Apply
-    _timetable=normalized;
-    localStorage.setItem(TT_KEY,JSON.stringify(normalized));
-    rebuildFromTimetable();
-    if(typeof buildSchedule==='function')buildSchedule();
-    if(typeof renderRoutineFromTimetable==='function')renderRoutineFromTimetable();
-    if(typeof renderTimetable==='function')renderTimetable();
-    if(typeof up==='function')up();
+    _applyRemoteTimetable(snap.val());
   });
 },{once:true});
 
