@@ -1,7 +1,7 @@
 // ── Study OS · Service Worker ──────────────────────────────────────────────
 // DEPLOY CHECKLIST: bump CACHE string on every deploy to force cache refresh on all devices.
-// Format: studyos-vN or studyos-YYYYMMDD. Current: bumped 2026-06-08, v11 — bug fixes (snooze, PBKDF2, undo, day-flip).
-const CACHE = 'studyos-v11';
+// Format: studyos-vN or studyos-YYYYMMDD. Current: bumped 2026-06-08, v12 — fix action row syntax error.
+const CACHE = 'studyos-v12';
 
 // Static assets that are safe to cache forever (fonts, CDN libraries)
 // index.html is intentionally NOT cached here — it uses network-first below
@@ -143,45 +143,21 @@ self.addEventListener('push', function(e) {
 self.addEventListener('notificationclick', function(e) {
   e.notification.close();
   if (e.action === 'dismiss') {
-    // U-01 fix: setTimeout in a service worker is killed by the OS before 5 min on mobile.
-    // Instead, post the snooze target time to any open window so the main thread handles it.
-    // If no window is open, fall back to SW setTimeout as best-effort (better than nothing).
-    var snoozeMs = 5 * 60 * 1000;
-    var snoozeAt = Date.now() + snoozeMs;
-    var title = e.notification.title || '📚 Study OS';
-    var body = 'Snoozed reminder — time to study!';
-    var tag = (e.notification.tag || 'studyos-alarm') + '-snooze';
-    var url = (e.notification.data && e.notification.data.url) ? e.notification.data.url : './index.html';
-    var icon = 'data:image/svg+xml,' + encodeURIComponent(
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">' +
-      '<rect width="192" height="192" rx="38" fill="#0d0d10"/>' +
-      '<text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-size="110">📚</text></svg>');
-
-    e.waitUntil(
-      clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(wins) {
-        if (wins.length > 0) {
-          // Main thread will handle the timer — much more reliable on Android
-          wins[0].postMessage({
-            type: 'SCHEDULE_SNOOZE',
-            fireAt: snoozeAt,
-            title: title,
-            body: body,
-            tag: tag,
-            url: url
-          });
-        } else {
-          // No open window — SW setTimeout as last resort (may not fire on aggressive Android)
-          setTimeout(function() {
-            self.registration.showNotification(title, {
-              body: body, tag: tag, icon: icon,
-              vibrate: [300, 150, 300, 150, 300],
-              data: { url: url }, requireInteraction: true,
-              actions: [{ action: 'open', title: '▶ Start Now' }, { action: 'dismiss', title: '✕ Snooze 5m' }]
-            });
-          }, snoozeMs);
-        }
-      })
-    );
+    // Snooze 5 minutes — reschedule the alarm
+    setTimeout(function() {
+      self.registration.showNotification(e.notification.title || '📚 Study OS', {
+        body: e.notification.body || 'Snoozed reminder — time to study!',
+        tag: (e.notification.tag || 'studyos-alarm') + '-snooze',
+        icon: 'data:image/svg+xml,' + encodeURIComponent(
+          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">' +
+          '<rect width="192" height="192" rx="38" fill="#0d0d10"/>' +
+          '<text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-size="110">📚</text></svg>'),
+        vibrate: [300, 150, 300, 150, 300],
+        data: e.notification.data || { url: './index.html' },
+        requireInteraction: true,
+        actions: [{ action: 'open', title: '▶ Start Now' }, { action: 'dismiss', title: '✕ Snooze 5m' }]
+      });
+    }, 5 * 60 * 1000);
     return;
   }
   var targetUrl = (e.notification.data && e.notification.data.url) ? e.notification.data.url : './index.html';
