@@ -6017,7 +6017,16 @@ function fbPath(key){return 'study/'+USER_ID+'/'+key;}
 function fbWrite(key,value){var fb=window._fb;if(!fb||!fb.ready)return;fb.set(fb.ref(fb.db,fbPath(key)),value).then(function(){if(window._setSyncStatus)window._setSyncStatus('ok','synced');}).catch(function(e){console.error('fbWrite',e);if(window._setSyncStatus)window._setSyncStatus('err','sync err');});}
 function fbWriteGate(key,value){var fb=window._fb;if(!fb||!fb.ready)return;fb.set(fb.ref(fb.db,fbPath(key)),value).catch(function(){});}
 
-function fbToArr(val){if(!val)return[];if(Array.isArray(val))return val.filter(function(x){return x!==null&&x!==undefined;});if(typeof val==='object')return Object.values(val);return[];}
+function fbToArr(val){if(!val)return[];if(Array.isArray(val))return val.filter(function(x){return x!==null&&x!==undefined;});if(typeof val==='object'){var keys=Object.keys(val);if(keys.every(function(k){return /^\d+$/.test(k);}))return keys.sort(function(a,b){return+a-+b;}).map(function(k){return val[k];}).filter(function(x){return x!=null;});return Object.values(val);}return[];}
+// fbToArrSlots: convert Firebase-stored slots, also fixing nested items arrays
+function fbToArrSlots(val){
+  return fbToArr(val).map(function(slot){
+    if(!slot||typeof slot!=='object')return slot;
+    var s=Object.assign({},slot);
+    if(s.items)s.items=fbToArr(s.items); // items array inside each slot
+    return s;
+  });
+}
 function fbToIntArr(val){return fbToArr(val).map(Number).filter(function(n){return !isNaN(n);});}
 
 function startSync(){
@@ -7987,11 +7996,14 @@ window.addEventListener('fbReady',function(){
     if(_ttLastWrittenJSON&&receivedJSON===_ttLastWrittenJSON)return;
 
     // Unwrap: new format {_data,_ts} or old raw format
+    // IMPORTANT: Firebase converts arrays to numeric-keyed objects on storage.
+    // fbToArr() handles both real arrays and Firebase-serialised arrays.
     var rawDays=val._data||val;
     var normalized={};
     TT_DAYS.forEach(function(d){
       var v=rawDays[d];
-      normalized[d]=Array.isArray(v)?v:(v&&v._empty?[]:[]);
+      if(v&&v._empty){normalized[d]=[];}        // cleared-day sentinel
+      else{normalized[d]=fbToArrSlots(v);}       // handles Array + Firebase {0:..,1:..} + nested items
     });
 
     // Apply
