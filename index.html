@@ -829,6 +829,15 @@ body.focus-mode .hero-cd{font-size:96px!important;letter-spacing:-4px;}
 .dmin-burnout.ok{background:rgba(45,212,160,.07);border:1px solid var(--s2o);color:var(--s2);}
 .dmin-burnout.warn{background:rgba(245,197,66,.07);border:1px solid var(--amo);color:var(--am);}
 .dmin-burnout.over{background:rgba(240,111,160,.07);border:1px solid var(--s3o);color:var(--s3);}
+.dmin-partial-tag{font-size:8px;font-weight:700;background:rgba(245,197,66,.12);color:var(--am);border:1px solid rgba(245,197,66,.25);border-radius:4px;padding:1px 4px;margin-left:4px;vertical-align:middle;white-space:nowrap;}
+.dmin-tier-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:10px;}
+.dmin-tier-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 4px;border-radius:10px;border:1px solid var(--bd2);background:var(--sf2);cursor:pointer;transition:all .15s;font-family:var(--fn);}
+.dmin-tier-btn:hover{border-color:var(--s1o);}
+.dmin-tier-btn.active{font-weight:700;}
+.dmin-tier-spd{font-family:var(--mo);font-size:12px;font-weight:700;}
+.dmin-tier-lbl{font-size:9px;color:inherit;opacity:.8;}
+.dmin-tier-cnt{font-family:var(--mo);font-size:9px;color:var(--mt);}
+.dmin-tier-list{border-radius:10px;border:1px solid var(--bd);padding:8px;margin-bottom:8px;}
 /* ── SPEED CALCULATOR ── */
 .sc-speed-row{display:grid;grid-template-columns:44px 1fr 90px 90px;gap:6px;align-items:center;padding:9px 10px;background:var(--sf2);border:1px solid var(--bd);border-radius:10px;margin-bottom:6px;}
 .sc-speed-row.highlight{border-color:var(--s2o);background:rgba(45,212,160,.05);}
@@ -7351,6 +7360,32 @@ function renderVelocity(){
 // ═══════════════════════════════════════════════════════════════════════════
 // ── DAILY MINIMUM TARGET ─────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════
+// Given a budget in minutes and the remaining task queue (in order),
+// greedily fill and return list of {task, chunk, isPartial} entries.
+function dmBuildTierList(budgetMins, done){
+  var result=[];
+  var remaining=budgetMins;
+  var subjOrd=getSubjOrder();
+  // Build ordered undone tasks (same order as buildSched)
+  var ordered=ALL_TASKS.filter(function(t){
+    return !done.has(t.id)&&!isPyqAllDone(t.id);
+  });
+  ordered.sort(function(a,b){
+    var ai=subjOrd.indexOf(a.subject),bi=subjOrd.indexOf(b.subject);
+    if(ai!==bi)return ai-bi;
+    return a.id-b.id;
+  });
+  for(var i=0;i<ordered.length;i++){
+    if(remaining<=0.5)break;
+    var t=ordered[i];
+    var chunk=Math.min(t.duration,remaining);
+    var isPartial=(chunk<t.duration-0.5);
+    result.push({task:t,chunk:Math.round(chunk*10)/10,isPartial:isPartial});
+    remaining-=chunk;
+  }
+  return result;
+}
+
 function renderDailyMinimum(){
   var el=document.getElementById('dailyMinContent');
   var badge=document.getElementById('dailyMinBadge');
@@ -7368,18 +7403,16 @@ function renderDailyMinimum(){
 
   var done=new Set(Object.keys(ST.done).map(Number));
 
-  // Collect unique lecture tasks assigned to today (not PYQs — those are long blocks)
-  // We show PYQs too since they appear in the schedule
+  // ── 1x tier: read directly from today's live schedule (source of truth) ──
   var minTasks=[];
   var seenIds=new Set();
   dayPlan.sessions.forEach(function(ses){
     (ses.items||[]).forEach(function(item){
       if(!seenIds.has(item.taskId)){
         seenIds.add(item.taskId);
-        // Find the full task
         var t=null;
         for(var i=0;i<ALL_TASKS.length;i++){if(ALL_TASKS[i].id===item.taskId){t=ALL_TASKS[i];break;}}
-        if(t)minTasks.push({task:t,item:item});
+        if(t)minTasks.push({task:t,chunk:Math.round(item.chunk*10)/10,isPartial:item.isSplit&&item.isFirst});
       }
     });
   });
@@ -7390,12 +7423,39 @@ function renderDailyMinimum(){
     return;
   }
 
-  var totalTasks=minTasks.length;
-  var doneTasks=minTasks.filter(function(x){return done.has(x.task.id)||isPyqAllDone(x.task.id);}).length;
-  var minReached=(doneTasks>=totalTasks);
+  // ── Budget for speed tiers: total minutes in today's study slots ──
+  var dayKey=getTodayDayKey();
+  var slots=_timetable[dayKey]||[];
+  var baseBudgetMins=0;
+  slots.forEach(function(s){
+    if(s.type==='study')baseBudgetMins+=(s.eh*60+s.em)-(s.sh*60+s.sm);
+  });
 
+  // ── Build tiers ──
+  var TIERS=[
+    {speed:1,    label:'Minimum',    labelColor:'var(--mt2)',   bgColor:'var(--sf2)',              borderColor:'var(--bd)'},
+    {speed:1.25, label:'Good',       labelColor:'var(--s1)',    bgColor:'rgba(123,111,255,.04)',    borderColor:'rgba(123,111,255,.2)'},
+    {speed:1.5,  label:'Great',      labelColor:'var(--s2)',    bgColor:'rgba(45,212,160,.04)',     borderColor:'rgba(45,212,160,.2)'},
+    {speed:2,    label:'Outstanding',labelColor:'var(--am)',    bgColor:'rgba(245,197,66,.04)',     borderColor:'rgba(245,197,66,.2)'}
+  ];
+
+  // Active tier tab state
+  var activeTier=0; // index into TIERS, stored on window so clicks persist across re-renders
+  if(typeof window._dminActiveTier==='number')activeTier=window._dminActiveTier;
+
+  // Pre-compute tier lists
+  var tierLists=[minTasks]; // 1x comes from schedule directly
+  for(var ti=1;ti<TIERS.length;ti++){
+    var budget=baseBudgetMins*TIERS[ti].speed;
+    tierLists.push(dmBuildTierList(budget,done));
+  }
+
+  // Badge reflects 1x (minimum) completion
+  var totalTasks1x=minTasks.length;
+  var doneTasks1x=minTasks.filter(function(x){return done.has(x.task.id)||isPyqAllDone(x.task.id);}).length;
+  var minReached=(doneTasks1x>=totalTasks1x);
   if(badge){
-    badge.textContent=doneTasks+'/'+totalTasks+' done';
+    badge.textContent=doneTasks1x+'/'+totalTasks1x+' min done';
     badge.style.background=minReached?'rgba(45,212,160,.1)':'var(--sf2)';
     badge.style.color=minReached?'var(--s2)':'var(--mt)';
     badge.style.borderColor=minReached?'var(--s2o)':'var(--bd2)';
@@ -7403,38 +7463,66 @@ function renderDailyMinimum(){
 
   var html='';
 
+  // ── Minimum reached banner ──
   if(minReached){
-    html+='<div class="dmin-reached">'
+    html+='<div class="dmin-reached" style="margin-bottom:10px;">'
       +'<div class="dmin-reached-txt">✅ Minimum reached!</div>'
-      +'<div class="dmin-reached-sub">'+doneTasks+' tasks done · anything more is a bonus.</div>'
+      +'<div class="dmin-reached-sub">'+doneTasks1x+' tasks done · anything more is a bonus.</div>'
       +'</div>';
   }
 
-  minTasks.forEach(function(x){
-    var t=x.task;var item=x.item;
-    var isDone=done.has(t.id)||isPyqAllDone(t.id);
-    var col=COLORS[t.subject]||'var(--s1)';
-    var lbl=LABELS[t.subject]||t.subject;
-    var isPyq=t.type==='pyq';
-    var displayName=isPyq?(t.subject+' — PYQ'):t.name;
-    html+='<div class="dmin-item'+(isDone?' done':'')+'">'
-      +'<div class="dmin-chk'+(isDone?' done':'')+'">'+( isDone?'✓':'')+'</div>'
-      +'<div class="dmin-info">'
-      +'<div class="dmin-subj" style="color:'+col+';">'+esc(lbl)+(isPyq?' · PYQ':' #'+t.num)+'</div>'
-      +'<div class="dmin-name">'+esc(displayName)+'</div>'
-      +'</div>'
-      +'<div class="dmin-dur">'+fmtMins(Math.round(item.chunk))+'</div>'
-      +'</div>';
+  // ── Speed tier tab strip ──
+  html+='<div class="dmin-tier-strip">';
+  TIERS.forEach(function(tier,idx){
+    var tList=tierLists[idx];
+    var tDone=tList.filter(function(x){return done.has(x.task.id)||isPyqAllDone(x.task.id);}).length;
+    var isActive=idx===activeTier;
+    html+='<button class="dmin-tier-btn'+(isActive?' active':'')+'" '
+      +'style="'+(isActive?'border-color:'+tier.labelColor+';color:'+tier.labelColor+';background:'+tier.bgColor+';':'')+'"'
+      +' onclick="window._dminActiveTier='+idx+';renderDailyMinimum();">'
+      +'<span class="dmin-tier-spd">'+(tier.speed===1?'1x':tier.speed+'x')+'</span>'
+      +'<span class="dmin-tier-lbl">'+tier.label+'</span>'
+      +'<span class="dmin-tier-cnt">'+tDone+'/'+tList.length+'</span>'
+      +'</button>';
   });
+  html+='</div>';
 
-  // Burnout guard: compare today's minimum count vs 7-day avg
-  var studyDays=getStudyDays();
-  var today7=getToday();
+  // ── Task list for active tier ──
+  var activeTierDef=TIERS[activeTier];
+  var activeList=tierLists[activeTier];
+  html+='<div class="dmin-tier-list" style="border-color:'+activeTierDef.borderColor+';background:'+activeTierDef.bgColor+';">';
+
+  if(!activeList.length){
+    html+='<div style="font-size:11px;color:var(--mt);font-style:italic;padding:8px 0;text-align:center;">All tasks complete!</div>';
+  } else {
+    activeList.forEach(function(x){
+      var t=x.task;
+      var isDone=done.has(t.id)||isPyqAllDone(t.id);
+      var col=COLORS[t.subject]||'var(--s1)';
+      var lbl=LABELS[t.subject]||t.subject;
+      var isPyq=t.type==='pyq';
+      var displayName=isPyq?(t.subject+' — PYQ'):t.name;
+      // Partial tag: chunk < full duration by more than 0.5 min
+      var isPartialChunk=(x.chunk<t.duration-0.5);
+      var partialTag=isPartialChunk
+        ?'<span class="dmin-partial-tag">partial '+fmtMins(Math.round(x.chunk))+' of '+fmtMins(Math.round(t.duration))+'</span>'
+        :'';
+      html+='<div class="dmin-item'+(isDone?' done':'')+'">'
+        +'<div class="dmin-chk'+(isDone?' done':'')+'">'+( isDone?'✓':'')+'</div>'
+        +'<div class="dmin-info">'
+        +'<div class="dmin-subj" style="color:'+col+';">'+esc(lbl)+(isPyq?' · PYQ':' #'+t.num)+partialTag+'</div>'
+        +'<div class="dmin-name">'+esc(displayName)+'</div>'
+        +'</div>'
+        +'<div class="dmin-dur">'+fmtMins(Math.round(x.chunk))+'</div>'
+        +'</div>';
+    });
+  }
+  html+='</div>';
+
+  // ── Burnout guard (based on 1x minimum count) ──
   var lecCountsLast7=[];
   for(var di=1;di<=7;di++){
-    var d7=addD(today7,-di);
-    var sched7=null;
-    // Count distinct tasks done on that day
+    var d7=addD(today,-di);
     var dayDoneCount=Object.keys(ST.done).filter(function(tid){
       return ST.done[tid]&&ST.done[tid].split('T')[0]===d7;
     }).length;
@@ -7442,11 +7530,11 @@ function renderDailyMinimum(){
   }
   if(lecCountsLast7.length>=2){
     var avg7=lecCountsLast7.reduce(function(a,b){return a+b;},0)/lecCountsLast7.length;
-    var ratio=totalTasks/avg7;
+    var ratio=totalTasks1x/avg7;
     var burnoutClass,burnoutMsg;
-    if(ratio<=1.1){burnoutClass='ok';burnoutMsg='🟢 Today\'s minimum ('+totalTasks+') is in line with your 7-day avg of '+Math.round(avg7*10)/10+' tasks/day.';}
-    else if(ratio<=1.4){burnoutClass='warn';burnoutMsg='🟡 Today\'s minimum ('+totalTasks+') is '+Math.round((ratio-1)*100)+'% above your 7-day avg of '+Math.round(avg7*10)/10+'. Manageable, but pace yourself.';}
-    else{burnoutClass='over';burnoutMsg='🔴 Today\'s minimum ('+totalTasks+') is '+Math.round((ratio-1)*100)+'% above your 7-day avg of '+Math.round(avg7*10)/10+'. High burnout risk — consider adjusting your timetable slots.';}
+    if(ratio<=1.1){burnoutClass='ok';burnoutMsg='🟢 Today\'s minimum ('+totalTasks1x+') is in line with your 7-day avg of '+Math.round(avg7*10)/10+' tasks/day.';}
+    else if(ratio<=1.4){burnoutClass='warn';burnoutMsg='🟡 Today\'s minimum ('+totalTasks1x+') is '+Math.round((ratio-1)*100)+'% above your 7-day avg of '+Math.round(avg7*10)/10+'. Manageable, but pace yourself.';}
+    else{burnoutClass='over';burnoutMsg='🔴 Today\'s minimum ('+totalTasks1x+') is '+Math.round((ratio-1)*100)+'% above your 7-day avg of '+Math.round(avg7*10)/10+'. High burnout risk — consider adjusting your timetable slots.';}
     html+='<div class="dmin-burnout '+burnoutClass+'">'+burnoutMsg+'</div>';
   }
 
