@@ -838,6 +838,13 @@ body.focus-mode .hero-cd{font-size:96px!important;letter-spacing:-4px;}
 .tt-day-strip{display:flex;gap:4px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch;}
 .tt-day-strip::-webkit-scrollbar{display:none;}
 .tt-day-btn{flex-shrink:0;padding:5px 11px;border-radius:20px;border:1px solid var(--bd2);background:var(--sf2);color:var(--mt2);font-family:var(--fn);font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.tt-active-tpl{display:none;align-items:center;gap:6px;background:var(--s2b);border:1px solid var(--s2o);border-radius:10px;padding:5px 10px;margin-bottom:10px;}
+.tt-active-tpl.show{display:flex;}
+.tt-active-tpl-name{font-family:var(--mo);font-size:10px;color:var(--s2);font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tt-active-tpl-clear{background:none;border:1px solid var(--s2o);color:var(--s2);border-radius:7px;padding:3px 8px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--fn);white-space:nowrap;flex-shrink:0;}
+.tt-active-tpl-clear:hover{background:var(--s3b);border-color:var(--s3o);color:var(--s3);}
+.tt-clear-all-btn{width:100%;background:none;border:1px dashed rgba(239,68,68,.35);color:#f87171;border-radius:10px;padding:7px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--fn);margin-top:8px;transition:all .15s;}
+.tt-clear-all-btn:hover{background:rgba(239,68,68,.08);}
 .tt-day-btn.act{background:var(--s1b);border-color:var(--s1o);color:var(--s1);}
 .tt-day-btn.has-slots{border-color:rgba(255,255,255,.15);color:var(--tx);}
 /* ── TIMETABLE COPY PANEL ── */
@@ -1557,6 +1564,11 @@ window.onerror=function(msg,src,line,col,err){
           <span id="ttDailyMins" style="font-family:var(--mo);font-size:10px;color:var(--mt);">—</span>
         </div>
       </div>
+      <div class="tt-active-tpl" id="ttActiveTpl">
+        <span style="font-size:13px;">📁</span>
+        <span class="tt-active-tpl-name" id="ttActiveTplName"></span>
+        <button class="tt-active-tpl-clear" onclick="ttClearActiveTemplate()">✕ Unload</button>
+      </div>
       <div class="tt-day-strip" id="ttDayStrip"></div>
       <div class="tt-copy-panel" id="ttCopyPanel">
         <div class="tt-copy-panel-header">
@@ -1573,6 +1585,7 @@ window.onerror=function(msg,src,line,col,err){
       </div>
       <div id="ttSlotList"></div>
       <button class="tt-add-slot-btn" onclick="ttAddSlot()">＋ Add Slot</button>
+      <button class="tt-clear-all-btn" onclick="ttClearAllSlots()" id="ttClearAllBtn">🗑 Clear all slots for this day</button>
     </div>
 
     <!-- TIMETABLE TEMPLATES -->
@@ -2194,6 +2207,7 @@ window.ttUndo=function(){
 
 // ── TIMETABLE SAVED TEMPLATES ─────────────────────────────────────────────────
 var TT_TEMPLATES_KEY='v5_tt_templates';
+var TT_ACTIVE_TPL_KEY='v5_tt_active_tpl'; // stores name of currently loaded template, or null
 var _ttTemplates=(function(){try{return JSON.parse(localStorage.getItem(TT_TEMPLATES_KEY)||'{}');}catch(e){return {};}}());
 
 function _saveTTTemplates(){
@@ -2220,12 +2234,19 @@ window.ttLoadTemplate=function(name){
   TT_DAYS.forEach(function(day){
     (_timetable[day]||[]).forEach(function(s){s.id=genTTId();});
   });
+  localStorage.setItem(TT_ACTIVE_TPL_KEY,name); // track which template is active
   _ttOpenSlot=null;saveTimetable();
   showT('📅 Loaded','Template "'+name+'" applied.');
+  updateActiveTplIndicator();
 };
 window.ttDeleteTemplate=function(name){
   delete _ttTemplates[name];
   _saveTTTemplates();
+  // If the deleted template was active, clear the active marker
+  if(localStorage.getItem(TT_ACTIVE_TPL_KEY)===name){
+    localStorage.removeItem(TT_ACTIVE_TPL_KEY);
+    updateActiveTplIndicator();
+  }
   renderTimetableTemplates();
   showT('🗑 Deleted','Template "'+name+'" removed.');
 };
@@ -2283,6 +2304,51 @@ function renderTimetableTemplates(){
     el.appendChild(row);
   });
 }
+
+// ── ACTIVE TEMPLATE INDICATOR ────────────────────────────────────────────────
+function updateActiveTplIndicator(){
+  var bar=document.getElementById('ttActiveTpl');
+  var lbl=document.getElementById('ttActiveTplName');
+  var clearBtn=document.getElementById('ttClearAllBtn');
+  var active=localStorage.getItem(TT_ACTIVE_TPL_KEY);
+  // Check if the active template still exists (user might have deleted it)
+  if(active&&!_ttTemplates[active]){
+    localStorage.removeItem(TT_ACTIVE_TPL_KEY);active=null;
+  }
+  if(active){
+    if(bar){bar.classList.add('show');}
+    if(lbl){lbl.textContent='📁 '+active+' loaded';}
+    if(clearBtn){clearBtn.textContent='🗑 Clear all slots for this day';}
+  } else {
+    if(bar){bar.classList.remove('show');}
+    if(clearBtn){clearBtn.textContent='🗑 Clear all slots for this day';}
+  }
+}
+
+// Unload template (clears the "active" label, doesn't touch the timetable slots)
+window.ttClearActiveTemplate=function(){
+  localStorage.removeItem(TT_ACTIVE_TPL_KEY);
+  updateActiveTplIndicator();
+  showT('↩ Unloaded','Template unlinked — your current slots are unchanged.');
+};
+
+// Clear all slots for the currently selected day (with confirmation)
+window.ttClearAllSlots=function(){
+  var day=_ttSelectedDay;
+  var slots=(_timetable[day]||[]);
+  if(!slots.length){showT('ℹ️ Empty','No slots to clear for this day.');return;}
+  showConfirm(document.getElementById('ttClearAllBtn'),
+    '🗑 Clear all '+slots.length+' slot'+(slots.length!==1?'s':'')+' for '+TT_LABELS[TT_DAYS.indexOf(day)]+'?',
+    function(){
+      ttPushUndo();
+      _timetable[day]=[];
+      localStorage.removeItem(TT_ACTIVE_TPL_KEY); // diverged from template
+      saveTimetable();
+      updateActiveTplIndicator();
+      showT('🗑 Cleared','All slots removed for '+TT_LABELS[TT_DAYS.indexOf(day)]+'.');
+    }
+  );
+};
 
 function saveTimetable(){
   ttPushUndo(); // always push undo before saving
@@ -2492,11 +2558,13 @@ function isPyqAllDone(id){if(ST.done[id])return true;var t=null;for(var i=0;i<AL
 function buildSched(){
   var done=new Set(Object.keys(ST.done).map(Number));
   var potato=new Set(ST.potato);var skips=new Set(ST.skips);var sched={};
+  // Guard: if no study sessions in today's timetable, return empty schedule
+  if(!SESSIONS||SESSIONS.length===0)return sched;
   function ensureDay(d){if(!sched[d])sched[d]={dateStr:d,sessions:SESSIONS.map(function(s){return{idx:s.idx,id:s.id,name:s.name,time:s.time,dur:s.dur,sh:s.sh,sm:s.sm,eh:s.eh,em:s.em,items:[]};})};} 
   var cur=getSchedStart();
   while(potato.has(cur))cur=addD(cur,1);
   var sIdx=0,sRem=SESSIONS[0].dur;ensureDay(cur);
-  function nextSes(){sIdx++;if(sIdx>=SESSIONS.length){do{cur=addD(cur,1);}while(potato.has(cur));sIdx=0;}sRem=SESSIONS[sIdx].dur;ensureDay(cur);}
+  function nextSes(){sIdx++;if(sIdx>=SESSIONS.length){do{cur=addD(cur,1);}while(potato.has(cur));sIdx=0;}if(!SESSIONS[sIdx])return;sRem=SESSIONS[sIdx].dur;ensureDay(cur);}
   function pushTask(task){
     var rem=task.duration,isFirst=true;
     if(skips.has(task.id)&&rem>sRem)nextSes();
@@ -7441,6 +7509,7 @@ window.ttSelectDay=function(day){
 };
 
 function renderTimetable(){
+  updateActiveTplIndicator(); // keep indicator in sync
   // Daily mins badge
   var dmEl=document.getElementById('ttDailyMins');
   if(dmEl){
@@ -7723,6 +7792,8 @@ window.ttDeleteSlot=function(id,day){
   });
   saveRoutineDone();
   _ttOpenSlot=null;saveTimetable();
+  rebuildFromTimetable(); // refresh SESSIONS so buildSched doesn't crash on stale data
+  if(typeof buildSchedule==='function')buildSchedule();
   showT('🗑 Deleted','Slot removed.');
 };
 // Called after double-tap confirm on the delete button
