@@ -2214,11 +2214,11 @@ var _ttTemplates=(function(){try{return JSON.parse(localStorage.getItem(TT_TEMPL
 function _saveTTTemplates(){
   localStorage.setItem(TT_TEMPLATES_KEY,JSON.stringify(_ttTemplates));
   if(window._fb&&window._fb.ready&&typeof fbPath==='function'){
-    // Don't try to fingerprint templates — they contain nested arrays that Firebase
-    // converts to objects, making fingerprint comparison unreliable.
-    // Instead use a simple write-timestamp to suppress own-echo for 10 seconds.
+    // Wrap with _ts so the receiving device can do proper last-write-wins,
+    // same pattern as the timetable payload.
     _ttTplWriteTs=Date.now();
-    window._fb.set(window._fb.ref(window._fb.db,fbPath(TT_TEMPLATES_KEY)),_ttTemplates).catch(function(){});
+    var tplPayload={_data:_ttTemplates,_ts:_ttTplWriteTs};
+    window._fb.set(window._fb.ref(window._fb.db,fbPath(TT_TEMPLATES_KEY)),tplPayload).catch(function(){});
   }
 }
 
@@ -2234,15 +2234,44 @@ window.ttSaveTemplate=function(){
 };
 window.ttLoadTemplate=function(name){
   var tmpl=_ttTemplates[name];if(!tmpl)return;
-  ttPushUndo();
-  _timetable=JSON.parse(JSON.stringify(tmpl.timetable));
-  TT_DAYS.forEach(function(day){
-    (_timetable[day]||[]).forEach(function(s){s.id=genTTId();});
+  var today=getToday();
+  // ── Check if today already has per-slot focus data ──────────────────────
+  // When a new template is loaded, all slot IDs are regenerated (genTTId).
+  // Any existing slotFocusSecs (per-slot focus breakdown) for today would be
+  // orphaned since the old slot IDs no longer exist.
+  // Total daily focusSecs (v5_focus_YYYYMMDD) is NOT affected — it is stored
+  // separately and always preserved.
+  var hasFocusToday = Object.keys(slotFocusSecs||{}).some(function(k){
+    return (slotFocusSecs[k]||0)>0;
   });
-  localStorage.setItem(TT_ACTIVE_TPL_KEY,name); // track which template is active
-  _ttOpenSlot=null;saveTimetable();
-  showT('📅 Loaded','Template "'+name+'" applied.');
-  updateActiveTplIndicator();
+  function _doLoad(){
+    ttPushUndo();
+    _timetable=JSON.parse(JSON.stringify(tmpl.timetable));
+    TT_DAYS.forEach(function(day){
+      (_timetable[day]||[]).forEach(function(s){s.id=genTTId();});
+    });
+    // Slot IDs are now all new — clear today's per-slot focus map so the UI
+    // doesn't show 0-second bars against phantom old IDs.
+    // (Total daily focus time on the hero card is preserved.)
+    slotFocusSecs={};
+    localStorage.setItem('v5_sft_'+today,JSON.stringify({}));
+    if(window._fb&&window._fb.ready&&typeof fbPath==='function'){
+      window._fb.set(window._fb.ref(window._fb.db,fbPath('v5_sft_'+today)),{}).catch(function(){});
+    }
+    localStorage.setItem(TT_ACTIVE_TPL_KEY,name);
+    _ttOpenSlot=null;saveTimetable();
+    showT('📅 Loaded','Template "'+name+'" applied. Today\'s slot timers reset.');
+    updateActiveTplIndicator();
+  }
+  if(hasFocusToday){
+    // Show a native confirm — slot-level timers will be lost (daily total is safe)
+    if(!window.confirm(
+      'Apply template "'+name+'"?\n\n' +
+      'Your per-slot study timers for today will be reset because the new timetable has different slot IDs.\n\n' +
+      'Your TOTAL daily focus time is always preserved separately and will not be affected.'
+    )){return;}
+  }
+  _doLoad();
 };
 window.ttDeleteTemplate=function(name){
   delete _ttTemplates[name];
@@ -2263,14 +2292,28 @@ function _applyRemoteTemplates(val){
     if(Object.keys(_ttTemplates).length&&Date.now()-_ttTplWriteTs>8000){
       _ttTplWriteTs=Date.now();
       var fb=window._fb;
-      if(fb&&fb.ready)fb.set(fb.ref(fb.db,fbPath(TT_TEMPLATES_KEY)),_ttTemplates).catch(function(){});
+      var tplPayload={_data:_ttTemplates,_ts:_ttTplWriteTs};
+      if(fb&&fb.ready)fb.set(fb.ref(fb.db,fbPath(TT_TEMPLATES_KEY)),tplPayload).catch(function(){});
     }
     return;
   }
-  // Suppress own-echo: skip if we wrote within last 10 seconds
-  if(Date.now()-_ttTplWriteTs<10000)return;
+  // ── Timestamp-based last-write-wins (same logic as _applyRemoteTimetable) ──
+  // New format: {_data:{...templates...}, _ts: number}
+  // Old format (no _ts): apply directly for backward compat
+  var remoteTs = (typeof val._ts === 'number') ? val._ts : 0;
+  if(remoteTs){
+    if(Math.abs(remoteTs - _ttTplWriteTs) < 3000) return; // our own echo
+    if(remoteTs < _ttTplWriteTs) return;                   // we have newer data
+  }
+  // Read templates from wrapper or root (backward compat with old un-wrapped format)
+  var remoteTemplates = (val._data && typeof val._data === 'object') ? val._data : val;
+  // Filter out the internal _ts/_data keys in case the old format was bare
+  var cleaned = {};
+  Object.keys(remoteTemplates).forEach(function(k){
+    if(k !== '_ts' && k !== '_data') cleaned[k] = remoteTemplates[k];
+  });
   // Apply remote — remote is always authoritative (supports deletions)
-  _ttTemplates=val;
+  _ttTemplates=cleaned;
   localStorage.setItem(TT_TEMPLATES_KEY,JSON.stringify(_ttTemplates));
   renderTimetableTemplates();
   var active=localStorage.getItem(TT_ACTIVE_TPL_KEY);
@@ -7997,13 +8040,25 @@ function renderFoSubItems(){
 function _applyRemoteTimetable(val){
   var fb=window._fb;
   if(!val||typeof val!=='object'){
+    // Firebase empty — seed from local if we are the source of truth
     if(Date.now()-_ttLastWriteTs>8000){
       var p=_buildTTPayload();_ttLastWriteTs=p._ts;
       if(fb&&fb.ready)fb.set(fb.ref(fb.db,fbPath(TT_KEY)),p).catch(function(){});
     }
     return;
   }
-  if(Date.now()-_ttLastWriteTs<10000)return; // suppress own echo
+  // ── Timestamp-based last-write-wins (replaces the old 10-second blind window) ──
+  // The payload always contains _ts = Date.now() from the writing device.
+  // • If |remote._ts − our_last_write| < 3 s  →  this is our own write echoing back → ignore.
+  // • If remote._ts < our_last_write            →  we are newer → ignore (we will keep our version).
+  // • Otherwise                                 →  remote is newer (or has no ts) → apply.
+  // This ensures two simultaneous editors never get stuck in a diverged state:
+  // the device that wrote LAST always wins, and its change propagates instantly.
+  var remoteTs = (typeof val._ts === 'number') ? val._ts : 0;
+  if(remoteTs){
+    if(Math.abs(remoteTs - _ttLastWriteTs) < 3000) return; // our own echo
+    if(remoteTs < _ttLastWriteTs) return;                  // we have newer data
+  }
   var rawDays=val._data||val;
   var normalized={};
   TT_DAYS.forEach(function(d){
