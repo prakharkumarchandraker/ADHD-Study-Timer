@@ -2196,7 +2196,8 @@ window.ttUndo=function(){
   _ttOpenSlot=null;
   localStorage.setItem(TT_KEY,JSON.stringify(_timetable));
   if(window._fb&&window._fb.ready&&typeof fbPath==='function'){
-    window._fb.set(window._fb.ref(window._fb.db,fbPath(TT_KEY)),_timetable).catch(function(){});
+    var _undoDays={};TT_DAYS.forEach(function(d){var slots=_timetable[d]||[];_undoDays[d]=slots.length>0?slots:{_empty:1};});
+    window._fb.set(window._fb.ref(window._fb.db,fbPath(TT_KEY)),{_data:_undoDays,_ts:Date.now()}).catch(function(){});
   }
   rebuildFromTimetable();
   if(typeof buildSchedule==='function')buildSchedule();
@@ -2254,44 +2255,29 @@ window.ttDeleteTemplate=function(name){
 // Sync templates from Firebase on connect
 window.addEventListener('fbReady',function(){
   var fb=window._fb;if(!fb||!fb.ready)return;
-  // Listen first — remote is authoritative (supports deletions syncing correctly).
-  // We do NOT blindly upload local on connect because that would restore
-  // templates that were deleted on another device.
   fb.onValue(fb.ref(fb.db,fbPath(TT_TEMPLATES_KEY)),function(snap){
     var val=snap.val();
-    // Remote is source of truth — use it directly (no merge).
-    // Deletions on any device propagate to all others.
-    var normalized=(val&&typeof val==='object')?val:{};
-    var remote=JSON.stringify(normalized),local=JSON.stringify(_ttTemplates);
-    if(remote!==local){
-      _ttTemplates=normalized;
-      localStorage.setItem(TT_TEMPLATES_KEY,JSON.stringify(_ttTemplates));
-      renderTimetableTemplates();
-      // If active template was deleted remotely, clear the indicator
-      var active=localStorage.getItem(TT_ACTIVE_TPL_KEY);
-      if(active&&!_ttTemplates[active]){
-        localStorage.removeItem(TT_ACTIVE_TPL_KEY);
-        if(typeof updateActiveTplIndicator==='function')updateActiveTplIndicator();
+    if(val===null){
+      // Firebase has no templates. If we have local ones, seed Firebase (first install).
+      if(Object.keys(_ttTemplates).length){
+        fb.set(fb.ref(fb.db,fbPath(TT_TEMPLATES_KEY)),_ttTemplates).catch(function(){});
       }
+      return;
+    }
+    if(typeof val!=='object')return;
+    // Remote is always authoritative. Apply directly — supports deletions.
+    var remote=JSON.stringify(val),local=JSON.stringify(_ttTemplates);
+    if(remote===local)return; // already in sync
+    _ttTemplates=val;
+    localStorage.setItem(TT_TEMPLATES_KEY,JSON.stringify(_ttTemplates));
+    renderTimetableTemplates();
+    // If active template was deleted remotely, clear the indicator
+    var active=localStorage.getItem(TT_ACTIVE_TPL_KEY);
+    if(active&&!_ttTemplates[active]){
+      localStorage.removeItem(TT_ACTIVE_TPL_KEY);
+      if(typeof updateActiveTplIndicator==='function')updateActiveTplIndicator();
     }
   });
-  // First-time setup only: if Firebase returns null (no templates ever saved),
-  // seed it with local templates. We detect this via the first onValue fire above —
-  // if _ttTemplates is still empty after the first snap, nothing to seed.
-  // The onValue listener above already handles the null case correctly (normalizes to {}).
-  // Seeding is handled: if remote was null, normalized={} matches local only if local
-  // is also empty. If local has templates and remote is null, remote!==local → we apply
-  // remote (empty) to local... which would wipe local. We need the opposite for first install.
-  // Fix: track whether Firebase has ever had templates using a flag.
-  var _ttSeeded=false;
-  var _ttSeedUnsubscribe=fb.onValue(fb.ref(fb.db,fbPath(TT_TEMPLATES_KEY)),function(snap){
-    if(_ttSeeded)return;
-    _ttSeeded=true;
-    if(snap.val()===null&&Object.keys(_ttTemplates).length){
-      // Firebase is empty but we have local templates — this is a first install, seed Firebase
-      fb.set(fb.ref(fb.db,fbPath(TT_TEMPLATES_KEY)),_ttTemplates).catch(function(){});
-    }
-  },{onlyOnce:true});
 },{once:true});
 function renderTimetableTemplates(){
   var el=document.getElementById('ttTemplateList');if(!el)return;
@@ -2374,13 +2360,20 @@ window.ttClearAllSlots=function(){
 var _ttLastWriteTs=0; // timestamp of last local write — used to skip own-write echo in onValue
 function saveTimetable(){
   ttPushUndo(); // always push undo before saving
+  var nowTs=Date.now();
   localStorage.setItem(TT_KEY,JSON.stringify(_timetable));
+  localStorage.setItem(TT_KEY+'_ts',String(nowTs)); // store write timestamp locally
   if(window._fb&&window._fb.ready&&typeof fbPath==='function'){
-    _ttLastWriteTs=Date.now();
-    // Wrap each day: Firebase drops empty arrays, so days with 0 slots must be
-    // written as {_empty:1} and unwrapped on read — OR we track via _ttLastWriteTs
-    // and keep local as authoritative when the echo comes back within 5s.
-    window._fb.set(window._fb.ref(window._fb.db,fbPath(TT_KEY)),_timetable).catch(function(){});
+    _ttLastWriteTs=nowTs;
+    // Wrap timetable with _ts so other devices can do timestamp-based conflict resolution.
+    // Wrapping also preserves empty arrays: {mon:{_empty:1}} survives Firebase storage.
+    var days={};
+    TT_DAYS.forEach(function(d){
+      var slots=_timetable[d]||[];
+      days[d]=slots.length>0?slots:{_empty:1}; // sentinel for empty day
+    });
+    var payload={_data:days,_ts:nowTs};
+    window._fb.set(window._fb.ref(window._fb.db,fbPath(TT_KEY)),payload).catch(function(){});
   }
   rebuildFromTimetable();
   if(typeof buildSchedule==='function')buildSchedule();
@@ -7968,41 +7961,56 @@ function renderFoSubItems(){
   });
 }
 
-// Firebase sync for timetable
+// Firebase sync for timetable — timestamp-based conflict resolution
 window.addEventListener('fbReady',function(){
   var fb=window._fb;if(!fb||!fb.ready)return;
   fb.onValue(fb.ref(fb.db,fbPath(TT_KEY)),function(snap){
     var val=snap.val();
-    if(val&&typeof val==='object'){
-      // Firebase drops empty arrays — normalize missing days back to [] so
-      // clearing a day's slots on Device A correctly applies on Device B
-      var normalized={};
-      TT_DAYS.forEach(function(d){
-        normalized[d]=Array.isArray(val[d])?val[d]:[];
-      });
-      var remote=JSON.stringify(normalized),local=JSON.stringify(_timetable);
-      // Skip echo of our own write (within 5s) — local version is already correct
-      // and has empty arrays that Firebase dropped. This prevents cleared days
-      // from being "un-cleared" by the echo of our own set() call.
-      var isOwnEcho=(Date.now()-_ttLastWriteTs)<5000;
-      if(remote!==local&&!isOwnEcho){
-        _timetable=normalized;localStorage.setItem(TT_KEY,remote);
-        rebuildFromTimetable();
-        if(typeof buildSchedule==='function')buildSchedule();
-        if(typeof renderRoutineFromTimetable==='function')renderRoutineFromTimetable();
-        if(typeof renderTimetable==='function')renderTimetable();
-        if(typeof up==='function')up();
+    if(!val||typeof val!=='object'){
+      // Null = no data in Firebase yet. If we have local data, upload it to seed Firebase.
+      if(Object.keys(_timetable).length){
+        var days={};
+        TT_DAYS.forEach(function(d){
+          var slots=_timetable[d]||[];
+          days[d]=slots.length>0?slots:{_empty:1};
+        });
+        fb.set(fb.ref(fb.db,fbPath(TT_KEY)),{_data:days,_ts:Date.now()}).catch(function(){});
       }
-    } else if(snap.val()===null){
-      // Entire timetable was cleared remotely — apply locally too
-      var empty={};TT_DAYS.forEach(function(d){empty[d]=[];});
-      _timetable=empty;localStorage.setItem(TT_KEY,JSON.stringify(empty));
-      rebuildFromTimetable();
-      if(typeof renderTimetable==='function')renderTimetable();
-      if(typeof up==='function')up();
+      return;
     }
+
+    // New format: {_data:{...}, _ts:number}
+    // Old format (no _ts): raw timetable — handle for backward compat
+    var remoteTs=val._ts||0;
+    var localTs=parseInt(localStorage.getItem(TT_KEY+'_ts')||'0',10);
+
+    // Skip if this is our own write echoing back (same timestamp)
+    if(remoteTs>0&&remoteTs===_ttLastWriteTs)return;
+
+    // Accept remote if it's newer than what we last wrote, OR if we have no timestamp (first load)
+    var shouldApply=remoteTs>localTs||localTs===0;
+    if(!shouldApply)return;
+
+    // Unwrap data: handle both new {_data,_ts} and old raw format
+    var rawDays=val._data||val;
+    var normalized={};
+    TT_DAYS.forEach(function(d){
+      var dayVal=rawDays[d];
+      if(Array.isArray(dayVal))normalized[d]=dayVal;          // normal slots
+      else if(dayVal&&dayVal._empty)normalized[d]=[];          // sentinel for cleared day
+      else normalized[d]=[];                                   // missing = cleared
+    });
+
+    // Apply remote timetable
+    _timetable=normalized;
+    localStorage.setItem(TT_KEY,JSON.stringify(normalized));
+    localStorage.setItem(TT_KEY+'_ts',String(remoteTs||Date.now()));
+    rebuildFromTimetable();
+    if(typeof buildSchedule==='function')buildSchedule();
+    if(typeof renderRoutineFromTimetable==='function')renderRoutineFromTimetable();
+    if(typeof renderTimetable==='function')renderTimetable();
+    if(typeof up==='function')up();
   });
-  // Routine done sync is handled in startSync() — no duplicate listener needed here
 },{once:true});
 
 </script>
