@@ -812,6 +812,45 @@ body.focus-mode .hero-cd{font-size:96px!important;letter-spacing:-4px;}
   /* nav-btn is now inside drawer - no responsive overrides needed */
 }
 
+/* ── DAILY MINIMUM TARGET ── */
+.dmin-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;background:var(--sf2);border:1px solid var(--bd);margin-bottom:5px;transition:border-color .15s;}
+.dmin-item.done{opacity:.5;}
+.dmin-item.done .dmin-name{text-decoration:line-through;color:var(--mt);}
+.dmin-chk{width:18px;height:18px;border-radius:4px;border:2px solid var(--bd2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex-shrink:0;transition:all .15s;}
+.dmin-chk.done{background:var(--s2b);border-color:var(--s2);color:var(--s2);}
+.dmin-info{flex:1;min-width:0;}
+.dmin-subj{font-size:9px;font-weight:700;font-family:var(--mo);margin-bottom:1px;}
+.dmin-name{font-size:12px;font-weight:600;color:var(--tx);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.dmin-dur{font-family:var(--mo);font-size:9px;color:var(--mt);flex-shrink:0;}
+.dmin-reached{background:rgba(45,212,160,.07);border:1px solid var(--s2o);border-radius:10px;padding:10px 14px;text-align:center;margin-top:6px;}
+.dmin-reached-txt{font-size:13px;font-weight:700;color:var(--s2);}
+.dmin-reached-sub{font-size:10px;color:var(--mt);margin-top:2px;}
+.dmin-burnout{border-radius:9px;padding:8px 12px;margin-top:8px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:7px;}
+.dmin-burnout.ok{background:rgba(45,212,160,.07);border:1px solid var(--s2o);color:var(--s2);}
+.dmin-burnout.warn{background:rgba(245,197,66,.07);border:1px solid var(--amo);color:var(--am);}
+.dmin-burnout.over{background:rgba(240,111,160,.07);border:1px solid var(--s3o);color:var(--s3);}
+/* ── SPEED CALCULATOR ── */
+.sc-speed-row{display:grid;grid-template-columns:44px 1fr 90px 90px;gap:6px;align-items:center;padding:9px 10px;background:var(--sf2);border:1px solid var(--bd);border-radius:10px;margin-bottom:6px;}
+.sc-speed-row.highlight{border-color:var(--s2o);background:rgba(45,212,160,.05);}
+.sc-speed-lbl{font-family:var(--mo);font-size:13px;font-weight:700;color:var(--tx);}
+.sc-speed-bar-wrap{height:6px;background:var(--sf3);border-radius:3px;overflow:hidden;}
+.sc-speed-bar{height:100%;border-radius:3px;transition:width .4s;}
+.sc-speed-days{font-family:var(--mo);font-size:11px;color:var(--mt2);text-align:right;}
+.sc-speed-date{font-family:var(--mo);font-size:10px;text-align:right;font-weight:700;}
+.sc-subj-row{display:flex;align-items:center;gap:7px;padding:6px 0;border-bottom:1px solid var(--bd);}
+.sc-subj-row:last-child{border-bottom:none;}
+.sc-subj-lbl{font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;flex-shrink:0;width:34px;text-align:center;}
+.sc-subj-name{font-size:11px;color:var(--mt2);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sc-subj-speeds{display:flex;gap:4px;flex-shrink:0;}
+.sc-subj-chip{font-family:var(--mo);font-size:9px;padding:2px 5px;border-radius:5px;background:var(--sf3);color:var(--mt);border:1px solid var(--bd);white-space:nowrap;}
+.sc-subj-chip.hl{background:rgba(45,212,160,.1);border-color:rgba(45,212,160,.25);color:var(--s2);}
+.sc-timeline{margin-top:4px;}
+.sc-tl-row{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+.sc-tl-speed{font-family:var(--mo);font-size:10px;font-weight:700;color:var(--mt2);width:36px;flex-shrink:0;}
+.sc-tl-bar-wrap{flex:1;height:16px;background:var(--sf3);border-radius:4px;overflow:hidden;display:flex;}
+.sc-tl-lec{height:100%;background:var(--s1);opacity:.8;}
+.sc-tl-pyq{height:100%;background:var(--s3);opacity:.7;}
+.sc-tl-dates{font-family:var(--mo);font-size:9px;color:var(--mt);flex-shrink:0;text-align:right;width:80px;}
 /* ── MOBILE GATE TAB LAYOUT FIXES ── */
 /* Do Next button - compact on mobile */
 .do-next-btn{max-width:80px;overflow:hidden;text-overflow:ellipsis;}
@@ -1410,6 +1449,51 @@ window.onerror=function(msg,src,line,col,err){
         <span id="vel-summary" style="font-family:var(--mo);font-size:9px;color:var(--mt);"></span>
       </div>
       <div class="vel-grid" id="vel-grid"></div>
+    </div>
+
+    <!-- DAILY MINIMUM TARGET -->
+    <div class="card" id="dailyMinCard">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div class="ct" style="margin-bottom:0;">🎯 Today's Minimum Target</div>
+        <span id="dailyMinBadge" style="font-family:var(--mo);font-size:9px;padding:2px 8px;border-radius:10px;background:var(--sf2);color:var(--mt);border:1px solid var(--bd2);"></span>
+      </div>
+      <div id="dailyMinContent"></div>
+    </div>
+
+    <!-- SPEED CALCULATOR -->
+    <div class="card" id="speedCalcCard">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <div class="ct" style="margin-bottom:0;">⚡ Speed Completion Calculator</div>
+        <button onclick="toggleSpeedCalc()" id="speedCalcToggleBtn" style="background:var(--sf2);border:1px solid var(--bd2);color:var(--mt2);border-radius:8px;padding:3px 9px;font-size:10px;font-weight:600;cursor:pointer;font-family:var(--fn);">▼ Show</button>
+      </div>
+      <div id="speedCalcBody" style="display:none;">
+        <!-- Controls -->
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;padding-top:10px;border-top:1px solid var(--bd);">
+          <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mt);">
+            <span>Hours/day:</span>
+            <span style="font-family:var(--mo);font-size:11px;color:var(--s2);" id="scAutoHours">—</span>
+            <span style="font-size:9px;color:var(--mt);">(auto)</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:5px;margin-left:auto;">
+            <label style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--mt);cursor:pointer;">
+              <input type="checkbox" id="scIncludeRecorded" onchange="renderSpeedCalc()" style="accent-color:var(--s1);"> +Recorded
+            </label>
+            <span style="color:var(--bd2);font-size:12px;">|</span>
+            <span style="font-size:10px;color:var(--mt);">Manual:</span>
+            <input type="number" id="scManualHours" min="1" max="20" placeholder="hrs" oninput="renderSpeedCalc()"
+              style="width:44px;background:var(--sf2);border:1px solid var(--bd2);border-radius:6px;padding:3px 6px;font-family:var(--mo);font-size:11px;color:var(--tx);outline:none;text-align:center;">
+          </div>
+        </div>
+        <!-- Speed rows -->
+        <div id="scSpeedRows" style="margin-bottom:14px;"></div>
+        <!-- Subject breakdown -->
+        <div style="margin-bottom:8px;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mt);margin-bottom:8px;">Per-Subject Breakdown</div>
+          <div id="scSubjectRows"></div>
+        </div>
+        <!-- Timeline -->
+        <div id="scTimeline"></div>
+      </div>
     </div>
 
     <!-- GATE HEATMAP -->
@@ -3468,6 +3552,10 @@ function renderGate(){
 
   // Velocity tracker (runs after subject grid so data is fresh)
   if(typeof renderVelocity==='function')renderVelocity();
+  // Daily minimum target
+  if(typeof renderDailyMinimum==='function')renderDailyMinimum();
+  // Speed calculator (only if open)
+  if(typeof renderSpeedCalc==='function'&&_speedCalcOpen)renderSpeedCalc();
 
   // Carry-forward: inject missed tasks at top of session plan if viewing today
   (function renderCarryForward(){
@@ -7261,7 +7349,287 @@ function renderVelocity(){
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// ── CARRY-FORWARD INCOMPLETE TASKS ───────────────────────────────────────
+// ── DAILY MINIMUM TARGET ─────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+function renderDailyMinimum(){
+  var el=document.getElementById('dailyMinContent');
+  var badge=document.getElementById('dailyMinBadge');
+  if(!el)return;
+
+  var today=getToday();
+  var sched=buildSched();
+  var dayPlan=sched[today];
+
+  if(!dayPlan||!dayPlan.sessions){
+    el.innerHTML='<div style="font-size:12px;color:var(--mt);font-style:italic;text-align:center;padding:10px 0;">No sessions scheduled today.</div>';
+    if(badge)badge.textContent='0 tasks';
+    return;
+  }
+
+  var done=new Set(Object.keys(ST.done).map(Number));
+
+  // Collect unique lecture tasks assigned to today (not PYQs — those are long blocks)
+  // We show PYQs too since they appear in the schedule
+  var minTasks=[];
+  var seenIds=new Set();
+  dayPlan.sessions.forEach(function(ses){
+    (ses.items||[]).forEach(function(item){
+      if(!seenIds.has(item.taskId)){
+        seenIds.add(item.taskId);
+        // Find the full task
+        var t=null;
+        for(var i=0;i<ALL_TASKS.length;i++){if(ALL_TASKS[i].id===item.taskId){t=ALL_TASKS[i];break;}}
+        if(t)minTasks.push({task:t,item:item});
+      }
+    });
+  });
+
+  if(!minTasks.length){
+    el.innerHTML='<div style="font-size:12px;color:var(--mt);font-style:italic;text-align:center;padding:10px 0;">No tasks assigned today — rest day or potato day.</div>';
+    if(badge)badge.textContent='0 tasks';
+    return;
+  }
+
+  var totalTasks=minTasks.length;
+  var doneTasks=minTasks.filter(function(x){return done.has(x.task.id)||isPyqAllDone(x.task.id);}).length;
+  var minReached=(doneTasks>=totalTasks);
+
+  if(badge){
+    badge.textContent=doneTasks+'/'+totalTasks+' done';
+    badge.style.background=minReached?'rgba(45,212,160,.1)':'var(--sf2)';
+    badge.style.color=minReached?'var(--s2)':'var(--mt)';
+    badge.style.borderColor=minReached?'var(--s2o)':'var(--bd2)';
+  }
+
+  var html='';
+
+  if(minReached){
+    html+='<div class="dmin-reached">'
+      +'<div class="dmin-reached-txt">✅ Minimum reached!</div>'
+      +'<div class="dmin-reached-sub">'+doneTasks+' tasks done · anything more is a bonus.</div>'
+      +'</div>';
+  }
+
+  minTasks.forEach(function(x){
+    var t=x.task;var item=x.item;
+    var isDone=done.has(t.id)||isPyqAllDone(t.id);
+    var col=COLORS[t.subject]||'var(--s1)';
+    var lbl=LABELS[t.subject]||t.subject;
+    var isPyq=t.type==='pyq';
+    var displayName=isPyq?(t.subject+' — PYQ'):t.name;
+    html+='<div class="dmin-item'+(isDone?' done':'')+'">'
+      +'<div class="dmin-chk'+(isDone?' done':'')+'">'+( isDone?'✓':'')+'</div>'
+      +'<div class="dmin-info">'
+      +'<div class="dmin-subj" style="color:'+col+';">'+esc(lbl)+(isPyq?' · PYQ':' #'+t.num)+'</div>'
+      +'<div class="dmin-name">'+esc(displayName)+'</div>'
+      +'</div>'
+      +'<div class="dmin-dur">'+fmtMins(Math.round(item.chunk))+'</div>'
+      +'</div>';
+  });
+
+  // Burnout guard: compare today's minimum count vs 7-day avg
+  var studyDays=getStudyDays();
+  var today7=getToday();
+  var lecCountsLast7=[];
+  for(var di=1;di<=7;di++){
+    var d7=addD(today7,-di);
+    var sched7=null;
+    // Count distinct tasks done on that day
+    var dayDoneCount=Object.keys(ST.done).filter(function(tid){
+      return ST.done[tid]&&ST.done[tid].split('T')[0]===d7;
+    }).length;
+    if(dayDoneCount>0)lecCountsLast7.push(dayDoneCount);
+  }
+  if(lecCountsLast7.length>=2){
+    var avg7=lecCountsLast7.reduce(function(a,b){return a+b;},0)/lecCountsLast7.length;
+    var ratio=totalTasks/avg7;
+    var burnoutClass,burnoutMsg;
+    if(ratio<=1.1){burnoutClass='ok';burnoutMsg='🟢 Today\'s minimum ('+totalTasks+') is in line with your 7-day avg of '+Math.round(avg7*10)/10+' tasks/day.';}
+    else if(ratio<=1.4){burnoutClass='warn';burnoutMsg='🟡 Today\'s minimum ('+totalTasks+') is '+Math.round((ratio-1)*100)+'% above your 7-day avg of '+Math.round(avg7*10)/10+'. Manageable, but pace yourself.';}
+    else{burnoutClass='over';burnoutMsg='🔴 Today\'s minimum ('+totalTasks+') is '+Math.round((ratio-1)*100)+'% above your 7-day avg of '+Math.round(avg7*10)/10+'. High burnout risk — consider adjusting your timetable slots.';}
+    html+='<div class="dmin-burnout '+burnoutClass+'">'+burnoutMsg+'</div>';
+  }
+
+  el.innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ── SPEED COMPLETION CALCULATOR ──────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+var _speedCalcOpen=false;
+window.toggleSpeedCalc=function(){
+  _speedCalcOpen=!_speedCalcOpen;
+  var body=document.getElementById('speedCalcBody');
+  var btn=document.getElementById('speedCalcToggleBtn');
+  if(body)body.style.display=_speedCalcOpen?'block':'none';
+  if(btn)btn.textContent=_speedCalcOpen?'▲ Hide':'▼ Show';
+  if(_speedCalcOpen)renderSpeedCalc();
+};
+
+function scGetDailyHours(){
+  // Auto-read from timetable: sum of 'study' slots, optionally + 'class' slots
+  var incRecorded=document.getElementById('scIncludeRecorded');
+  var includeRec=incRecorded&&incRecorded.checked;
+  var dayKey=getTodayDayKey();
+  var slots=_timetable[dayKey]||[];
+  var mins=0;
+  slots.forEach(function(s){
+    if(s.type==='study')mins+=(s.eh*60+s.em)-(s.sh*60+s.sm);
+    else if(s.type==='class'&&includeRec)mins+=(s.eh*60+s.em)-(s.sh*60+s.sm);
+  });
+  // Check if manual override
+  var manInp=document.getElementById('scManualHours');
+  var manVal=manInp&&manInp.value?parseFloat(manInp.value):0;
+  return{auto:Math.round(mins/60*10)/10,manual:manVal>0?manVal:null};
+}
+
+window.renderSpeedCalc=function(){
+  if(!_speedCalcOpen)return;
+  var hoursData=scGetDailyHours();
+  var autoEl=document.getElementById('scAutoHours');
+  if(autoEl)autoEl.textContent=hoursData.auto+'h';
+  var dailyHours=hoursData.manual||hoursData.auto;
+  if(!dailyHours||dailyHours<=0){
+    document.getElementById('scSpeedRows').innerHTML='<div style="font-size:11px;color:var(--mt);font-style:italic;">No study slots found in today\'s timetable. Enter manual hours above.</div>';
+    return;
+  }
+  var dailyMins=dailyHours*60;
+
+  var done=new Set(Object.keys(ST.done).map(Number));
+  var subjOrder=getSubjOrder();
+
+  // Compute remaining per subject
+  var subjData=[];
+  subjOrder.forEach(function(subj){
+    var lecTasks=ALL_TASKS.filter(function(t){return t.subject===subj&&t.type==='lecture'&&!done.has(t.id);});
+    var pyqTask=ALL_TASKS.find(function(t){return t.subject===subj&&t.type==='pyq'&&!done.has(t.id)&&!isPyqAllDone(t.id);});
+    // partial pyq done
+    var pyqRemMin=0;
+    if(pyqTask){
+      var doneTopics=ST.pyqTopics&&ST.pyqTopics[pyqTask.id]?ST.pyqTopics[pyqTask.id].length:0;
+      var totalTopics=pyqTask.topics?pyqTask.topics.length:1;
+      var pct=doneTopics/Math.max(1,totalTopics);
+      pyqRemMin=pyqTask.duration*(1-pct);
+    }
+    var lecRemMin=lecTasks.reduce(function(s,t){return s+t.duration;},0);
+    if(lecRemMin>0||pyqRemMin>0){
+      subjData.push({subj:subj,lecMin:lecRemMin,pyqMin:pyqRemMin,col:COLORS[subj]||'#7b6fff',lbl:LABELS[subj]||subj});
+    }
+  });
+
+  // Total remaining
+  var totalLecMin=subjData.reduce(function(s,d){return s+d.lecMin;},0);
+  var totalPyqMin=subjData.reduce(function(s,d){return s+d.pyqMin;},0);
+
+  var speeds=[1,1.25,1.5,1.75,2];
+  var prepTarget=TARGET_DATE;
+  var today=getToday();
+
+  // For each speed, compute total days
+  function calcDays(speed){
+    var adjLecMins=totalLecMin/speed;
+    var totalMins=adjLecMins+totalPyqMin;
+    return Math.ceil(totalMins/dailyMins);
+  }
+  function addDays(date,n){return addD(date,n);}
+
+  // ── Overall speed rows ──
+  var maxDays=calcDays(1);
+  var speedRowsHtml='';
+  speeds.forEach(function(sp){
+    var days=calcDays(sp);
+    var finDate=addDays(today,days);
+    var onTrack=finDate<=prepTarget;
+    var barPct=Math.round((1-(days/Math.max(1,maxDays)))*100);
+    var barPct2=Math.max(8,barPct);
+    var isBase=sp===1;
+    var highlight=onTrack&&!isBase;
+    var dateColor=onTrack?'var(--s2)':'var(--s3)';
+    var spLabel=sp===1?'1x':sp+'x';
+    speedRowsHtml+='<div class="sc-speed-row'+(highlight?' highlight':'')+'">'
+      +'<div class="sc-speed-lbl">'+spLabel+'</div>'
+      +'<div class="sc-speed-bar-wrap"><div class="sc-speed-bar" style="width:'+barPct2+'%;background:'+(onTrack?'var(--s2)':'var(--s1)')+';"></div></div>'
+      +'<div class="sc-speed-days">'+days+'d'+(sp!==1?' (−'+(calcDays(1)-days)+'d)':'')+'</div>'
+      +'<div class="sc-speed-date" style="color:'+dateColor+';">'+fmtShort(finDate)+'</div>'
+      +'</div>';
+  });
+  // Summary line
+  speedRowsHtml='<div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mt);margin-bottom:8px;">'
+    +'Remaining: <span style="color:var(--s1);">'+Math.round(totalLecMin/60*10)/10+'h lectures</span>'
+    +' + <span style="color:var(--s3);">'+Math.round(totalPyqMin/60*10)/10+'h PYQs (fixed)</span>'
+    +' · '+dailyHours+'h/day</div>'
+    +speedRowsHtml;
+  document.getElementById('scSpeedRows').innerHTML=speedRowsHtml;
+
+  // ── Per-subject breakdown ──
+  // Subjects are sequential — cursor advances after each subject finishes
+  var subjRowsHtml='<div style="display:grid;grid-template-columns:auto 1fr repeat(4,52px);gap:4px;align-items:center;margin-bottom:6px;">'
+    +'<div style="font-size:9px;color:var(--mt);">Subj</div>'
+    +'<div style="font-size:9px;color:var(--mt);"></div>'
+    +'<div style="font-size:9px;color:var(--mt);text-align:center;">1x</div>'
+    +'<div style="font-size:9px;color:var(--mt);text-align:center;">1.25x</div>'
+    +'<div style="font-size:9px;color:var(--mt);text-align:center;">1.5x</div>'
+    +'<div style="font-size:9px;color:var(--mt);text-align:center;">2x</div>'
+    +'</div>';
+
+  var speedsSubj=[1,1.25,1.5,2];
+  // Compute sequential end dates per subject per speed
+  var cursors={};
+  speedsSubj.forEach(function(sp){cursors[sp]=today;});
+
+  subjData.forEach(function(sd){
+    var chips='';
+    speedsSubj.forEach(function(sp){
+      var adjLec=sd.lecMin/sp;
+      var totalSubjMins=adjLec+sd.pyqMin;
+      var subjDays=Math.ceil(totalSubjMins/dailyMins);
+      cursors[sp]=addD(cursors[sp],subjDays);
+      var onT=cursors[sp]<=prepTarget;
+      chips+='<div class="sc-subj-chip'+(sp===1.5?' hl':'')+'" style="'+(onT?'':'color:var(--s3);border-color:var(--s3o);')+'">'+fmtShort(cursors[sp])+'</div>';
+    });
+    subjRowsHtml+='<div class="sc-subj-row">'
+      +'<div class="sc-subj-lbl" style="background:'+sd.col+'18;color:'+sd.col+';">'+esc(sd.lbl)+'</div>'
+      +'<div class="sc-subj-name">'+esc(sd.subj)+'</div>'
+      +'<div class="sc-subj-speeds">'+chips+'</div>'
+      +'</div>';
+  });
+  document.getElementById('scSubjectRows').innerHTML=subjRowsHtml;
+
+  // ── Timeline bar ──
+  var tlHtml='<div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mt);margin-bottom:8px;">Timeline</div>'
+    +'<div style="display:grid;grid-template-columns:36px 1fr 80px;gap:6px;align-items:center;margin-bottom:4px;">'
+    +'<div></div>'
+    +'<div style="display:flex;gap:8px;font-size:9px;color:var(--mt);padding:0 2px;">'
+    +'<span style="display:flex;align-items:center;gap:3px;"><span style="width:8px;height:8px;border-radius:2px;background:var(--s1);display:inline-block;"></span>Lectures</span>'
+    +'<span style="display:flex;align-items:center;gap:3px;"><span style="width:8px;height:8px;border-radius:2px;background:var(--s3);display:inline-block;"></span>PYQs (fixed)</span>'
+    +'</div><div></div></div>';
+
+  speeds.forEach(function(sp){
+    var adjLecMins=totalLecMin/sp;
+    var totalMins=adjLecMins+totalPyqMin;
+    var lecPct=totalMins>0?Math.round(adjLecMins/totalMins*100):100;
+    var pyqPct=100-lecPct;
+    var lecDays=Math.ceil(adjLecMins/dailyMins);
+    var pyqDays=Math.ceil(totalPyqMin/dailyMins);
+    var lecEnd=addDays(today,lecDays);
+    var pyqEnd=addDays(lecEnd,pyqDays);
+    var spLabel=sp===1?'1x':sp+'x';
+    var onTrack=pyqEnd<=prepTarget;
+    tlHtml+='<div class="sc-tl-row">'
+      +'<div class="sc-tl-speed">'+spLabel+'</div>'
+      +'<div class="sc-tl-bar-wrap">'
+      +'<div class="sc-tl-lec" style="width:'+lecPct+'%;"></div>'
+      +'<div class="sc-tl-pyq" style="width:'+pyqPct+'%;"></div>'
+      +'</div>'
+      +'<div class="sc-tl-dates" style="color:'+(onTrack?'var(--s2)':'var(--s3)')+';">→ '+fmtShort(pyqEnd)+'</div>'
+      +'</div>';
+    tlHtml+='<div style="font-size:9px;color:var(--mt);margin:-3px 0 6px 44px;">'
+      +'Lec ends: '+fmtShort(lecEnd)+' · PYQ: '+fmtShort(lecEnd)+'→'+fmtShort(pyqEnd)
+      +'</div>';
+  });
+  document.getElementById('scTimeline').innerHTML='<div class="sc-timeline">'+tlHtml+'</div>';
+};
+
 // ═══════════════════════════════════════════════════════════════════════════
 // Returns tasks that were scheduled in the last 3 days but are not yet done
 function getCarryForwardTasks(sched){
