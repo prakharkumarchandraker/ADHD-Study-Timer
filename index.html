@@ -901,8 +901,8 @@ body.focus-mode .hero-cd{font-size:96px!important;letter-spacing:-4px;}
 .tt-dup-btn{background:var(--s1b);border:1px solid var(--s1o);color:var(--s1);border-radius:8px;padding:5px 10px;font-size:11px;font-weight:700;font-family:var(--fn);cursor:pointer;margin-top:4px;width:100%;}
 .tt-slot-action-row{display:flex;gap:6px;margin-top:4px;}
 .tt-slot-action-row .tt-del-btn,.tt-slot-action-row .tt-dup-btn{margin-top:0;flex:1;}
-.tt-nudge-row{display:flex;align-items:center;gap:4px;flex:1;}
-.tt-nudge-btn{background:var(--sf3);border:1px solid var(--bd2);color:var(--mt2);border-radius:6px;padding:4px 7px;font-size:11px;font-weight:700;font-family:var(--mo);cursor:pointer;line-height:1;white-space:nowrap;flex-shrink:0;}
+.tt-nudge-row{display:flex;align-items:center;gap:3px;flex:1;}
+.tt-nudge-btn{background:var(--sf3);border:1px solid var(--bd2);color:var(--mt2);border-radius:6px;padding:5px 6px;font-size:10px;font-weight:700;font-family:var(--mo);cursor:pointer;line-height:1;white-space:nowrap;flex-shrink:0;min-width:28px;text-align:center;}
 .tt-nudge-btn:active{background:var(--s1b);color:var(--s1);border-color:var(--s1o);}
 
 /* Sub-items */
@@ -7725,9 +7725,13 @@ function makeTTSlotCard(s,i,day,conflicts){
       dragging=true;ty0=e.touches[0].clientY;
       _ttDragIdx=slotIdx;_ttDragDay=slotDay;
       origRect=slotDiv.getBoundingClientRect();
-      // create visual ghost
-      ghost=slotDiv.cloneNode(true);
-      ghost.style.cssText='position:fixed;left:'+origRect.left+'px;top:'+origRect.top+'px;width:'+origRect.width+'px;opacity:.7;z-index:9999;pointer-events:none;transform:scale(1.02);box-shadow:0 8px 32px rgba(0,0,0,.5);';
+      // Clone only the header (collapsed view) so ghost is always small and doesn't cover drop targets
+      var headEl=slotDiv.querySelector('.tt-slot-head');
+      ghost=document.createElement('div');
+      ghost.className='tt-slot';
+      if(headEl){ghost.appendChild(headEl.cloneNode(true));}
+      var ghostH=headEl?headEl.getBoundingClientRect().height:56;
+      ghost.style.cssText='position:fixed;left:'+origRect.left+'px;top:'+origRect.top+'px;width:'+origRect.width+'px;height:'+ghostH+'px;overflow:hidden;opacity:.85;z-index:9999;pointer-events:none;transform:scale(1.02);box-shadow:0 8px 32px rgba(0,0,0,.5);border-radius:14px;';
       document.body.appendChild(ghost);
       slotDiv.style.opacity='.3';
     },{passive:true});
@@ -7736,10 +7740,12 @@ function makeTTSlotCard(s,i,day,conflicts){
       e.preventDefault();
       var ty=e.touches[0].clientY;
       if(ghost)ghost.style.top=(origRect.top+(ty-ty0))+'px';
-      // Highlight slot under finger
+      // Hide ghost briefly so elementFromPoint hits the real slot beneath
+      if(ghost)ghost.style.visibility='hidden';
       document.querySelectorAll('.tt-slot').forEach(function(c){c.classList.remove('drag-over');});
       var el=document.elementFromPoint(e.touches[0].clientX,ty);
       var target=el?el.closest('.tt-slot'):null;
+      if(ghost)ghost.style.visibility='visible';
       if(target&&target!==slotDiv)target.classList.add('drag-over');
     },{passive:false});
     handle.addEventListener('touchend',function(e){
@@ -7789,27 +7795,27 @@ function makeTTSlotCard(s,i,day,conflicts){
   // Times with ±15min nudge buttons
   var startVal=pad(s.sh)+':'+pad(s.sm);
   var endVal=s.eh>=24?pad(s.eh-24)+':'+pad(s.em):pad(s.eh)+':'+pad(s.em);
-  body.innerHTML+='<div class="tt-field-row">'
-    +'<span class="tt-field-lbl">Time</span>'
-    +'<div style="display:flex;flex-direction:column;gap:5px;flex:1;">'
-    // Start time row
+  // Time field: label | [−15][−5][time input][+5][+15] | dur badge
+  // Two rows: start then end. Buttons use abbreviated labels to fit mobile.
+  body.innerHTML+='<div class="tt-field-row" style="align-items:flex-start;">'
+    +'<span class="tt-field-lbl" style="padding-top:8px;">Time</span>'
+    +'<div style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:0;">'
     +'<div class="tt-nudge-row">'
     +'<button class="tt-nudge-btn" onclick="ttNudgeTime(\''+s.id+'\',\''+day+'\',\'start\',-15)">−15</button>'
     +'<button class="tt-nudge-btn" onclick="ttNudgeTime(\''+s.id+'\',\''+day+'\',\'start\',-5)">−5</button>'
-    +'<input class="tt-time-inp" type="time" value="'+startVal+'" onchange="ttSetTime(\''+s.id+'\',\''+day+'\',\'start\',this.value)" style="flex:1;min-width:0;">'
+    +'<input class="tt-time-inp" type="time" value="'+startVal+'" onchange="ttSetTime(\''+s.id+'\',\''+day+'\',\'start\',this.value)" style="flex:1;min-width:0;width:0;">'
     +'<button class="tt-nudge-btn" onclick="ttNudgeTime(\''+s.id+'\',\''+day+'\',\'start\',5)">+5</button>'
     +'<button class="tt-nudge-btn" onclick="ttNudgeTime(\''+s.id+'\',\''+day+'\',\'start\',15)">+15</button>'
     +'</div>'
-    // End time row
     +'<div class="tt-nudge-row">'
     +'<button class="tt-nudge-btn" onclick="ttNudgeTime(\''+s.id+'\',\''+day+'\',\'end\',-15)">−15</button>'
     +'<button class="tt-nudge-btn" onclick="ttNudgeTime(\''+s.id+'\',\''+day+'\',\'end\',-5)">−5</button>'
-    +'<input class="tt-time-inp" type="time" value="'+endVal+'" onchange="ttSetTime(\''+s.id+'\',\''+day+'\',\'end\',this.value)" style="flex:1;min-width:0;">'
+    +'<input class="tt-time-inp" type="time" value="'+endVal+'" onchange="ttSetTime(\''+s.id+'\',\''+day+'\',\'end\',this.value)" style="flex:1;min-width:0;width:0;">'
     +'<button class="tt-nudge-btn" onclick="ttNudgeTime(\''+s.id+'\',\''+day+'\',\'end\',5)">+5</button>'
     +'<button class="tt-nudge-btn" onclick="ttNudgeTime(\''+s.id+'\',\''+day+'\',\'end\',15)">+15</button>'
     +'</div>'
     +'</div>'
-    +'<span class="tt-dur-badge">'+durStr+(dur===0?' <span style="color:var(--s3)">!</span>':'')+'</span>'
+    +'<span class="tt-dur-badge" style="align-self:center;margin-left:4px;">'+durStr+(dur===0?' <span style="color:var(--s3)">!</span>':'')+'</span>'
     +'</div>';
 
   // Sub-items (Other + Class)

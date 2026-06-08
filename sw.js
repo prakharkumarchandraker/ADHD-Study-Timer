@@ -1,7 +1,7 @@
 // ── Study OS · Service Worker ──────────────────────────────────────────────
 // DEPLOY CHECKLIST: bump CACHE string on every deploy to force cache refresh on all devices.
-// Format: studyos-vN or studyos-YYYYMMDD. Current: bumped 2026-06-08, v12 — fix action row syntax error.
-const CACHE = 'studyos-v12';
+// Format: studyos-vN or studyos-YYYYMMDD. Current: bumped 2026-06-08, v13 — nudge row mobile fix, drag ghost fix.
+const CACHE = 'studyos-v13';
 
 // Static assets that are safe to cache forever (fonts, CDN libraries)
 // index.html is intentionally NOT cached here — it uses network-first below
