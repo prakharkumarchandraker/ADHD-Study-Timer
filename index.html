@@ -1585,7 +1585,7 @@ window.onerror=function(msg,src,line,col,err){
       </div>
       <div id="ttSlotList"></div>
       <button class="tt-add-slot-btn" onclick="ttAddSlot()">＋ Add Slot</button>
-      <button class="tt-clear-all-btn" onclick="ttClearAllSlots()" id="ttClearAllBtn">🗑 Clear all slots for this day</button>
+      <button class="tt-clear-all-btn" onclick="ttClearAllSlots(this)" id="ttClearAllBtn">🗑 Clear all slots for this day</button>
     </div>
 
     <!-- TIMETABLE TEMPLATES -->
@@ -2196,7 +2196,9 @@ window.ttUndo=function(){
   _ttOpenSlot=null;
   localStorage.setItem(TT_KEY,JSON.stringify(_timetable));
   if(window._fb&&window._fb.ready&&typeof fbPath==='function'){
-    var _undoPayload=_buildTTPayload();_ttLastWrittenJSON=JSON.stringify(_undoPayload);_ttLastWriteTs=_undoPayload._ts;
+    var _undoPayload=_buildTTPayload();
+    _ttLastWrittenJSON=JSON.stringify(_undoPayload._data); // update fingerprint
+    _ttLastWriteTs=_undoPayload._ts;
     window._fb.set(window._fb.ref(window._fb.db,fbPath(TT_KEY)),_undoPayload).catch(function(){});
   }
   rebuildFromTimetable();
@@ -2214,10 +2216,9 @@ var _ttTemplates=(function(){try{return JSON.parse(localStorage.getItem(TT_TEMPL
 function _saveTTTemplates(){
   localStorage.setItem(TT_TEMPLATES_KEY,JSON.stringify(_ttTemplates));
   if(window._fb&&window._fb.ready&&typeof fbPath==='function'){
-    // Wrap with _ts so the receiving device can do proper last-write-wins,
-    // same pattern as the timetable payload.
     _ttTplWriteTs=Date.now();
     var tplPayload={_data:_ttTemplates,_ts:_ttTplWriteTs};
+    _ttTplLastWrittenJSON=JSON.stringify(_ttTemplates); // fingerprint for echo suppression
     window._fb.set(window._fb.ref(window._fb.db,fbPath(TT_TEMPLATES_KEY)),tplPayload).catch(function(){});
   }
 }
@@ -2232,15 +2233,9 @@ window.ttSaveTemplate=function(){
   showT('💾 Saved','Template "'+name+'" saved.');
   renderTimetableTemplates();
 };
-window.ttLoadTemplate=function(name){
+window.ttLoadTemplate=function(name,triggerBtn){
   var tmpl=_ttTemplates[name];if(!tmpl)return;
   var today=getToday();
-  // ── Check if today already has per-slot focus data ──────────────────────
-  // When a new template is loaded, all slot IDs are regenerated (genTTId).
-  // Any existing slotFocusSecs (per-slot focus breakdown) for today would be
-  // orphaned since the old slot IDs no longer exist.
-  // Total daily focusSecs (v5_focus_YYYYMMDD) is NOT affected — it is stored
-  // separately and always preserved.
   var hasFocusToday = Object.keys(slotFocusSecs||{}).some(function(k){
     return (slotFocusSecs[k]||0)>0;
   });
@@ -2250,9 +2245,6 @@ window.ttLoadTemplate=function(name){
     TT_DAYS.forEach(function(day){
       (_timetable[day]||[]).forEach(function(s){s.id=genTTId();});
     });
-    // Slot IDs are now all new — clear today's per-slot focus map so the UI
-    // doesn't show 0-second bars against phantom old IDs.
-    // (Total daily focus time on the hero card is preserved.)
     slotFocusSecs={};
     localStorage.setItem('v5_sft_'+today,JSON.stringify({}));
     if(window._fb&&window._fb.ready&&typeof fbPath==='function'){
@@ -2260,18 +2252,21 @@ window.ttLoadTemplate=function(name){
     }
     localStorage.setItem(TT_ACTIVE_TPL_KEY,name);
     _ttOpenSlot=null;saveTimetable();
-    showT('📅 Loaded','Template "'+name+'" applied. Today\'s slot timers reset.');
+    showT('📅 Loaded','Template "'+name+'" applied.');
     updateActiveTplIndicator();
   }
   if(hasFocusToday){
-    // Show a native confirm — slot-level timers will be lost (daily total is safe)
-    if(!window.confirm(
-      'Apply template "'+name+'"?\n\n' +
-      'Your per-slot study timers for today will be reset because the new timetable has different slot IDs.\n\n' +
-      'Your TOTAL daily focus time is always preserved separately and will not be affected.'
-    )){return;}
+    // Use the custom showConfirm instead of window.confirm (blocked in PWA/WebView)
+    var btn=triggerBtn||document.querySelector('[data-tpl-load="'+name+'"]');
+    if(btn){
+      showConfirm(btn,'⚠️ Reset today\'s slot timers & load?',_doLoad);
+    } else {
+      // No button reference — just load (timers are not critical data)
+      _doLoad();
+    }
+  } else {
+    _doLoad();
   }
-  _doLoad();
 };
 window.ttDeleteTemplate=function(name){
   delete _ttTemplates[name];
@@ -2293,26 +2288,26 @@ function _applyRemoteTemplates(val){
       _ttTplWriteTs=Date.now();
       var fb=window._fb;
       var tplPayload={_data:_ttTemplates,_ts:_ttTplWriteTs};
+      _ttTplLastWrittenJSON=JSON.stringify(_ttTemplates);
       if(fb&&fb.ready)fb.set(fb.ref(fb.db,fbPath(TT_TEMPLATES_KEY)),tplPayload).catch(function(){});
     }
     return;
   }
-  // ── Timestamp-based last-write-wins (same logic as _applyRemoteTimetable) ──
-  // New format: {_data:{...templates...}, _ts: number}
-  // Old format (no _ts): apply directly for backward compat
-  var remoteTs = (typeof val._ts === 'number') ? val._ts : 0;
-  if(remoteTs){
-    if(Math.abs(remoteTs - _ttTplWriteTs) < 3000) return; // our own echo
-    if(remoteTs < _ttTplWriteTs) return;                   // we have newer data
+  // ── Content-fingerprint echo suppression (same pattern as timetable) ──────
+  var rawTpls=(val._data&&typeof val._data==='object')?val._data:val;
+  // Filter internal keys for fingerprint
+  var cleaned={};
+  Object.keys(rawTpls).forEach(function(k){if(k!=='_ts'&&k!=='_data')cleaned[k]=rawTpls[k];});
+  var incomingJSON=JSON.stringify(cleaned);
+  if(_ttTplLastWrittenJSON&&incomingJSON===_ttTplLastWrittenJSON){
+    return; // our own echo
   }
-  // Read templates from wrapper or root (backward compat with old un-wrapped format)
-  var remoteTemplates = (val._data && typeof val._data === 'object') ? val._data : val;
-  // Filter out the internal _ts/_data keys in case the old format was bare
-  var cleaned = {};
-  Object.keys(remoteTemplates).forEach(function(k){
-    if(k !== '_ts' && k !== '_data') cleaned[k] = remoteTemplates[k];
-  });
-  // Apply remote — remote is always authoritative (supports deletions)
+  // Last-write-wins: only block if remote is strictly older than our last write
+  var remoteTs=(typeof val._ts==='number')?val._ts:0;
+  if(remoteTs&&remoteTs<(_ttTplWriteTs-500)){
+    return; // remote is older — keep ours
+  }
+  // Apply remote — remote is authoritative (supports deletions)
   _ttTemplates=cleaned;
   localStorage.setItem(TT_TEMPLATES_KEY,JSON.stringify(_ttTemplates));
   renderTimetableTemplates();
@@ -2322,12 +2317,13 @@ function _applyRemoteTemplates(val){
     if(typeof updateActiveTplIndicator==='function')updateActiveTplIndicator();
   }
 }
-window.addEventListener('fbReady',function(){
+function _initTemplateSync(){
   var fb=window._fb;if(!fb||!fb.ready)return;
   fb.onValue(fb.ref(fb.db,fbPath(TT_TEMPLATES_KEY)),function(snap){
     _applyRemoteTemplates(snap.val());
   });
-},{once:true});
+}
+window.addEventListener('fbReady',_initTemplateSync,{once:true});
 function renderTimetableTemplates(){
   var el=document.getElementById('ttTemplateList');if(!el)return;
   var keys=Object.keys(_ttTemplates);
@@ -2347,8 +2343,9 @@ function renderTimetableTemplates(){
     // Load button
     var loadBtn=document.createElement('button');
     loadBtn.textContent='Load';
+    loadBtn.setAttribute('data-tpl-load',name);
     loadBtn.style.cssText='background:var(--s2b);border:1px solid var(--s2o);color:var(--s2);border-radius:7px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--fn);white-space:nowrap;';
-    loadBtn.onclick=function(){ttLoadTemplate(name);};
+    loadBtn.onclick=function(){ttLoadTemplate(name,loadBtn);};
     // Delete button
     var delBtn=document.createElement('button');
     delBtn.textContent='\u00d7';
@@ -2389,25 +2386,35 @@ window.ttClearActiveTemplate=function(){
 };
 
 // Clear all slots for the currently selected day (with confirmation)
-window.ttClearAllSlots=function(){
+window.ttClearAllSlots=function(triggerBtn){
   var day=_ttSelectedDay;
   var slots=(_timetable[day]||[]);
   if(!slots.length){showT('ℹ️ Empty','No slots to clear for this day.');return;}
-  showConfirm(document.getElementById('ttClearAllBtn'),
-    '🗑 Clear all '+slots.length+' slot'+(slots.length!==1?'s':'')+' for '+TT_LABELS[TT_DAYS.indexOf(day)]+'?',
-    function(){
+  // triggerBtn may be passed from onclick — fall back to getElementById
+  var btn=triggerBtn||document.getElementById('ttClearAllBtn');
+  var label='🗑 Clear all '+slots.length+' slot'+(slots.length!==1?'s':'')+' for '+TT_LABELS[TT_DAYS.indexOf(day)]+'?';
+  if(btn){
+    showConfirm(btn,label,function(){
       ttPushUndo();
       _timetable[day]=[];
-      localStorage.removeItem(TT_ACTIVE_TPL_KEY); // diverged from template
+      localStorage.removeItem(TT_ACTIVE_TPL_KEY);
       saveTimetable();
       updateActiveTplIndicator();
       showT('🗑 Cleared','All slots removed for '+TT_LABELS[TT_DAYS.indexOf(day)]+'.');
-    }
-  );
+    });
+  } else {
+    // No button reference — execute directly after inline confirmation
+    ttPushUndo();
+    _timetable[day]=[];
+    localStorage.removeItem(TT_ACTIVE_TPL_KEY);
+    saveTimetable();
+    updateActiveTplIndicator();
+    showT('🗑 Cleared','All slots removed for '+TT_LABELS[TT_DAYS.indexOf(day)]+'.');
+  }
 };
 
 var _ttLastWriteTs=0;
-var _ttLastWrittenJSON=null; // fingerprint of what we last wrote to Firebase (echo detection)
+var _ttLastWrittenJSON=null; // fingerprint of the last payload WE wrote — used for echo suppression
 var _ttTplLastWrittenJSON=null;
 var _ttTplWriteTs=0; // timestamp of last template write
 function _buildTTPayload(){
@@ -2423,7 +2430,8 @@ function saveTimetable(){
   localStorage.setItem(TT_KEY,JSON.stringify(_timetable));
   if(window._fb&&window._fb.ready&&typeof fbPath==='function'){
     var payload=_buildTTPayload();
-    _ttLastWrittenJSON=JSON.stringify(payload);
+    // Store BOTH the fingerprint AND the timestamp so echo detection uses content, not just time
+    _ttLastWrittenJSON=JSON.stringify(payload._data); // fingerprint = data only (no _ts jitter)
     _ttLastWriteTs=payload._ts;
     window._fb.set(window._fb.ref(window._fb.db,fbPath(TT_KEY)),payload).catch(function(){});
   }
@@ -8043,23 +8051,28 @@ function _applyRemoteTimetable(val){
     // Firebase empty — seed from local if we are the source of truth
     if(Date.now()-_ttLastWriteTs>8000){
       var p=_buildTTPayload();_ttLastWriteTs=p._ts;
+      _ttLastWrittenJSON=JSON.stringify(p._data);
       if(fb&&fb.ready)fb.set(fb.ref(fb.db,fbPath(TT_KEY)),p).catch(function(){});
     }
     return;
   }
-  // ── Timestamp-based last-write-wins (replaces the old 10-second blind window) ──
-  // The payload always contains _ts = Date.now() from the writing device.
-  // • If |remote._ts − our_last_write| < 3 s  →  this is our own write echoing back → ignore.
-  // • If remote._ts < our_last_write            →  we are newer → ignore (we will keep our version).
-  // • Otherwise                                 →  remote is newer (or has no ts) → apply.
-  // This ensures two simultaneous editors never get stuck in a diverged state:
-  // the device that wrote LAST always wins, and its change propagates instantly.
-  var remoteTs = (typeof val._ts === 'number') ? val._ts : 0;
-  if(remoteTs){
-    if(Math.abs(remoteTs - _ttLastWriteTs) < 3000) return; // our own echo
-    if(remoteTs < _ttLastWriteTs) return;                  // we have newer data
-  }
+  // ── Content-fingerprint echo suppression ──────────────────────────────────
+  // We store the exact _data JSON we last wrote. If the incoming remote _data
+  // matches our fingerprint exactly, this is our own write echoing back — skip.
+  // This avoids the timestamp race where two devices' clocks are close enough
+  // that a legitimate remote change gets dropped as "our echo".
   var rawDays=val._data||val;
+  var incomingDataJSON=JSON.stringify(rawDays);
+  if(_ttLastWrittenJSON&&incomingDataJSON===_ttLastWrittenJSON){
+    return; // this is our own write echoing back
+  }
+  // ── Last-write-wins via timestamp ─────────────────────────────────────────
+  // Only block if remote timestamp is strictly OLDER than what we last wrote.
+  // We add a 500ms grace period to handle clock skew between devices.
+  var remoteTs=(typeof val._ts==='number')?val._ts:0;
+  if(remoteTs&&remoteTs<(_ttLastWriteTs-500)){
+    return; // remote is older than our last write — keep ours
+  }
   var normalized={};
   TT_DAYS.forEach(function(d){
     var v=rawDays[d];
@@ -8074,13 +8087,14 @@ function _applyRemoteTimetable(val){
   if(typeof up==='function')up();
 }
 
-// Firebase sync for timetable
-window.addEventListener('fbReady',function(){
+// Firebase sync for timetable — does NOT use {once:true} so it re-subscribes after reconnect
+function _initTimetableSync(){
   var fb=window._fb;if(!fb||!fb.ready)return;
   fb.onValue(fb.ref(fb.db,fbPath(TT_KEY)),function(snap){
     _applyRemoteTimetable(snap.val());
   });
-},{once:true});
+}
+window.addEventListener('fbReady',_initTimetableSync,{once:true});
 
 </script>
 
