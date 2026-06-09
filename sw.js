@@ -1,7 +1,7 @@
 // ── Study OS · Service Worker ──────────────────────────────────────────────
 // DEPLOY CHECKLIST: bump CACHE string on every deploy to force cache refresh on all devices.
-// Format: studyos-vN or studyos-YYYYMMDD. Current: bumped 2026-06-09, v17 — revision re-rating, clear button, soft mode fix.
-const CACHE = 'studyos-v17';
+// v19 — 2026-06-09: curriculum manager mobile redesign, CM auto-apply, bug fixes (B1-B8)
+const CACHE = 'studyos-v19';
 
 // Static assets that are safe to cache forever (fonts, CDN libraries)
 // index.html is intentionally NOT cached here — it uses network-first below
@@ -128,10 +128,8 @@ self.addEventListener('push', function(e) {
   var url    = data.url    || './index.html';
   e.waitUntil(self.registration.showNotification(title, {
     body: body, tag: tag,
-    icon: 'data:image/svg+xml,' + encodeURIComponent(
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">' +
-      '<rect width="192" height="192" rx="38" fill="#0d0d10"/>' +
-      '<text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-size="110">📚</text></svg>'),
+    icon: './icon-192.png',
+    badge: './icon-192.png',
     vibrate: [200, 100, 200],
     data: { url: url },
     actions: [{ action: 'open', title: '▶ Open' }, { action: 'dismiss', title: '✕ Dismiss' }],
@@ -148,10 +146,8 @@ self.addEventListener('notificationclick', function(e) {
       self.registration.showNotification(e.notification.title || '📚 Study OS', {
         body: e.notification.body || 'Snoozed reminder — time to study!',
         tag: (e.notification.tag || 'studyos-alarm') + '-snooze',
-        icon: 'data:image/svg+xml,' + encodeURIComponent(
-          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">' +
-          '<rect width="192" height="192" rx="38" fill="#0d0d10"/>' +
-          '<text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-size="110">📚</text></svg>'),
+        icon: './icon-192.png',
+        badge: './icon-192.png',
         vibrate: [300, 150, 300, 150, 300],
         data: e.notification.data || { url: './index.html' },
         requireInteraction: true,
@@ -185,10 +181,8 @@ self.addEventListener('message', function(e) {
     self.registration.showNotification(e.data.title || '📚 Study OS', {
       body: e.data.body || 'Time to study!',
       tag: e.data.tag || 'studyos-alarm',
-      icon: 'data:image/svg+xml,' + encodeURIComponent(
-        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">' +
-        '<rect width="192" height="192" rx="38" fill="#0d0d10"/>' +
-        '<text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-size="110">📚</text></svg>'),
+      icon: './icon-192.png',
+      badge: './icon-192.png',
       vibrate: [300, 150, 300, 150, 300],
       data: { url: e.data.url || './index.html' },
       requireInteraction: true,

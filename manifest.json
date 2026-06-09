@@ -1,13 +1,14 @@
 {
   "name": "Study OS · GATE 2027",
   "short_name": "StudyOS",
-  "description": "GATE 2027 study tracker — schedule, tasks, habits, focus.",
+  "description": "GATE 2027 study tracker — schedule, tasks, habits, revision, focus.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "fullscreen",
-  "orientation": "portrait",
+  "orientation": "portrait-primary",
   "background_color": "#0d0d10",
   "theme_color": "#0d0d10",
+  "lang": "en",
   "categories": [
     "education",
     "productivity"
@@ -36,28 +37,31 @@
     {
       "name": "Today's Schedule",
       "short_name": "Today",
-      "description": "View today's study schedule",
+      "description": "View today's study schedule and sessions",
       "url": "./index.html",
-      "icons": [
-        {
-          "src": "./icon-192.png",
-          "sizes": "192x192",
-          "type": "image/png"
-        }
-      ]
+      "icons": [{ "src": "./icon-192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
       "name": "GATE Tasks",
       "short_name": "GATE",
-      "description": "View GATE task schedule",
+      "description": "View GATE syllabus and task progress",
       "url": "./index.html?tab=gate",
-      "icons": [
-        {
-          "src": "./icon-192.png",
-          "sizes": "192x192",
-          "type": "image/png"
-        }
-      ]
+      "icons": [{ "src": "./icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Habits",
+      "short_name": "Habits",
+      "description": "Check in on daily habits and quits",
+      "url": "./index.html?tab=habits",
+      "icons": [{ "src": "./icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Stats",
+      "short_name": "Stats",
+      "description": "View screen time, streaks and weekly review",
+      "url": "./index.html?tab=stats",
+      "icons": [{ "src": "./icon-192.png", "sizes": "192x192", "type": "image/png" }]
     }
-  ]
+  ],
+  "prefer_related_applications": false
 }
