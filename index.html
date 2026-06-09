@@ -6572,6 +6572,40 @@ function startSync(){
   startPresence(fb);
   // Daily minimum snapshot Firebase listener
   dmStartFirebaseListener();
+
+  // ── Curriculum sync — listen for changes from other devices ──────────────
+  // This was the missing piece: curriculum was written to Firebase but never
+  // read back on other devices. Now both devices stay in sync.
+  fb.onValue(fb.ref(fb.db,fbPath('v5_curriculum')),function(snap){
+    var val=snap.val();
+    // val is null = default/reset; val is array = custom curriculum
+    var localRaw=localStorage.getItem('v5_curriculum');
+    var localJson=localRaw||'null';
+    var remoteJson=val?JSON.stringify(val):'null';
+    if(remoteJson===localJson)return; // nothing changed
+    if(val&&Array.isArray(val)&&val.length>0){
+      localStorage.setItem('v5_curriculum',JSON.stringify(val));
+    } else {
+      localStorage.removeItem('v5_curriculum');
+    }
+    // Reload to pick up new ALL_TASKS (it's a const set at page-load time)
+    console.log('[Curriculum] Remote change detected — reloading');
+    showT('📚 Curriculum updated','Reloading to apply changes…');
+    setTimeout(function(){location.reload();},1200);
+  });
+  fb.onValue(fb.ref(fb.db,fbPath('v5_curriculum_meta')),function(snap){
+    var val=snap.val();
+    var localRaw=localStorage.getItem('v5_curriculum_meta');
+    var remoteJson=val?JSON.stringify(val):'null';
+    if(remoteJson===(localRaw||'null'))return;
+    if(val&&typeof val==='object'){
+      localStorage.setItem('v5_curriculum_meta',JSON.stringify(val));
+    } else {
+      localStorage.removeItem('v5_curriculum_meta');
+    }
+    // Meta-only change (colors/labels) — reload handled by curriculum listener above
+    // or will take effect on next page load
+  });
 }
 
 if(window._fb&&window._fb.ready)startSync();else window.addEventListener('fbReady',startSync,{once:true});
@@ -8035,6 +8069,151 @@ window.openCurriculumOverlay=openCM;window.closeCurriculumOverlay=closeCM;
 // ── Mobile back button ───────────────────────────────────────────────────────
 window.cmBackToList=function(){
   _cmShowPane('list');
+};
+
+// ── Curriculum Diff ──────────────────────────────────────────────────────────
+// Compares the LIVE ALL_TASKS (current, may be custom) against the hardcoded
+// default embedded in the page. Shows added/removed/renamed lectures per subject.
+window.cmShowDiff=function(){
+  // ── Get the hardcoded default directly from the page source ──
+  // We re-extract it by calling cmFromTasks on what the page hardcoded.
+  // The hardcoded array is the fallback in the ALL_TASKS IIFE — we can't
+  // re-run it, but we CAN compare against the custom localStorage version.
+  var isCustom=!!localStorage.getItem('v5_curriculum');
+  var summaryEl=document.getElementById('cmDiffSummary');
+  var bodyEl=document.getElementById('cmDiffBody');
+  if(!summaryEl||!bodyEl)return;
+
+  if(!isCustom){
+    summaryEl.innerHTML='<span style="color:var(--s2);">✓ Using default curriculum — no changes.</span>';
+    bodyEl.innerHTML='<div style="font-size:12px;color:var(--mt);padding:10px 0;font-style:italic;">You have not uploaded a custom curriculum. The default hardcoded syllabus is active.</div>';
+    document.getElementById('cmDiffMo').style.display='flex';
+    return;
+  }
+
+  // Get current (custom) subjects
+  var current=cmFromTasks(ALL_TASKS);
+
+  // Re-parse the hardcoded default — it's embedded as the IIFE fallback.
+  // We extract it by parsing the script tag text. Simpler: just read it
+  // directly from the page's inline script via regex on the known pattern.
+  var defaultTasks=null;
+  try{
+    var scripts=document.querySelectorAll('script:not([src])');
+    for(var si=0;si<scripts.length;si++){
+      var txt=scripts[si].textContent;
+      var m=txt.match(/return\s+(\[\{"id":0,"type":"lecture"[\s\S]+?\}\]);\s*\}\)\(\)/);
+      if(m){defaultTasks=JSON.parse(m[1]);break;}
+    }
+  }catch(e){}
+
+  if(!defaultTasks){
+    summaryEl.innerHTML='<span style="color:var(--s3);">⚠️ Could not read default for comparison.</span>';
+    bodyEl.innerHTML='<div style="font-size:12px;color:var(--mt);">Default could not be parsed from inline scripts.</div>';
+    document.getElementById('cmDiffMo').style.display='flex';
+    return;
+  }
+
+  var defaults=cmFromTasks(defaultTasks);
+
+  // Index by subject name
+  function byName(arr){var m={};arr.forEach(function(s){m[s.name]=s;});return m;}
+  var defMap=byName(defaults);
+  var curMap=byName(current);
+
+  var allSubjs=[];
+  defaults.forEach(function(s){if(allSubjs.indexOf(s.name)<0)allSubjs.push(s.name);});
+  current.forEach(function(s){if(allSubjs.indexOf(s.name)<0)allSubjs.push(s.name);});
+
+  var totalAdded=0,totalRemoved=0,totalRenamed=0,totalSubjAdded=0,totalSubjRemoved=0;
+  var html='';
+
+  allSubjs.forEach(function(sname){
+    var def=defMap[sname];
+    var cur=curMap[sname];
+    var col=(COLORS&&COLORS[sname])||'var(--s1)';
+    var lbl=(LABELS&&LABELS[sname])||sname;
+
+    if(!def&&cur){
+      // Entirely new subject
+      totalSubjAdded++;
+      var lc=cmTL(cur);
+      html+='<div style="background:rgba(45,212,160,.06);border:1px solid rgba(45,212,160,.2);border-radius:10px;padding:10px 13px;margin-bottom:8px;">'
+        +'<div style="display:flex;align-items:center;gap:7px;margin-bottom:6px;">'
+        +'<span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:'+col+'22;color:'+col+';">'+cmEv(lbl)+'</span>'
+        +'<span style="font-size:12px;font-weight:700;color:var(--tx);">'+cmEv(sname)+'</span>'
+        +'<span style="font-family:var(--mo);font-size:10px;color:var(--s2);margin-left:auto;">+ NEW SUBJECT · '+lc+' lectures</span>'
+        +'</div></div>';
+      return;
+    }
+    if(def&&!cur){
+      // Removed subject
+      totalSubjRemoved++;
+      var lc=cmTL(def);
+      html+='<div style="background:rgba(240,111,160,.06);border:1px solid rgba(240,111,160,.2);border-radius:10px;padding:10px 13px;margin-bottom:8px;">'
+        +'<div style="display:flex;align-items:center;gap:7px;margin-bottom:6px;">'
+        +'<span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:'+col+'22;color:'+col+';">'+cmEv(lbl)+'</span>'
+        +'<span style="font-size:12px;font-weight:700;color:var(--tx);">'+cmEv(sname)+'</span>'
+        +'<span style="font-family:var(--mo);font-size:10px;color:var(--s3);margin-left:auto;">✕ REMOVED · was '+lc+' lectures</span>'
+        +'</div></div>';
+      return;
+    }
+
+    // Both exist — diff lectures
+    var defLecs={},curLecs={};
+    (def.units||[]).forEach(function(u){(u.lectures||[]).forEach(function(l){defLecs[u.name+'|'+l.name]=Math.round(l.duration*10)/10;});});
+    (cur.units||[]).forEach(function(u){(u.lectures||[]).forEach(function(l){curLecs[u.name+'|'+l.name]=Math.round(l.duration*10)/10;});});
+
+    var added=[],removed=[],changed=[];
+    Object.keys(curLecs).forEach(function(k){
+      if(defLecs[k]===undefined){added.push(k);}
+      else if(Math.abs(curLecs[k]-defLecs[k])>0.5){changed.push({k:k,old:defLecs[k],nw:curLecs[k]});}
+    });
+    Object.keys(defLecs).forEach(function(k){
+      if(curLecs[k]===undefined)removed.push(k);
+    });
+
+    var defTotal=Object.keys(defLecs).length,curTotal=Object.keys(curLecs).length;
+    var hasChanges=added.length||removed.length||changed.length||(defTotal!==curTotal);
+    if(!hasChanges)return; // identical — skip
+
+    totalAdded+=added.length;totalRemoved+=removed.length;totalRenamed+=changed.length;
+
+    html+='<div style="background:var(--sf2);border:1px solid var(--bd);border-radius:10px;padding:10px 13px;margin-bottom:8px;">';
+    html+='<div style="display:flex;align-items:center;gap:7px;margin-bottom:8px;">'
+      +'<span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:'+col+'22;color:'+col+';">'+cmEv(lbl)+'</span>'
+      +'<span style="font-size:13px;font-weight:700;color:var(--tx);">'+cmEv(sname)+'</span>'
+      +'<span style="font-family:var(--mo);font-size:10px;color:var(--mt);margin-left:auto;">'+defTotal+' → '+curTotal+' lecs</span>'
+      +'</div>';
+
+    if(added.length){
+      html+='<div style="font-size:10px;font-weight:700;color:var(--s2);margin-bottom:4px;">+ Added ('+added.length+')</div>';
+      added.slice(0,10).forEach(function(k){var p=k.split('|');html+='<div style="font-size:11px;color:var(--s2);padding:1px 0 1px 10px;border-left:2px solid var(--s2o);">'+cmEv(p[1])+'<span style="font-family:var(--mo);color:var(--mt);margin-left:6px;">'+Math.round(curLecs[k])+'m</span></div>';});
+      if(added.length>10)html+='<div style="font-size:10px;color:var(--mt);padding-left:10px;">…and '+(added.length-10)+' more</div>';
+    }
+    if(removed.length){
+      html+='<div style="font-size:10px;font-weight:700;color:var(--s3);margin:6px 0 4px;">− Removed ('+removed.length+')</div>';
+      removed.slice(0,10).forEach(function(k){var p=k.split('|');html+='<div style="font-size:11px;color:var(--s3);padding:1px 0 1px 10px;border-left:2px solid var(--s3o);">'+cmEv(p[1])+'<span style="font-family:var(--mo);color:var(--mt);margin-left:6px;">'+Math.round(defLecs[k])+'m</span></div>';});
+      if(removed.length>10)html+='<div style="font-size:10px;color:var(--mt);padding-left:10px;">…and '+(removed.length-10)+' more</div>';
+    }
+    if(changed.length){
+      html+='<div style="font-size:10px;font-weight:700;color:var(--am);margin:6px 0 4px;">~ Duration changed ('+changed.length+')</div>';
+      changed.slice(0,8).forEach(function(c){var p=c.k.split('|');html+='<div style="font-size:11px;color:var(--am);padding:1px 0 1px 10px;border-left:2px solid var(--amo);">'+cmEv(p[1])+'<span style="font-family:var(--mo);color:var(--mt);margin-left:6px;">'+c.old+'m → '+c.nw+'m</span></div>';});
+    }
+    html+='</div>';
+  });
+
+  // Summary chips
+  var chips='';
+  if(totalSubjAdded)chips+='<span style="background:rgba(45,212,160,.1);border:1px solid var(--s2o);color:var(--s2);border-radius:20px;padding:3px 10px;">+'+totalSubjAdded+' subject'+(totalSubjAdded!==1?'s':'')+' added</span>';
+  if(totalSubjRemoved)chips+='<span style="background:rgba(240,111,160,.1);border:1px solid var(--s3o);color:var(--s3);border-radius:20px;padding:3px 10px;">−'+totalSubjRemoved+' subject'+(totalSubjRemoved!==1?'s':'')+' removed</span>';
+  if(totalAdded)chips+='<span style="background:rgba(45,212,160,.1);border:1px solid var(--s2o);color:var(--s2);border-radius:20px;padding:3px 10px;">+'+totalAdded+' lecture'+(totalAdded!==1?'s':'')+' added</span>';
+  if(totalRemoved)chips+='<span style="background:rgba(240,111,160,.1);border:1px solid var(--s3o);color:var(--s3);border-radius:20px;padding:3px 10px;">−'+totalRemoved+' lecture'+(totalRemoved!==1?'s':'')+' removed</span>';
+  if(totalRenamed)chips+='<span style="background:rgba(245,197,66,.1);border:1px solid var(--amo);color:var(--am);border-radius:20px;padding:3px 10px;">~'+totalRenamed+' duration changed</span>';
+  if(!chips&&!html)chips='<span style="color:var(--s2);">✓ No differences — curriculum matches default.</span>';
+  summaryEl.innerHTML=chips;
+  bodyEl.innerHTML=html||'<div style="font-size:12px;color:var(--mt);padding:8px 0;font-style:italic;">All subjects identical to default.</div>';
+  document.getElementById('cmDiffMo').style.display='flex';
 };
 // Re-apply layout on resize/rotation
 window.addEventListener('resize',function(){
@@ -9804,6 +9983,7 @@ window.addEventListener('fbReady',_initTimetableSync,{once:true});
     <span id="cmStatusBar" style="font-family:var(--mo);font-size:10px;color:var(--mt);flex:1;min-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
     <label style="background:var(--sf2);border:1px solid var(--bd2);color:var(--mt2);border-radius:8px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0;">↑ Patch<input type="file" accept=".json" style="display:none;" onchange="cmHandlePatch(this)"></label>
     <label style="background:var(--sf2);border:1px solid var(--bd2);color:var(--mt2);border-radius:8px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0;">↑ Full<input type="file" accept=".json" style="display:none;" onchange="cmHandleFull(this)"></label>
+    <button onclick="cmShowDiff()" style="background:var(--sf2);border:1px solid var(--bd2);color:var(--mt2);border-radius:8px;padding:5px 10px;font-size:11px;cursor:pointer;flex-shrink:0;" title="Compare current curriculum with original hardcoded default">📊 Diff</button>
     <button onclick="cmShowPromptModal()" style="background:var(--sf2);border:1px solid var(--bd2);color:var(--mt2);border-radius:8px;padding:5px 10px;font-size:11px;cursor:pointer;flex-shrink:0;" title="What format does Claude need?">🤖 AI prompt</button>
     <button style="background:rgba(240,111,160,.08);border:1px solid rgba(240,111,160,.25);color:var(--s3);border-radius:8px;padding:5px 10px;font-size:11px;cursor:pointer;flex-shrink:0;" onclick="resetCurriculum()" title="Reset to original hardcoded syllabus">↺ Reset</button>
   </div>
@@ -9856,6 +10036,18 @@ window.addEventListener('fbReady',_initTimetableSync,{once:true});
       <button onclick="cmDoBulk()" style="background:var(--s1);border:none;color:#fff;border-radius:9px;padding:8px 18px;font-size:12px;font-weight:700;cursor:pointer;">Add Lectures</button>
       <button onclick="document.getElementById('cmBulkMo').style.display='none'" style="background:var(--sf2);border:1px solid var(--bd2);color:var(--mt2);border-radius:9px;padding:8px 14px;font-size:12px;cursor:pointer;">Cancel</button>
     </div>
+  </div>
+</div>
+
+<!-- CM: Diff Modal -->
+<div id="cmDiffMo" style="display:none;position:fixed;inset:0;z-index:9800;background:rgba(0,0,0,.7);align-items:center;justify-content:center;">
+  <div style="background:var(--sf);border:1px solid var(--bd2);border-radius:18px;padding:20px;width:min(540px,96vw);max-height:90vh;overflow-y:auto;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+      <span style="font-size:15px;font-weight:700;color:var(--tx);flex:1;">📊 Curriculum Diff — Current vs Default</span>
+      <button onclick="document.getElementById('cmDiffMo').style.display='none'" style="background:none;border:none;color:var(--mt);font-size:18px;cursor:pointer;">✕</button>
+    </div>
+    <div id="cmDiffSummary" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;font-family:var(--mo);font-size:11px;"></div>
+    <div id="cmDiffBody" style="font-size:12px;"></div>
   </div>
 </div>
 

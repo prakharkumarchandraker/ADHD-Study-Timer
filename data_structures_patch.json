@@ -1,0 +1,115 @@
+{
+  "type": "studyos_subject_patch",
+  "subject_name": "Data Structures",
+  "color": "#a6e3a1",
+  "label": "DS",
+  "units": [
+    {
+      "name": "Unit 01 : Introduction of Data Structures",
+      "lectures": [
+        { "name": "Introduction of Data Structures", "duration": "1:30:51" },
+        { "name": "About Type of DS and Algorithm", "duration": "1:35:22" }
+      ]
+    },
+    {
+      "name": "Unit 02 : Time Complexity",
+      "lectures": [
+        { "name": "Analysis of Algorithm - Relative and Absolute Analysis", "duration": "1:36:21" },
+        { "name": "Relation Between Function, logarithmic and Other Formula", "duration": "1:39:37" },
+        { "name": "Time Complexity of Iteration - Single Loop", "duration": "1:23:46" },
+        { "name": "Time Complexity - Nested Iteration", "duration": "1:39:15" },
+        { "name": "Time Complexity - Triple Nested Loop", "duration": "1:31:20" },
+        { "name": "Find Approx Value S and Time Complexity", "duration": "1:30:28" },
+        { "name": "Analysis of Insertion Sort - BC, AC and WC", "duration": "1:27:04" }
+      ]
+    },
+    {
+      "name": "Unit 03 : Asymptotic Notation",
+      "lectures": [
+        { "name": "Asymptotic Function - Big O", "duration": "1:37:02" },
+        { "name": "Big Omega, Theta, Little Oh and Little Omega", "duration": "2:07:54" },
+        { "name": "Properties of AN and Question on Asymptotic Notation", "duration": "1:49:26" },
+        { "name": "PYQ of Asymptotic Notation", "duration": "1:03:41" }
+      ]
+    },
+    {
+      "name": "Unit 04 : Recurrence Relation and Solution",
+      "lectures": [
+        { "name": "About Recurrence", "duration": "1:47:33" },
+        { "name": "Iteration Methods - with Coding Example", "duration": "1:34:05" },
+        { "name": "Question Discussion on Iteration Method", "duration": "1:19:35" },
+        { "name": "PYQ on Iteration and Substitution Method", "duration": "1:08:29" },
+        { "name": "Recursion Tree Method", "duration": "0:40:20" },
+        { "name": "Question Discussion on Recursion Tree Method", "duration": "1:43:38" },
+        { "name": "Master Theorem of Divide and Conquer", "duration": "1:39:00" },
+        { "name": "Changing Variable Method and PYQ", "duration": "1:48:34" }
+      ]
+    },
+    {
+      "name": "Unit 05 : Stack and Application",
+      "lectures": [
+        { "name": "About Stack - PUSH and POP", "duration": "2:04:35" },
+        { "name": "Question Discussion of Stack and PYQ", "duration": "1:46:04" },
+        { "name": "Coding on Stack - PART 1", "duration": "1:13:09" },
+        { "name": "Coding on Stack - PART 2", "duration": "0:07:34" },
+        { "name": "Space Complexity", "duration": "0:34:26" },
+        { "name": "Infix to Postfix Conversion with PYQ", "duration": "1:29:16" },
+        { "name": "Infix to Prefix Conversion with PYQ", "duration": "1:24:18" },
+        { "name": "Postfix Evaluation with PYQ", "duration": "1:18:28" },
+        { "name": "Recursion and TOH", "duration": "1:23:58" }
+      ]
+    },
+    {
+      "name": "Unit 06 : Queue and Its Applications",
+      "lectures": [
+        { "name": "About Queue, Enqueue and Dequeue Operations", "duration": "1:09:55" },
+        { "name": "Queue Operations Coding", "duration": "0:53:26" },
+        { "name": "Question Discussion on Queue", "duration": "0:38:59" },
+        { "name": "About Circular Queue and Coding", "duration": "1:30:53" },
+        { "name": "Question Discussion on Queue and Stack", "duration": "1:05:54" },
+        { "name": "DEQUE and Priority Queue with PYQ", "duration": "1:10:37" }
+      ]
+    },
+    {
+      "name": "Unit 07 : Linked List",
+      "lectures": [
+        { "name": "Basic of Linked List and Creation of Node", "duration": "1:29:17" },
+        { "name": "LL Creation and Question Discussion", "duration": "1:43:39" },
+        { "name": "Insert and Delete Operation of FIRST and LAST Node", "duration": "1:23:23" },
+        { "name": "Insert Y after X and Before Y and Delete Node X", "duration": "2:20:41" },
+        { "name": "Stack and Queue using Linked List Implementation", "duration": "1:44:06" },
+        { "name": "Circular Linked List - Insertion and Deletion", "duration": "2:24:47" },
+        { "name": "PYQ PART 01, Find Mid Node and Sort Elements", "duration": "1:57:30" },
+        { "name": "Set Operation on Linked List, Find Loop and PYQ PART 02", "duration": "1:19:24" },
+        { "name": "PYQ PART 03 Discussion", "duration": "1:44:11" }
+      ]
+    },
+    {
+      "name": "Unit 08 : Hashing Function",
+      "lectures": [
+        { "name": "About Hashing Function and Type of Hashing Function", "duration": "1:44:46" },
+        { "name": "Collision Resolution Technique: LP and QP", "duration": "1:41:35" },
+        { "name": "Collision Resolution Technique: DH and RH", "duration": "1:10:47" }
+      ]
+    },
+    {
+      "name": "Unit 09 : Tree",
+      "lectures": [
+        { "name": "About Tree, Binary Tree and Type of Binary Tree", "duration": "2:11:06" },
+        { "name": "Memory Representation of Binary Tree", "duration": "1:26:15" },
+        { "name": "Question Discussion on Binary Tree", "duration": "1:02:56" },
+        { "name": "Traversal of Binary Tree", "duration": "1:25:18" },
+        { "name": "Application of Binary Tree", "duration": "0:13:12" },
+        { "name": "Construction of Binary Tree", "duration": "1:33:36" },
+        { "name": "Binary Search Tree and Search Operation", "duration": "1:36:16" },
+        { "name": "Insertion, Deletion and PYQ Discussion", "duration": "1:20:51" },
+        { "name": "AVL Tree and Operation", "duration": "1:52:48" },
+        { "name": "Threaded BT and Extended BT", "duration": "1:49:55" },
+        { "name": "M Way Search Tree and B Tree", "duration": "1:48:43" },
+        { "name": "Max and Min Number of Keys in B Tree", "duration": "1:25:26" },
+        { "name": "2 - 3 Tree and Operation", "duration": "0:59:28" }
+      ]
+    }
+  ],
+  "pyq_action": "keep"
+}

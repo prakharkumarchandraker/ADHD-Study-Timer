@@ -1,0 +1,134 @@
+{
+  "type": "studyos_subject_patch",
+  "subject_name": "Computer Organization",
+  "color": "#fab387",
+  "label": "CO",
+  "units": [
+    {
+      "name": "Unit 01 : Number System",
+      "lectures": [
+        { "name": "Syllabus, Relation Between Combination and Number Of Bits", "duration": "1:41:03" },
+        { "name": "Decimal to Binary and Binary to Decimal", "duration": "1:41:49" },
+        { "name": "PYQ and Question Discussion on Number System", "duration": "1:29:12" },
+        { "name": "Unsigned Number and Signed Magnitude Number Range and OvF", "duration": "1:54:53" },
+        { "name": "1's Complement and 2's Complement Number and OvF", "duration": "1:56:35" },
+        { "name": "2's Complements OvF and PYQ Question Discussion", "duration": "1:32:03" }
+      ]
+    },
+    {
+      "name": "Unit 02 : Floating Point Representation",
+      "lectures": [
+        { "name": "Implicit and Explicit Normalisation", "duration": "2:22:25" },
+        { "name": "Single Precision Format - 32 bits Version", "duration": "2:14:17" },
+        { "name": "Top Level Question on Single Precision Format", "duration": "1:23:43" },
+        { "name": "Question Discussion on FP Format and NaN", "duration": "1:38:19" },
+        { "name": "Booth Recording Pattern and Algorithm", "duration": "2:15:06" },
+        { "name": "Floating Point Multiplication and Division", "duration": "1:46:10" }
+      ]
+    },
+    {
+      "name": "Unit 03 : Foundation of CO",
+      "lectures": [
+        { "name": "About Computer and Execution of Program", "duration": "1:33:34" },
+        { "name": "Memory Chip Configuration, Byte and Word Addressable Memory", "duration": "2:04:07" },
+        { "name": "Address Decoding and Question Discussion on BA, WA and bA", "duration": "1:35:46" },
+        { "name": "Little and Big Endian Mechanisms", "duration": "1:53:35" },
+        { "name": "Processor Pin Structures and CPU Memory Interfacing", "duration": "1:39:40" },
+        { "name": "Clock Cycle, Memory Cycle and Bus Structure", "duration": "1:29:06" },
+        { "name": "Bus Configuration", "duration": "1:34:03" }
+      ]
+    },
+    {
+      "name": "Unit 04 : Instruction Cycle, Instruction Format and Addressing Mode",
+      "lectures": [
+        { "name": "About Fetch Cycle and Question Discussion", "duration": "1:56:38" },
+        { "name": "Execution Cycle and 0AIF and 1AIF", "duration": "1:57:18" },
+        { "name": "Expand Opcode Technique", "duration": "1:43:00" },
+        { "name": "2 AI, 3 AI format and Question Discussion", "duration": "1:47:46" },
+        { "name": "Top Level Question Discussion on Instruction Format", "duration": "1:47:49" },
+        { "name": "Execution Sequence of Instruction", "duration": "1:39:50" },
+        { "name": "Flag Register (Program Status Word)", "duration": "1:24:51" },
+        { "name": "Addressing Mode With Practice Example", "duration": "1:46:36" },
+        { "name": "Indexed Addressing Mode and PYQ", "duration": "1:31:00" },
+        { "name": "Unconditional and Conditional TOC Instruction", "duration": "1:44:03" }
+      ]
+    },
+    {
+      "name": "Unit 05 : Pipeline",
+      "lectures": [
+        { "name": "Instruction Cycle with Interrupts", "duration": "1:57:46" },
+        { "name": "Pipeline and Non Pipeline Processor and Performance", "duration": "1:53:14" },
+        { "name": "Question Discussion on Linear Pipeline PART 1", "duration": "1:52:04" },
+        { "name": "Question Discussion on Linear Pipeline PART 2", "duration": "2:01:21" },
+        { "name": "RISC Pipeline", "duration": "1:42:33" },
+        { "name": "Write Back Stage in RISC Pipeline", "duration": "0:11:35" },
+        { "name": "Question Discussion, Stalls and Structural Dependency", "duration": "1:55:09" },
+        { "name": "Data Dependency, Anti Dependency and Output Dependency", "duration": "2:02:20" },
+        { "name": "Data Hazards, Dependency Vs Hazard and Numerical Discussion", "duration": "2:40:02" },
+        { "name": "Control Dependency and Branch Penalty", "duration": "1:23:20" },
+        { "name": "Conditional TOC and Branch Prediction Buffer", "duration": "1:13:48" },
+        { "name": "Question Discussion on Branching Prediction", "duration": "2:02:13" },
+        { "name": "PYQ and Question Discussion PART 1", "duration": "1:35:01" },
+        { "name": "PYQ Discussion PART 2", "duration": "2:27:21" },
+        { "name": "Dynamic Pipeline and PYQ Discussion PART 3", "duration": "1:38:30" },
+        { "name": "PYQ Discussion PART 4", "duration": "1:28:56" }
+      ]
+    },
+    {
+      "name": "Unit 06 : Memory Organisation",
+      "lectures": [
+        { "name": "About Memory Organisation and Addressability of Memory", "duration": "1:29:05" },
+        { "name": "A Connection Between CPU and Memory", "duration": "1:05:44" },
+        { "name": "Question Discussion on RAM and ROM and PYQ", "duration": "2:44:01" },
+        { "name": "Memory Hierarchy System Design", "duration": "1:37:23" },
+        { "name": "Type of Memory Organisation, Avg Access Time and Throughput", "duration": "1:36:57" },
+        { "name": "Question Discussion on Type of Memory Organisation - PART 1", "duration": "2:03:27" },
+        { "name": "Question Discussion on Memory Organisation - PART 2", "duration": "0:44:29" },
+        { "name": "Cache Memory and Organisation", "duration": "1:34:50" },
+        { "name": "Associative Mapping and Instruction Execution", "duration": "1:16:49" },
+        { "name": "Advantage and Disadvantage of Associative Mapping and DM", "duration": "1:27:20" },
+        { "name": "Direct Mapping, Advantage and Disadvantage", "duration": "1:31:15" },
+        { "name": "Set Associative Mapping", "duration": "0:44:47" },
+        { "name": "Set Associative Mapping and Question Discussion on Mapping", "duration": "1:54:36" },
+        { "name": "Question Discussion on Mapping - DM, AM and SAM", "duration": "1:22:09" },
+        { "name": "Replacement Algorithm and Question Discussion", "duration": "1:26:45" },
+        { "name": "Type of Miss - CM, CP and CF", "duration": "1:17:51" },
+        { "name": "Size of Comparator and Latency - Question Discussion On Hit", "duration": "2:29:58" },
+        { "name": "Update Technique and Write Through Procedure", "duration": "2:20:25" },
+        { "name": "Write Back Procedure", "duration": "1:03:31" },
+        { "name": "PYQ PART 1", "duration": "1:36:16" },
+        { "name": "PYQ PART 2", "duration": "2:16:07" },
+        { "name": "GATE PYQ 3", "duration": "2:50:08" },
+        { "name": "PYQ on Memory PART 4", "duration": "1:46:27" }
+      ]
+    },
+    {
+      "name": "Unit 07 : Disk Structure",
+      "lectures": [
+        { "name": "About Disk Structure, Access Time and Capacity", "duration": "2:12:52" },
+        { "name": "Question Discussion on Disk PART 1", "duration": "1:44:51" },
+        { "name": "Question Discussion on Disk PART 2", "duration": "1:33:30" },
+        { "name": "CAV, CLV and PYQ Discussion on Disk", "duration": "1:39:36" },
+        { "name": "Magnetic Disk and Question Discussion", "duration": "1:17:07" }
+      ]
+    },
+    {
+      "name": "Unit 08 : Control Unit",
+      "lectures": [
+        { "name": "About Control Unit, Hardwired CU and Microprogrammed CU", "duration": "2:09:59" },
+        { "name": "Horizontal and Vertical Micro Programmed Control Unit", "duration": "1:39:52" },
+        { "name": "Nano Programmed Control Unit and Question Discussion", "duration": "1:15:18" }
+      ]
+    },
+    {
+      "name": "Unit 09 : IO Operations",
+      "lectures": [
+        { "name": "About Programmed IO and Interrupt IO", "duration": "1:03:03" },
+        { "name": "Top Level Question Discussion on PIO and IDIO", "duration": "1:05:03" },
+        { "name": "Type of Interrupts", "duration": "1:31:51" },
+        { "name": "DMA Controller and PYQ Numerical Discussion", "duration": "1:54:12" }
+      ]
+    }
+  ],
+  "pyq_action": "keep"
+}
