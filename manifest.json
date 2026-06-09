@@ -1,7 +1,7 @@
 {
-  "name": "Study OS \u00b7 GATE 2027",
+  "name": "Study OS · GATE 2027",
   "short_name": "StudyOS",
-  "description": "GATE 2027 study tracker \u2014 schedule, tasks, habits, focus.",
+  "description": "GATE 2027 study tracker — schedule, tasks, habits, focus.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "fullscreen",
