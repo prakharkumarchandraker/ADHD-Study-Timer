@@ -1509,7 +1509,10 @@ window.onerror=function(msg,src,line,col,err){
     <div class="card" id="dailyMinCard">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
         <div class="ct" style="margin-bottom:0;">🎯 Today's Minimum Target</div>
-        <span id="dailyMinBadge" style="font-family:var(--mo);font-size:9px;padding:2px 8px;border-radius:10px;background:var(--sf2);color:var(--mt);border:1px solid var(--bd2);"></span>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span id="dailyMinBadge" style="font-family:var(--mo);font-size:9px;padding:2px 8px;border-radius:10px;background:var(--sf2);color:var(--mt);border:1px solid var(--bd2);"></span>
+          <button onclick="dmRefreshSnap()" id="dmRefreshBtn" title="Recalculate today's minimum from current schedule" style="background:none;border:1px solid var(--bd2);color:var(--mt);border-radius:7px;padding:2px 7px;font-size:10px;cursor:pointer;font-family:var(--fn);">↺</button>
+        </div>
       </div>
       <div id="dailyMinContent"></div>
     </div>
@@ -2607,6 +2610,9 @@ function saveTimetable(skipSort){
   if(typeof renderGate==='function')renderGate();
   if(typeof up==='function')up();
   if(typeof renderTimetable==='function')renderTimetable();
+  // Timetable change means today's session slots changed → stale daily minimum snapshot
+  if(typeof dmInvalidateSnap==='function')dmInvalidateSnap();
+  if(typeof renderDailyMinimum==='function')renderDailyMinimum();
 }
 
 function genTTId(){return 'tt_'+Date.now().toString(36)+Math.random().toString(36).substr(2,4);}
@@ -8502,6 +8508,33 @@ function dmBuildSnapFromSched(){
   });
   list.sort(function(a,b){return a.id-b.id;});
   return list.length?list:null;
+}
+
+// Manual refresh: wipe today's frozen snapshot and rebuild from current schedule.
+// Also clears Firebase copy so other devices get fresh data too.
+function dmRefreshSnap(){
+  var key=dmSnapKey();
+  localStorage.removeItem(key);
+  if(window._fb&&window._fb.ready){
+    try{window._fb.set(window._fb.ref(window._fb.db,fbPath(key)),null);}catch(e){}
+  }
+  // Rebuild immediately
+  var fresh=dmBuildSnapFromSched();
+  if(fresh)dmSaveSnap(fresh);
+  renderDailyMinimum();
+  var btn=document.getElementById('dmRefreshBtn');
+  if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='↺';},1500);}
+}
+window.dmRefreshSnap=dmRefreshSnap;
+
+// Auto-invalidate snapshot when timetable changes (adding/removing sessions
+// changes which tasks land on today, so the frozen snapshot becomes stale).
+function dmInvalidateSnap(){
+  var key=dmSnapKey();
+  localStorage.removeItem(key);
+  if(window._fb&&window._fb.ready){
+    try{window._fb.set(window._fb.ref(window._fb.db,fbPath(key)),null);}catch(e){}
+  }
 }
 
 // Called once on startSync to listen for remote snapshot updates
