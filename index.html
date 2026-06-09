@@ -2108,14 +2108,14 @@ window.onerror=function(msg,src,line,col,err){
 <!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getDatabase, ref, onValue, set, update } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+import { getDatabase, ref, onValue, set, update, get } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
 const FIREBASE_CONFIG={apiKey:"AIzaSyBiR56BExZjtmmpjOHn2YHqlnjJNkggReY",authDomain:"adhd-timer-27e1b.firebaseapp.com",databaseURL:"https://adhd-timer-27e1b-default-rtdb.firebaseio.com",projectId:"adhd-timer-27e1b",storageBucket:"adhd-timer-27e1b.firebasestorage.app",messagingSenderId:"1081377208233",appId:"1:1081377208233:web:6671afd64e30a4b8fff6b8"};
 function setSyncStatus(state,label){['syncDot','syncDotDrawer'].forEach(function(id){var dot=document.getElementById(id);if(dot)dot.className='sync-dot '+(state==='ok'?'ok':state==='err'?'err':'');});['syncLbl','syncLblDrawer'].forEach(function(id){var lbl=document.getElementById(id);if(lbl)lbl.textContent=label;});}
 try{
   const app=initializeApp(FIREBASE_CONFIG);
   const db=getDatabase(app);
   setSyncStatus('ok','synced');
-  window._fb={db,ref,onValue,set,update,ready:true};
+  window._fb={db,ref,onValue,set,update,get,ready:true};
   window._setSyncStatus=setSyncStatus;
   window.dispatchEvent(new Event('fbReady'));
 }catch(e){
@@ -6612,6 +6612,7 @@ function startPresence(fb){
     // Always poll Firebase for stale presence records, not just when paused.
     // onValue only fires on writes — if the other device was force-killed, Firebase
     // never changes again, so we must check manually on every heartbeat.
+    if(typeof fb.get!=='function')return; // guard: get not available (shouldn't happen)
     fb.get(fb.ref(fb.db,PKEY)).then(function(snap){
       var val=snap.val();
       if(!val||!val.tabId)return;

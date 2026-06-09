@@ -1,0 +1,109 @@
+{
+  "type": "studyos_subject_patch",
+  "subject_name": "C Programming",
+  "color": "#89b4fa",
+  "label": "C",
+  "units": [
+    {
+      "name": "Unit 01 : Foundation and C Tokens",
+      "lectures": [
+        { "name": "About Computer and Mapping Between HLL to LLL", "duration": "1:33:40" },
+        { "name": "About Printf and Signature", "duration": "1:36:27" },
+        { "name": "About Scanf and ESC", "duration": "1:51:15" },
+        { "name": "Number Representation in Binary Form - Positive and Negative", "duration": "1:35:13" },
+        { "name": "Data Type", "duration": "1:41:43" },
+        { "name": "FS and C Tokens", "duration": "1:37:37" },
+        { "name": "Arithmetic, Relational and Logical Operators", "duration": "2:01:38" },
+        { "name": "Assignment Operators and Bitwise Operators", "duration": "1:31:52" },
+        { "name": "Left and Right Shift Operators", "duration": "1:18:32" },
+        { "name": "Ternary, Increment and Decrement and Other Operators", "duration": "2:07:04" }
+      ]
+    },
+    {
+      "name": "Unit 02 : Control Flow Statement",
+      "lectures": [
+        { "name": "If else statements", "duration": "1:37:20" },
+        { "name": "Switch Case with Question Discussion", "duration": "1:37:46" },
+        { "name": "For Loop with Question Discussion", "duration": "1:39:45" },
+        { "name": "while and Do While Loop with Question Discussion", "duration": "1:42:21" },
+        { "name": "Jump Statement - Break, Continue, Goto and Exit", "duration": "1:38:23" }
+      ]
+    },
+    {
+      "name": "Unit 03 : Pointers",
+      "lectures": [
+        { "name": "About Pointers and Indirection Operators", "duration": "1:38:39" },
+        { "name": "Wild, Null, Void and Dangling Pointers", "duration": "1:37:17" },
+        { "name": "Pointer to Pointer and Arithmetic Operation on Pointers", "duration": "1:35:53" }
+      ]
+    },
+    {
+      "name": "Unit 04 : Array",
+      "lectures": [
+        { "name": "About 1 D Array", "duration": "1:19:00" },
+        { "name": "Relation Between 1 D Array and Pointers", "duration": "1:42:32" },
+        { "name": "Array of Pointers and Top Level Question Discussion", "duration": "1:34:34" },
+        { "name": "About 2 D Array", "duration": "1:30:25" },
+        { "name": "Relation Between 2 D Array and Pointers", "duration": "1:56:25" },
+        { "name": "About 3 D Array", "duration": "1:53:23" }
+      ]
+    },
+    {
+      "name": "Unit 05 : Strings",
+      "lectures": [
+        { "name": "About Strings and Relation with Pointers", "duration": "1:32:56" },
+        { "name": "String Library Function", "duration": "1:27:36" },
+        { "name": "Difference S[] and *p and Question Discussion on Pointers", "duration": "1:25:04" },
+        { "name": "PYQ Discussion", "duration": "1:46:08" },
+        { "name": "Ready Only Variable and difference between *s and s[]", "duration": "1:40:24" }
+      ]
+    },
+    {
+      "name": "Unit 06 : Functions",
+      "lectures": [
+        { "name": "About Function, Local Variable and Global Variable", "duration": "1:48:44" },
+        { "name": "Storage Classes - Auto, Register, Static and Extern", "duration": "1:50:42" },
+        { "name": "Macro Substitution", "duration": "1:42:25" },
+        { "name": "Static and Dynamic Scoping with PYQ", "duration": "1:29:12" },
+        { "name": "Call By Value, Call By Address and Calling Conversion", "duration": "1:29:58" },
+        { "name": "CBV, CBR, CICO and CBN with Example", "duration": "1:40:14" },
+        { "name": "Recursion - T0, T1, T3, T4 and T5", "duration": "1:44:32" },
+        { "name": "PYQ PART 1", "duration": "1:39:41" },
+        { "name": "PYQ PART 2", "duration": "1:18:26" },
+        { "name": "Dangling Pointer", "duration": "0:21:39" }
+      ]
+    },
+    {
+      "name": "Unit 07 : Structure and PYQ",
+      "lectures": [
+        { "name": "About Structure and Syntax", "duration": "1:29:37" },
+        { "name": "Passing Entire Structure and Bit Operations", "duration": "1:40:54" },
+        { "name": "Top Level Question Discussion on Structure", "duration": "1:38:27" }
+      ]
+    },
+    {
+      "name": "Unit 08 : Union, Enum and Runtime Memory Allocation",
+      "lectures": [
+        { "name": "Union and Enum with Question Discussion", "duration": "2:07:04" },
+        { "name": "RunTime Memory Allocation and imp Pointer Concept", "duration": "1:35:30" }
+      ]
+    },
+    {
+      "name": "Unit 09 : C PYQ",
+      "lectures": [
+        { "name": "PYQ L01", "duration": "1:36:12" }
+      ]
+    },
+    {
+      "name": "Unit 10 : IMP Concept On Array",
+      "lectures": [
+        { "name": "Find Address Of Element of 1 DA and 2 DA", "duration": "1:06:28" },
+        { "name": "3 DA Array and Lower Triangular Matrix", "duration": "1:35:21" },
+        { "name": "Question Discussion on LTM", "duration": "1:35:35" },
+        { "name": "Upper Triangular Matrix and Tridaigonal Matrix", "duration": "1:35:30" },
+        { "name": "Diagonal Matrix, Z Matrix and C Matrix", "duration": "1:11:30" }
+      ]
+    }
+  ],
+  "pyq_action": "keep"
+}
