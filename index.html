@@ -812,6 +812,54 @@ body.focus-mode .hero-cd{font-size:96px!important;letter-spacing:-4px;}
   /* nav-btn is now inside drawer - no responsive overrides needed */
 }
 
+/* ── DAILY MINIMUM TARGET ── */
+.dmin-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;background:var(--sf2);border:1px solid var(--bd);margin-bottom:5px;transition:border-color .15s;}
+.dmin-item.done{opacity:.5;}
+.dmin-item.done .dmin-name{text-decoration:line-through;color:var(--mt);}
+.dmin-chk{width:18px;height:18px;border-radius:4px;border:2px solid var(--bd2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex-shrink:0;transition:all .15s;}
+.dmin-chk.done{background:var(--s2b);border-color:var(--s2);color:var(--s2);}
+.dmin-info{flex:1;min-width:0;}
+.dmin-subj{font-size:9px;font-weight:700;font-family:var(--mo);margin-bottom:1px;}
+.dmin-name{font-size:12px;font-weight:600;color:var(--tx);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.dmin-dur{font-family:var(--mo);font-size:9px;color:var(--mt);flex-shrink:0;}
+.dmin-reached{background:rgba(45,212,160,.07);border:1px solid var(--s2o);border-radius:10px;padding:10px 14px;text-align:center;margin-top:6px;}
+.dmin-reached-txt{font-size:13px;font-weight:700;color:var(--s2);}
+.dmin-reached-sub{font-size:10px;color:var(--mt);margin-top:2px;}
+.dmin-burnout{border-radius:9px;padding:8px 12px;margin-top:8px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:7px;}
+.dmin-burnout.ok{background:rgba(45,212,160,.07);border:1px solid var(--s2o);color:var(--s2);}
+.dmin-burnout.warn{background:rgba(245,197,66,.07);border:1px solid var(--amo);color:var(--am);}
+.dmin-burnout.over{background:rgba(240,111,160,.07);border:1px solid var(--s3o);color:var(--s3);}
+.dmin-partial-tag{font-size:8px;font-weight:700;background:rgba(245,197,66,.12);color:var(--am);border:1px solid rgba(245,197,66,.25);border-radius:4px;padding:1px 4px;margin-left:4px;vertical-align:middle;white-space:nowrap;}
+.dmin-tier-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:10px;}
+.dmin-tier-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 4px;border-radius:10px;border:1px solid var(--bd2);background:var(--sf2);cursor:pointer;transition:all .15s;font-family:var(--fn);}
+.dmin-tier-btn:hover{border-color:var(--s1o);}
+.dmin-tier-btn.active{font-weight:700;}
+.dmin-tier-spd{font-family:var(--mo);font-size:12px;font-weight:700;}
+.dmin-tier-lbl{font-size:9px;color:inherit;opacity:.8;}
+.dmin-tier-cnt{font-family:var(--mo);font-size:9px;color:var(--mt);}
+.dmin-tier-list{border-radius:10px;border:1px solid var(--bd);padding:8px;margin-bottom:8px;}
+/* ── SPEED CALCULATOR ── */
+.sc-speed-row{display:grid;grid-template-columns:44px 1fr 90px 90px;gap:6px;align-items:center;padding:9px 10px;background:var(--sf2);border:1px solid var(--bd);border-radius:10px;margin-bottom:6px;}
+.sc-speed-row.highlight{border-color:var(--s2o);background:rgba(45,212,160,.05);}
+.sc-speed-lbl{font-family:var(--mo);font-size:13px;font-weight:700;color:var(--tx);}
+.sc-speed-bar-wrap{height:6px;background:var(--sf3);border-radius:3px;overflow:hidden;}
+.sc-speed-bar{height:100%;border-radius:3px;transition:width .4s;}
+.sc-speed-days{font-family:var(--mo);font-size:11px;color:var(--mt2);text-align:right;}
+.sc-speed-date{font-family:var(--mo);font-size:10px;text-align:right;font-weight:700;}
+.sc-subj-row{display:flex;align-items:center;gap:7px;padding:6px 0;border-bottom:1px solid var(--bd);}
+.sc-subj-row:last-child{border-bottom:none;}
+.sc-subj-lbl{font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;flex-shrink:0;width:34px;text-align:center;}
+.sc-subj-name{font-size:11px;color:var(--mt2);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sc-subj-speeds{display:flex;gap:4px;flex-shrink:0;}
+.sc-subj-chip{font-family:var(--mo);font-size:9px;padding:2px 5px;border-radius:5px;background:var(--sf3);color:var(--mt);border:1px solid var(--bd);white-space:nowrap;}
+.sc-subj-chip.hl{background:rgba(45,212,160,.1);border-color:rgba(45,212,160,.25);color:var(--s2);}
+.sc-timeline{margin-top:4px;}
+.sc-tl-row{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+.sc-tl-speed{font-family:var(--mo);font-size:10px;font-weight:700;color:var(--mt2);width:36px;flex-shrink:0;}
+.sc-tl-bar-wrap{flex:1;height:16px;background:var(--sf3);border-radius:4px;overflow:hidden;display:flex;}
+.sc-tl-lec{height:100%;background:var(--s1);opacity:.8;}
+.sc-tl-pyq{height:100%;background:var(--s3);opacity:.7;}
+.sc-tl-dates{font-family:var(--mo);font-size:9px;color:var(--mt);flex-shrink:0;text-align:right;width:80px;}
 /* ── MOBILE GATE TAB LAYOUT FIXES ── */
 /* Do Next button - compact on mobile */
 .do-next-btn{max-width:80px;overflow:hidden;text-overflow:ellipsis;}
@@ -1410,6 +1458,51 @@ window.onerror=function(msg,src,line,col,err){
         <span id="vel-summary" style="font-family:var(--mo);font-size:9px;color:var(--mt);"></span>
       </div>
       <div class="vel-grid" id="vel-grid"></div>
+    </div>
+
+    <!-- DAILY MINIMUM TARGET -->
+    <div class="card" id="dailyMinCard">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div class="ct" style="margin-bottom:0;">🎯 Today's Minimum Target</div>
+        <span id="dailyMinBadge" style="font-family:var(--mo);font-size:9px;padding:2px 8px;border-radius:10px;background:var(--sf2);color:var(--mt);border:1px solid var(--bd2);"></span>
+      </div>
+      <div id="dailyMinContent"></div>
+    </div>
+
+    <!-- SPEED CALCULATOR -->
+    <div class="card" id="speedCalcCard">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <div class="ct" style="margin-bottom:0;">⚡ Speed Completion Calculator</div>
+        <button onclick="toggleSpeedCalc()" id="speedCalcToggleBtn" style="background:var(--sf2);border:1px solid var(--bd2);color:var(--mt2);border-radius:8px;padding:3px 9px;font-size:10px;font-weight:600;cursor:pointer;font-family:var(--fn);">▼ Show</button>
+      </div>
+      <div id="speedCalcBody" style="display:none;">
+        <!-- Controls -->
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;padding-top:10px;border-top:1px solid var(--bd);">
+          <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mt);">
+            <span>Hours/day:</span>
+            <span style="font-family:var(--mo);font-size:11px;color:var(--s2);" id="scAutoHours">—</span>
+            <span style="font-size:9px;color:var(--mt);">(auto)</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:5px;margin-left:auto;">
+            <label style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--mt);cursor:pointer;">
+              <input type="checkbox" id="scIncludeRecorded" onchange="renderSpeedCalc()" style="accent-color:var(--s1);"> +Recorded
+            </label>
+            <span style="color:var(--bd2);font-size:12px;">|</span>
+            <span style="font-size:10px;color:var(--mt);">Manual:</span>
+            <input type="number" id="scManualHours" min="1" max="20" placeholder="hrs" oninput="renderSpeedCalc()"
+              style="width:44px;background:var(--sf2);border:1px solid var(--bd2);border-radius:6px;padding:3px 6px;font-family:var(--mo);font-size:11px;color:var(--tx);outline:none;text-align:center;">
+          </div>
+        </div>
+        <!-- Speed rows -->
+        <div id="scSpeedRows" style="margin-bottom:14px;"></div>
+        <!-- Subject breakdown -->
+        <div style="margin-bottom:8px;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mt);margin-bottom:8px;">Per-Subject Breakdown</div>
+          <div id="scSubjectRows"></div>
+        </div>
+        <!-- Timeline -->
+        <div id="scTimeline"></div>
+      </div>
     </div>
 
     <!-- GATE HEATMAP -->
@@ -2908,19 +3001,65 @@ window.revMarkUnit=function(key,rating){
   if(!ST.revUnits||!ST.revUnits[key])return;
   var u=ST.revUnits[key];var today=getToday();
   var mp=u.maxPasses||9;
-  u.passes.push({date:today,rating:rating,passNumber:u.passNumber});
-  if(rating==='blank'){u.passNumber=0;u.nextRevision=addD(today,1);}
-  else{
-    u.passNumber=Math.min(u.passNumber+1,9);
-    if(u.passNumber>=9||u.passNumber>=mp){
-      u.subjectGraduated=true;u.nextRevision=null;
-    }else{
-      u.nextRevision=revNextDate(today,u.passNumber,rating);
+  // ── Same-day re-rating: if last pass was today, overwrite it instead of adding ──
+  var existingTodayIdx=-1;
+  for(var pi=u.passes.length-1;pi>=0;pi--){
+    if(u.passes[pi].date===today){existingTodayIdx=pi;break;}
+  }
+  if(existingTodayIdx>=0){
+    // Overwrite: restore passNumber to what it was before that pass, then re-apply
+    var prevPassNumber=u.passes[existingTodayIdx].passNumber;
+    u.passes[existingTodayIdx]={date:today,rating:rating,passNumber:prevPassNumber};
+    // Recalculate nextRevision from this pass
+    if(rating==='blank'){u.passNumber=0;u.nextRevision=addD(today,1);}
+    else{
+      u.passNumber=Math.min(prevPassNumber+1,9);
+      if(u.passNumber>=9||u.passNumber>=mp){u.subjectGraduated=true;u.nextRevision=null;}
+      else{u.nextRevision=revNextDate(today,u.passNumber,rating);}
+    }
+  } else {
+    // New pass for today
+    u.passes.push({date:today,rating:rating,passNumber:u.passNumber});
+    if(rating==='blank'){u.passNumber=0;u.nextRevision=addD(today,1);}
+    else{
+      u.passNumber=Math.min(u.passNumber+1,9);
+      if(u.passNumber>=9||u.passNumber>=mp){u.subjectGraduated=true;u.nextRevision=null;}
+      else{u.nextRevision=revNextDate(today,u.passNumber,rating);}
     }
   }
-  saveGateState();renderRevCard();if(typeof renderRevCalendar==='function')renderRevCalendar();if(typeof renderRevLog==='function')renderRevLog();up();
+  saveGateState();renderRevCard();if(typeof renderRevCalendar==='function')renderRevCalendar();if(typeof renderRevLog==='function')renderRevLog();if(typeof updateRevBlockScreen==='function')updateRevBlockScreen();up();
   var next=u.nextRevision?fmtShort(u.nextRevision):(u.subjectGraduated?'all done \u2714':'');
   showT('Revision logged',{easy:'\u2705 Easy! Next: '+next,hard:'\U0001f605 Hard. Next: '+next,blank:'\u274c Blank. Retry tomorrow.'}[rating]||'');
+};
+window.revClearTodayRating=function(type,key){
+  var today=getToday();
+  if(type==='unit'){
+    if(!ST.revUnits||!ST.revUnits[key])return;
+    var u=ST.revUnits[key];
+    // Find and remove today's pass
+    var idx=-1;
+    for(var pi=u.passes.length-1;pi>=0;pi--){if(u.passes[pi].date===today){idx=pi;break;}}
+    if(idx<0)return;
+    var removedPass=u.passes[idx];
+    u.passes.splice(idx,1);
+    // Restore passNumber to what it was before this pass
+    u.passNumber=removedPass.passNumber;
+    // Restore nextRevision to today so it shows as due again
+    u.nextRevision=today;
+    u.subjectGraduated=false;
+  } else {
+    if(!ST.revSubjects||!ST.revSubjects[key])return;
+    var s=ST.revSubjects[key];
+    var sidx=-1;
+    for(var si=s.sweeps.length-1;si>=0;si--){if(s.sweeps[si].date===today){sidx=si;break;}}
+    if(sidx<0)return;
+    var removedSweep=s.sweeps[sidx];
+    s.sweeps.splice(sidx,1);
+    s.sweepNumber=removedSweep.sweepNumber;
+    s.nextSweep=today;
+  }
+  saveGateState();renderRevCard();if(typeof updateRevBlockScreen==='function')updateRevBlockScreen();
+  showT('↩ Rating cleared','Item is back in your due queue.');
 };
 window.revMarkSubject=function(subj,rating){
   if(!ST.revSubjects||!ST.revSubjects[subj])return;
@@ -2929,16 +3068,16 @@ window.revMarkSubject=function(subj,rating){
   if(rating==='blank'||rating==='partial'){s.nextSweep=addD(today,3);showT('Redo in 3 days','Keep going!');}
   else{s.sweepNumber=Math.min(s.sweepNumber+1,3);if(s.sweepNumber>=3){s.nextSweep=null;showT(subj+' mastered!','All sweeps done!');}else{var dLeft=revDaysToGate(today);var pcts=[0.40,0.60];s.nextSweep=addD(today,Math.max(7,Math.round(dLeft*pcts[Math.min(s.sweepNumber-1,1)])));showT('Sweep done!','Next: '+fmtShort(s.nextSweep));}}
   s.weakUnits=revGetWeakUnits(subj);
-  saveGateState();renderRevCard();if(typeof renderRevCalendar==='function')renderRevCalendar();if(typeof renderRevLog==='function')renderRevLog();up();
+  saveGateState();renderRevCard();if(typeof renderRevCalendar==='function')renderRevCalendar();if(typeof renderRevLog==='function')renderRevLog();if(typeof updateRevBlockScreen==='function')updateRevBlockScreen();up();
 };
 window.revSnooze=function(type,key){
   var today=getToday();
   if(type==='unit'&&ST.revUnits&&ST.revUnits[key])ST.revUnits[key].nextRevision=addD(today,1);
   else if(type==='subject'&&ST.revSubjects&&ST.revSubjects[key])ST.revSubjects[key].nextSweep=addD(today,1);
-  saveGateState();renderRevCard();if(typeof renderRevCalendar==='function')renderRevCalendar();if(typeof renderRevLog==='function')renderRevLog();showT('\U0001f4a4 Snoozed','See you tomorrow.');
+  saveGateState();renderRevCard();if(typeof renderRevCalendar==='function')renderRevCalendar();if(typeof renderRevLog==='function')renderRevLog();if(typeof updateRevBlockScreen==='function')updateRevBlockScreen();showT('\U0001f4a4 Snoozed','See you tomorrow.');
 };
 function revGetBlockMode(){return ST.revBlockMode||'B';}
-window.revSetBlockMode=function(mode){ST.revBlockMode=mode;saveGateState();renderRevCard();renderGate();};
+window.revSetBlockMode=function(mode){ST.revBlockMode=mode;saveGateState();renderRevCard();if(typeof updateRevBlockScreen==='function')updateRevBlockScreen();renderGate();};
 function revIsBlocked(){var mode=revGetBlockMode();if(mode==='A')return false;return revDueCount()>0;}
 window.markRevDone=function(subj,idx){if(!ST.revDone)ST.revDone={};ST.revDone[subj+'_'+idx]=true;saveGateState();renderGate();};
 
@@ -3468,6 +3607,10 @@ function renderGate(){
 
   // Velocity tracker (runs after subject grid so data is fresh)
   if(typeof renderVelocity==='function')renderVelocity();
+  // Daily minimum target
+  if(typeof renderDailyMinimum==='function')renderDailyMinimum();
+  // Speed calculator (only if open)
+  if(typeof renderSpeedCalc==='function'&&_speedCalcOpen)renderSpeedCalc();
 
   // Carry-forward: inject missed tasks at top of session plan if viewing today
   (function renderCarryForward(){
@@ -4627,7 +4770,47 @@ function renderRevCard(){
   html+='</div>';
 
   if(!items.length){
-    html+='<div class="rev-empty">✅ No revisions due — keep going!</div></div>';
+    html+='<div class="rev-empty">✅ No revisions due — keep going!</div>';
+    // Still show revised-today history even when queue is empty
+    var todayR=getToday();
+    var COLORS_E=typeof COLORS!=='undefined'?COLORS:{};var LABELS_E=typeof LABELS!=='undefined'?LABELS:{};
+    var revisedE=[];
+    if(ST.revUnits){Object.keys(ST.revUnits).forEach(function(k){var u=ST.revUnits[k];if(!u.passes||!u.passes.length)return;var lp=u.passes[u.passes.length-1];if(lp.date===todayR)revisedE.push({type:'unit',key:k,subject:u.subject,unit:u.unit,rating:lp.rating,passNumber:lp.passNumber,nextRevision:u.nextRevision,subjectGraduated:u.subjectGraduated});});}
+    if(ST.revSubjects){Object.keys(ST.revSubjects).forEach(function(k){var s=ST.revSubjects[k];if(!s.sweeps||!s.sweeps.length)return;var ls=s.sweeps[s.sweeps.length-1];if(ls.date===todayR)revisedE.push({type:'subject',key:k,subject:k,rating:ls.rating,sweepNumber:ls.sweepNumber,nextSweep:s.nextSweep});});}
+    if(revisedE.length){
+      var isCollE=!window._revTodayExpanded;
+      html+='<div class="rev-section-lbl" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;margin-top:8px;" onclick="window._revTodayExpanded=!window._revTodayExpanded;renderRevCard();">'
+        +'<span>✅ Revised today ('+revisedE.length+')</span>'
+        +'<span style="font-size:10px;color:var(--mt);">'+(isCollE?'▼ show':'▲ hide')+'</span></div>';
+      if(!isCollE){
+        revisedE.forEach(function(rv){
+          var col=COLORS_E[rv.subject]||'var(--s1)';var lbl=LABELS_E[rv.subject]||rv.subject;
+          var rc={easy:'var(--s2)',hard:'var(--am)',blank:'var(--s3)',done:'var(--s2)',partial:'var(--am)'}[rv.rating]||'var(--mt)';
+          var re={easy:'✅',hard:'😅',blank:'❌',done:'✅',partial:'😅'}[rv.rating]||'·';
+          var rl={easy:'Easy',hard:'Hard',blank:'Blank',done:'Done',partial:'Partial'}[rv.rating]||rv.rating;
+          var nt=rv.nextRevision?'Next: '+fmtShort(rv.nextRevision):(rv.subjectGraduated?'Graduated ✓':(rv.nextSweep?'Next: '+fmtShort(rv.nextSweep):''));
+          var rs='padding:5px 8px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--fn);border:1px solid;';
+          html+='<div style="background:var(--sf2);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;margin-bottom:6px;">'
+            +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">'
+            +'<div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:700;color:'+col+';">'+esc(lbl)+(rv.unit?' · '+esc(rv.unit):'')+'</div>'
+            +'<div style="font-size:10px;color:var(--mt);">'+nt+'</div></div>'
+            +'<span style="font-size:11px;font-weight:700;color:'+rc+';">'+re+' '+rl+'</span></div>'
+            +'<div style="display:flex;gap:5px;">'
+            +(rv.type==='unit'
+              ?'<button onclick="revMarkUnit(\''+rv.key+'\',\'easy\')" style="'+rs+'background:rgba(45,212,160,.1);border-color:rgba(45,212,160,.3);color:var(--s2);">✅ Easy</button>'
+               +'<button onclick="revMarkUnit(\''+rv.key+'\',\'hard\')" style="'+rs+'background:rgba(245,197,66,.1);border-color:rgba(245,197,66,.3);color:var(--am);">😅 Hard</button>'
+               +'<button onclick="revMarkUnit(\''+rv.key+'\',\'blank\')" style="'+rs+'background:rgba(240,111,160,.1);border-color:rgba(240,111,160,.3);color:var(--s3);">❌ Blank</button>'
+              :'<button onclick="revMarkSubject(\''+rv.key+'\',\'done\')" style="'+rs+'background:rgba(45,212,160,.1);border-color:rgba(45,212,160,.3);color:var(--s2);">✅ Done</button>'
+               +'<button onclick="revMarkSubject(\''+rv.key+'\',\'partial\')" style="'+rs+'background:rgba(245,197,66,.1);border-color:rgba(245,197,66,.3);color:var(--am);">😅 Partial</button>'
+               +'<button onclick="revMarkSubject(\''+rv.key+'\',\'blank\')" style="'+rs+'background:rgba(240,111,160,.1);border-color:rgba(240,111,160,.3);color:var(--s3);">❌ Skip</button>'
+            )
+            +'<span style="font-size:9px;color:var(--mt);align-self:center;margin-left:2px;">change</span>'
+            +'<button onclick="revClearTodayRating(\''+rv.type+'\',\''+rv.key+'\')" style="margin-left:auto;padding:5px 8px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--fn);border:1px solid var(--bd2);background:var(--sf3);color:var(--mt);">↩ Clear</button>'
+            +'</div></div>';
+        });
+      }
+    }
+    html+='</div>';
     el.innerHTML=html;
     var badge=document.getElementById('revGateBadge');
     if(badge)badge.style.display='none';
@@ -4687,6 +4870,76 @@ function renderRevCard(){
 
   if(overdue.length){html+='<div class="rev-section-lbl">🔴 Overdue ('+overdue.length+')</div>';overdue.forEach(function(it){html+=renderItem(it);});}
   if(todayItems.length){html+='<div class="rev-section-lbl">📅 Due today ('+todayItems.length+')</div>';todayItems.forEach(function(it){html+=renderItem(it);});}
+
+  // ── Revised Today: items rated today — show with re-rate option ──
+  var today=getToday();
+  var COLORS_L2=typeof COLORS!=='undefined'?COLORS:{};
+  var LABELS_L2=typeof LABELS!=='undefined'?LABELS:{};
+  var revisedToday=[];
+  if(ST.revUnits){
+    Object.keys(ST.revUnits).forEach(function(key){
+      var u=ST.revUnits[key];
+      if(!u.passes||!u.passes.length)return;
+      var lastPass=u.passes[u.passes.length-1];
+      if(lastPass.date===today){
+        revisedToday.push({type:'unit',key:key,subject:u.subject,unit:u.unit,rating:lastPass.rating,passNumber:lastPass.passNumber,lectureCount:u.lectureCount||0,nextRevision:u.nextRevision,subjectGraduated:u.subjectGraduated});
+      }
+    });
+  }
+  if(ST.revSubjects){
+    Object.keys(ST.revSubjects).forEach(function(key){
+      var s=ST.revSubjects[key];
+      if(!s.sweeps||!s.sweeps.length)return;
+      var lastSweep=s.sweeps[s.sweeps.length-1];
+      if(lastSweep.date===today){
+        revisedToday.push({type:'subject',key:key,subject:key,unit:null,rating:lastSweep.rating,sweepNumber:lastSweep.sweepNumber,nextSweep:s.nextSweep});
+      }
+    });
+  }
+
+  if(revisedToday.length){
+    var isRevCollapsed=!window._revTodayExpanded;
+    html+='<div class="rev-section-lbl" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;" onclick="window._revTodayExpanded=!window._revTodayExpanded;renderRevCard();">'
+      +'<span>✅ Revised today ('+revisedToday.length+')</span>'
+      +'<span style="font-size:10px;color:var(--mt);">'+(isRevCollapsed?'▼ show':'▲ hide')+'</span>'
+      +'</div>';
+    if(!isRevCollapsed){
+      revisedToday.forEach(function(rv){
+        var col=COLORS_L2[rv.subject]||'var(--s1)';
+        var lbl=LABELS_L2[rv.subject]||rv.subject;
+        var ratingColor={easy:'var(--s2)',hard:'var(--am)',blank:'var(--s3)',done:'var(--s2)',partial:'var(--am)'}[rv.rating]||'var(--mt)';
+        var ratingEmoji={easy:'✅',hard:'😅',blank:'❌',done:'✅',partial:'😅'}[rv.rating]||'·';
+        var ratingLabel={easy:'Easy',hard:'Hard',blank:'Blank',done:'Done',partial:'Partial'}[rv.rating]||rv.rating;
+        var nextTxt=rv.nextRevision?'Next: '+fmtShort(rv.nextRevision):(rv.subjectGraduated?'Graduated ✓':(rv.nextSweep?'Next: '+fmtShort(rv.nextSweep):''));
+        html+='<div style="background:var(--sf2);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;margin-bottom:6px;">';
+        html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">';
+        html+='<div style="flex:1;min-width:0;">';
+        html+='<div style="font-size:12px;font-weight:700;color:'+col+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+esc(lbl)+(rv.unit?' · '+esc(rv.unit):'')+'</div>';
+        html+='<div style="font-size:10px;color:var(--mt);margin-top:1px;">'+nextTxt+'</div>';
+        html+='</div>';
+        html+='<div style="display:flex;align-items:center;gap:5px;flex-shrink:0;">';
+        html+='<span style="font-size:11px;font-weight:700;color:'+ratingColor+';">'+ratingEmoji+' '+ratingLabel+'</span>';
+        html+='</div></div>';
+        // Re-rate buttons (smaller)
+        html+='<div style="display:flex;gap:5px;">';
+        if(rv.type==='unit'){
+          var rateStyles='padding:5px 8px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--fn);border:1px solid;';
+          html+='<button onclick="revMarkUnit(\''+rv.key+'\',\'easy\')" style="'+rateStyles+'background:rgba(45,212,160,.1);border-color:rgba(45,212,160,.3);color:var(--s2);">✅ Easy</button>';
+          html+='<button onclick="revMarkUnit(\''+rv.key+'\',\'hard\')" style="'+rateStyles+'background:rgba(245,197,66,.1);border-color:rgba(245,197,66,.3);color:var(--am);">😅 Hard</button>';
+          html+='<button onclick="revMarkUnit(\''+rv.key+'\',\'blank\')" style="'+rateStyles+'background:rgba(240,111,160,.1);border-color:rgba(240,111,160,.3);color:var(--s3);">❌ Blank</button>';
+        } else {
+          var rateStylesS='padding:5px 8px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--fn);border:1px solid;';
+          html+='<button onclick="revMarkSubject(\''+rv.key+'\',\'done\')" style="'+rateStylesS+'background:rgba(45,212,160,.1);border-color:rgba(45,212,160,.3);color:var(--s2);">✅ Done</button>';
+          html+='<button onclick="revMarkSubject(\''+rv.key+'\',\'partial\')" style="'+rateStylesS+'background:rgba(245,197,66,.1);border-color:rgba(245,197,66,.3);color:var(--am);">😅 Partial</button>';
+          html+='<button onclick="revMarkSubject(\''+rv.key+'\',\'blank\')" style="'+rateStylesS+'background:rgba(240,111,160,.1);border-color:rgba(240,111,160,.3);color:var(--s3);">❌ Skip</button>';
+        }
+        html+='<span style="font-size:9px;color:var(--mt);align-self:center;margin-left:2px;">change</span>';
+        html+='<button onclick="revClearTodayRating(\''+rv.type+'\',\''+rv.key+'\')" style="margin-left:auto;padding:5px 8px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--fn);border:1px solid var(--bd2);background:var(--sf3);color:var(--mt);">↩ Clear</button>';
+        html+='</div></div>';
+      });
+    }
+  }
+
   html+='</div>';
   el.innerHTML=html;
 
@@ -5208,7 +5461,14 @@ function updateRevBlockScreen(){
   var mode=typeof revGetBlockMode==='function'?revGetBlockMode():'B';
   var count=typeof revDueCount==='function'?revDueCount():0;
   screen.style.display=blocked?'block':'none';
-  if(mode==='B'){
+  if(mode==='A'){
+    // Soft mode: always show everything regardless of revisions
+    if(sesContainer)sesContainer.style.display='block';
+    if(upNext)upNext.style.display='block';
+    sesContainer&&sesContainer.querySelectorAll('.chk-btn').forEach(function(btn){
+      btn.style.opacity='';btn.style.pointerEvents='';
+    });
+  } else if(mode==='B'){
     if(sesContainer)sesContainer.style.display=blocked?'none':'block';
     if(upNext)upNext.style.display=blocked?'none':'block';
   } else if(mode==='C'){
@@ -6244,10 +6504,13 @@ function startSync(){
       var d=defaultState();for(var k in d)if(ST[k]===undefined)ST[k]=d[k];
       localStorage.setItem('gate2027v6',JSON.stringify(ST));
       renderGate();
+      if(typeof renderDailyMinimum==='function')renderDailyMinimum();
     }
   });
   // Multi-device presence
   startPresence(fb);
+  // Daily minimum snapshot Firebase listener
+  dmStartFirebaseListener();
 }
 
 if(window._fb&&window._fb.ready)startSync();else window.addEventListener('fbReady',startSync,{once:true});
@@ -7261,7 +7524,435 @@ function renderVelocity(){
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// ── CARRY-FORWARD INCOMPLETE TASKS ───────────────────────────────────────
+// ── DAILY MINIMUM TARGET ─────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// Given a budget in minutes and the remaining task queue (in order),
+// greedily fill and return list of {task, chunk, isPartial} entries.
+function dmBuildTierList(budgetMins, done){
+  var result=[];
+  var remaining=budgetMins;
+  var subjOrd=getSubjOrder();
+  // Build ordered undone tasks (same order as buildSched)
+  var ordered=ALL_TASKS.filter(function(t){
+    return !done.has(t.id)&&!isPyqAllDone(t.id);
+  });
+  ordered.sort(function(a,b){
+    var ai=subjOrd.indexOf(a.subject),bi=subjOrd.indexOf(b.subject);
+    if(ai!==bi)return ai-bi;
+    return a.id-b.id;
+  });
+  for(var i=0;i<ordered.length;i++){
+    if(remaining<=0.5)break;
+    var t=ordered[i];
+    var chunk=Math.min(t.duration,remaining);
+    var isPartial=(chunk<t.duration-0.5);
+    result.push({task:t,chunk:Math.round(chunk*10)/10,isPartial:isPartial});
+    remaining-=chunk;
+  }
+  return result;
+}
+
+// ── Daily Minimum Snapshot helpers ───────────────────────────────────────
+// Snapshot is frozen per app-day (getToday() = 4am boundary).
+// Key: v5_dmin_YYYY-MM-DD → {tasks:[{id,chunk,isPartial},...]}
+// Stored in localStorage immediately, synced to Firebase so other devices
+// pick up the same frozen list.
+
+function dmSnapKey(){ return 'v5_dmin_'+getToday(); }
+
+function dmSaveSnap(tasks){
+  // tasks = [{id,chunk,isPartial}]
+  var key=dmSnapKey();
+  var payload=JSON.stringify({tasks:tasks});
+  localStorage.setItem(key,payload);
+  // Firebase sync
+  if(window._fb&&window._fb.ready){
+    try{window._fb.set(window._fb.ref(window._fb.db,fbPath(key)),{tasks:tasks});}catch(e){}
+  }
+}
+
+function dmLoadSnap(){
+  var key=dmSnapKey();
+  // Try localStorage first (fast)
+  var raw=localStorage.getItem(key);
+  if(raw){try{var p=JSON.parse(raw);if(p&&Array.isArray(p.tasks))return p.tasks;}catch(e){}}
+  return null;
+}
+
+function dmBuildSnapFromSched(){
+  // Build today's 1x task list from live schedule (summing chunks across sessions)
+  var today=getToday();
+  var sched=buildSched();
+  var dayPlan=sched[today];
+  if(!dayPlan||!dayPlan.sessions)return null;
+  var chunkMap={};
+  dayPlan.sessions.forEach(function(ses){
+    (ses.items||[]).forEach(function(item){
+      if(!chunkMap[item.taskId]){
+        var t=null;
+        for(var i=0;i<ALL_TASKS.length;i++){if(ALL_TASKS[i].id===item.taskId){t=ALL_TASKS[i];break;}}
+        if(t)chunkMap[item.taskId]={id:item.taskId,chunk:0,completesToday:false};
+      }
+      if(chunkMap[item.taskId]){
+        chunkMap[item.taskId].chunk+=item.chunk;
+        if(item.isLast)chunkMap[item.taskId].completesToday=true;
+      }
+    });
+  });
+  var list=Object.keys(chunkMap).map(function(tid){
+    var e=chunkMap[tid];
+    return{id:e.id,chunk:Math.round(e.chunk*10)/10,isPartial:!e.completesToday};
+  });
+  list.sort(function(a,b){return a.id-b.id;});
+  return list.length?list:null;
+}
+
+// Called once on startSync to listen for remote snapshot updates
+function dmStartFirebaseListener(){
+  if(!window._fb||!window._fb.ready)return;
+  var key=dmSnapKey();
+  window._fb.onValue(window._fb.ref(window._fb.db,fbPath(key)),function(snap){
+    var val=snap.val();
+    if(!val||!Array.isArray(val.tasks))return;
+    var existing=localStorage.getItem(key);
+    var incoming=JSON.stringify({tasks:val.tasks});
+    if(incoming!==existing){
+      localStorage.setItem(key,incoming);
+      renderDailyMinimum();
+    }
+  });
+}
+
+function renderDailyMinimum(){
+  var el=document.getElementById('dailyMinContent');
+  var badge=document.getElementById('dailyMinBadge');
+  if(!el)return;
+
+  var today=getToday();
+  var done=new Set(Object.keys(ST.done).map(Number));
+
+  // ── Get or create today's frozen snapshot ──
+  var snapTasks=dmLoadSnap();
+  if(!snapTasks){
+    snapTasks=dmBuildSnapFromSched();
+    if(snapTasks)dmSaveSnap(snapTasks);
+  }
+
+  if(!snapTasks||!snapTasks.length){
+    el.innerHTML='<div style="font-size:12px;color:var(--mt);font-style:italic;text-align:center;padding:10px 0;">No sessions scheduled today.</div>';
+    if(badge)badge.textContent='0 tasks';
+    return;
+  }
+
+  // Hydrate task objects from snapshot ids
+  var minTasks=snapTasks.map(function(s){
+    var t=null;
+    for(var i=0;i<ALL_TASKS.length;i++){if(ALL_TASKS[i].id===s.id){t=ALL_TASKS[i];break;}}
+    if(!t)return null;
+    return{task:t,chunk:s.chunk,isPartial:s.isPartial};
+  }).filter(Boolean);
+
+  if(!minTasks.length){
+    el.innerHTML='<div style="font-size:12px;color:var(--mt);font-style:italic;text-align:center;padding:10px 0;">No tasks assigned today — rest day or potato day.</div>';
+    if(badge)badge.textContent='0 tasks';
+    return;
+  }
+
+  // ── Budget for speed tiers: total minutes in today's study slots (live, not frozen) ──
+  var dayKey=getTodayDayKey();
+  var slots=_timetable[dayKey]||[];
+  var baseBudgetMins=0;
+  slots.forEach(function(s){
+    if(s.type==='study')baseBudgetMins+=(s.eh*60+s.em)-(s.sh*60+s.sm);
+  });
+
+  // ── Build tiers ──
+  var TIERS=[
+    {speed:1,    label:'Minimum',    labelColor:'var(--mt2)',   bgColor:'var(--sf2)',              borderColor:'var(--bd)'},
+    {speed:1.25, label:'Good',       labelColor:'var(--s1)',    bgColor:'rgba(123,111,255,.04)',    borderColor:'rgba(123,111,255,.2)'},
+    {speed:1.5,  label:'Great',      labelColor:'var(--s2)',    bgColor:'rgba(45,212,160,.04)',     borderColor:'rgba(45,212,160,.2)'},
+    {speed:2,    label:'Outstanding',labelColor:'var(--am)',    bgColor:'rgba(245,197,66,.04)',     borderColor:'rgba(245,197,66,.2)'}
+  ];
+
+  // Active tier tab state
+  var activeTier=0; // index into TIERS, stored on window so clicks persist across re-renders
+  if(typeof window._dminActiveTier==='number')activeTier=window._dminActiveTier;
+
+  // Pre-compute tier lists
+  var tierLists=[minTasks]; // 1x comes from schedule directly
+  for(var ti=1;ti<TIERS.length;ti++){
+    var budget=baseBudgetMins*TIERS[ti].speed;
+    tierLists.push(dmBuildTierList(budget,done));
+  }
+
+  // Badge reflects 1x (minimum) completion
+  var totalTasks1x=minTasks.length;
+  var doneTasks1x=minTasks.filter(function(x){return done.has(x.task.id)||isPyqAllDone(x.task.id);}).length;
+  var minReached=(doneTasks1x>=totalTasks1x);
+  if(badge){
+    badge.textContent=doneTasks1x+'/'+totalTasks1x+' min done';
+    badge.style.background=minReached?'rgba(45,212,160,.1)':'var(--sf2)';
+    badge.style.color=minReached?'var(--s2)':'var(--mt)';
+    badge.style.borderColor=minReached?'var(--s2o)':'var(--bd2)';
+  }
+
+  var html='';
+
+  // ── Minimum reached banner ──
+  if(minReached){
+    html+='<div class="dmin-reached" style="margin-bottom:10px;">'
+      +'<div class="dmin-reached-txt">✅ Minimum reached!</div>'
+      +'<div class="dmin-reached-sub">'+doneTasks1x+' tasks done · anything more is a bonus.</div>'
+      +'</div>';
+  }
+
+  // ── Speed tier tab strip ──
+  html+='<div class="dmin-tier-strip">';
+  TIERS.forEach(function(tier,idx){
+    var tList=tierLists[idx];
+    var tDone=tList.filter(function(x){return done.has(x.task.id)||isPyqAllDone(x.task.id);}).length;
+    var isActive=idx===activeTier;
+    html+='<button class="dmin-tier-btn'+(isActive?' active':'')+'" '
+      +'style="'+(isActive?'border-color:'+tier.labelColor+';color:'+tier.labelColor+';background:'+tier.bgColor+';':'')+'"'
+      +' onclick="window._dminActiveTier='+idx+';renderDailyMinimum();">'
+      +'<span class="dmin-tier-spd">'+(tier.speed===1?'1x':tier.speed+'x')+'</span>'
+      +'<span class="dmin-tier-lbl">'+tier.label+'</span>'
+      +'<span class="dmin-tier-cnt">'+tDone+'/'+tList.length+'</span>'
+      +'</button>';
+  });
+  html+='</div>';
+
+  // ── Task list for active tier ──
+  var activeTierDef=TIERS[activeTier];
+  var activeList=tierLists[activeTier];
+  html+='<div class="dmin-tier-list" style="border-color:'+activeTierDef.borderColor+';background:'+activeTierDef.bgColor+';">';
+
+  if(!activeList.length){
+    html+='<div style="font-size:11px;color:var(--mt);font-style:italic;padding:8px 0;text-align:center;">All tasks complete!</div>';
+  } else {
+    activeList.forEach(function(x){
+      var t=x.task;
+      var isDone=done.has(t.id)||isPyqAllDone(t.id);
+      var col=COLORS[t.subject]||'var(--s1)';
+      var lbl=LABELS[t.subject]||t.subject;
+      var isPyq=t.type==='pyq';
+      var displayName=isPyq?(t.subject+' — PYQ'):t.name;
+      // Partial tag: chunk < full duration by more than 0.5 min
+      var isPartialChunk=(x.chunk<t.duration-0.5);
+      var partialTag=isPartialChunk
+        ?'<span class="dmin-partial-tag">partial '+fmtMins(Math.round(x.chunk))+' of '+fmtMins(Math.round(t.duration))+'</span>'
+        :'';
+      html+='<div class="dmin-item'+(isDone?' done':'')+'">'
+        +'<div class="dmin-chk'+(isDone?' done':'')+'">'+( isDone?'✓':'')+'</div>'
+        +'<div class="dmin-info">'
+        +'<div class="dmin-subj" style="color:'+col+';">'+esc(lbl)+(isPyq?' · PYQ':' #'+t.num)+partialTag+'</div>'
+        +'<div class="dmin-name">'+esc(displayName)+'</div>'
+        +'</div>'
+        +'<div class="dmin-dur">'+fmtMins(Math.round(x.chunk))+'</div>'
+        +'</div>';
+    });
+  }
+  html+='</div>';
+
+  // ── Burnout guard (based on 1x minimum count) ──
+  var lecCountsLast7=[];
+  for(var di=1;di<=7;di++){
+    var d7=addD(today,-di);
+    var dayDoneCount=Object.keys(ST.done).filter(function(tid){
+      return ST.done[tid]&&ST.done[tid].split('T')[0]===d7;
+    }).length;
+    if(dayDoneCount>0)lecCountsLast7.push(dayDoneCount);
+  }
+  if(lecCountsLast7.length>=2){
+    var avg7=lecCountsLast7.reduce(function(a,b){return a+b;},0)/lecCountsLast7.length;
+    var ratio=totalTasks1x/avg7;
+    var burnoutClass,burnoutMsg;
+    if(ratio<=1.1){burnoutClass='ok';burnoutMsg='🟢 Today\'s minimum ('+totalTasks1x+') is in line with your 7-day avg of '+Math.round(avg7*10)/10+' tasks/day.';}
+    else if(ratio<=1.4){burnoutClass='warn';burnoutMsg='🟡 Today\'s minimum ('+totalTasks1x+') is '+Math.round((ratio-1)*100)+'% above your 7-day avg of '+Math.round(avg7*10)/10+'. Manageable, but pace yourself.';}
+    else{burnoutClass='over';burnoutMsg='🔴 Today\'s minimum ('+totalTasks1x+') is '+Math.round((ratio-1)*100)+'% above your 7-day avg of '+Math.round(avg7*10)/10+'. High burnout risk — consider adjusting your timetable slots.';}
+    html+='<div class="dmin-burnout '+burnoutClass+'">'+burnoutMsg+'</div>';
+  }
+
+  el.innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ── SPEED COMPLETION CALCULATOR ──────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+var _speedCalcOpen=false;
+window.toggleSpeedCalc=function(){
+  _speedCalcOpen=!_speedCalcOpen;
+  var body=document.getElementById('speedCalcBody');
+  var btn=document.getElementById('speedCalcToggleBtn');
+  if(body)body.style.display=_speedCalcOpen?'block':'none';
+  if(btn)btn.textContent=_speedCalcOpen?'▲ Hide':'▼ Show';
+  if(_speedCalcOpen)renderSpeedCalc();
+};
+
+function scGetDailyHours(){
+  // Auto-read from timetable: sum of 'study' slots, optionally + 'class' slots
+  var incRecorded=document.getElementById('scIncludeRecorded');
+  var includeRec=incRecorded&&incRecorded.checked;
+  var dayKey=getTodayDayKey();
+  var slots=_timetable[dayKey]||[];
+  var mins=0;
+  slots.forEach(function(s){
+    if(s.type==='study')mins+=(s.eh*60+s.em)-(s.sh*60+s.sm);
+    else if(s.type==='class'&&includeRec)mins+=(s.eh*60+s.em)-(s.sh*60+s.sm);
+  });
+  // Check if manual override
+  var manInp=document.getElementById('scManualHours');
+  var manVal=manInp&&manInp.value?parseFloat(manInp.value):0;
+  return{auto:Math.round(mins/60*10)/10,manual:manVal>0?manVal:null};
+}
+
+window.renderSpeedCalc=function(){
+  if(!_speedCalcOpen)return;
+  var hoursData=scGetDailyHours();
+  var autoEl=document.getElementById('scAutoHours');
+  if(autoEl)autoEl.textContent=hoursData.auto+'h';
+  var dailyHours=hoursData.manual||hoursData.auto;
+  if(!dailyHours||dailyHours<=0){
+    document.getElementById('scSpeedRows').innerHTML='<div style="font-size:11px;color:var(--mt);font-style:italic;">No study slots found in today\'s timetable. Enter manual hours above.</div>';
+    return;
+  }
+  var dailyMins=dailyHours*60;
+
+  var done=new Set(Object.keys(ST.done).map(Number));
+  var subjOrder=getSubjOrder();
+
+  // Compute remaining per subject
+  var subjData=[];
+  subjOrder.forEach(function(subj){
+    var lecTasks=ALL_TASKS.filter(function(t){return t.subject===subj&&t.type==='lecture'&&!done.has(t.id);});
+    var pyqTask=ALL_TASKS.find(function(t){return t.subject===subj&&t.type==='pyq'&&!done.has(t.id)&&!isPyqAllDone(t.id);});
+    // partial pyq done
+    var pyqRemMin=0;
+    if(pyqTask){
+      var doneTopics=ST.pyqTopics&&ST.pyqTopics[pyqTask.id]?ST.pyqTopics[pyqTask.id].length:0;
+      var totalTopics=pyqTask.topics?pyqTask.topics.length:1;
+      var pct=doneTopics/Math.max(1,totalTopics);
+      pyqRemMin=pyqTask.duration*(1-pct);
+    }
+    var lecRemMin=lecTasks.reduce(function(s,t){return s+t.duration;},0);
+    if(lecRemMin>0||pyqRemMin>0){
+      subjData.push({subj:subj,lecMin:lecRemMin,pyqMin:pyqRemMin,col:COLORS[subj]||'#7b6fff',lbl:LABELS[subj]||subj});
+    }
+  });
+
+  // Total remaining
+  var totalLecMin=subjData.reduce(function(s,d){return s+d.lecMin;},0);
+  var totalPyqMin=subjData.reduce(function(s,d){return s+d.pyqMin;},0);
+
+  var speeds=[1,1.25,1.5,1.75,2];
+  var prepTarget=TARGET_DATE;
+  var today=getToday();
+
+  // For each speed, compute total days
+  function calcDays(speed){
+    var adjLecMins=totalLecMin/speed;
+    var totalMins=adjLecMins+totalPyqMin;
+    return Math.ceil(totalMins/dailyMins);
+  }
+  function addDays(date,n){return addD(date,n);}
+
+  // ── Overall speed rows ──
+  var maxDays=calcDays(1);
+  var speedRowsHtml='';
+  speeds.forEach(function(sp){
+    var days=calcDays(sp);
+    var finDate=addDays(today,days);
+    var onTrack=finDate<=prepTarget;
+    var barPct=Math.round((1-(days/Math.max(1,maxDays)))*100);
+    var barPct2=Math.max(8,barPct);
+    var isBase=sp===1;
+    var highlight=onTrack&&!isBase;
+    var dateColor=onTrack?'var(--s2)':'var(--s3)';
+    var spLabel=sp===1?'1x':sp+'x';
+    speedRowsHtml+='<div class="sc-speed-row'+(highlight?' highlight':'')+'">'
+      +'<div class="sc-speed-lbl">'+spLabel+'</div>'
+      +'<div class="sc-speed-bar-wrap"><div class="sc-speed-bar" style="width:'+barPct2+'%;background:'+(onTrack?'var(--s2)':'var(--s1)')+';"></div></div>'
+      +'<div class="sc-speed-days">'+days+'d'+(sp!==1?' (−'+(calcDays(1)-days)+'d)':'')+'</div>'
+      +'<div class="sc-speed-date" style="color:'+dateColor+';">'+fmtShort(finDate)+'</div>'
+      +'</div>';
+  });
+  // Summary line
+  speedRowsHtml='<div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mt);margin-bottom:8px;">'
+    +'Remaining: <span style="color:var(--s1);">'+Math.round(totalLecMin/60*10)/10+'h lectures</span>'
+    +' + <span style="color:var(--s3);">'+Math.round(totalPyqMin/60*10)/10+'h PYQs (fixed)</span>'
+    +' · '+dailyHours+'h/day</div>'
+    +speedRowsHtml;
+  document.getElementById('scSpeedRows').innerHTML=speedRowsHtml;
+
+  // ── Per-subject breakdown ──
+  // Subjects are sequential — cursor advances after each subject finishes
+  var subjRowsHtml='<div style="display:grid;grid-template-columns:auto 1fr repeat(4,52px);gap:4px;align-items:center;margin-bottom:6px;">'
+    +'<div style="font-size:9px;color:var(--mt);">Subj</div>'
+    +'<div style="font-size:9px;color:var(--mt);"></div>'
+    +'<div style="font-size:9px;color:var(--mt);text-align:center;">1x</div>'
+    +'<div style="font-size:9px;color:var(--mt);text-align:center;">1.25x</div>'
+    +'<div style="font-size:9px;color:var(--mt);text-align:center;">1.5x</div>'
+    +'<div style="font-size:9px;color:var(--mt);text-align:center;">2x</div>'
+    +'</div>';
+
+  var speedsSubj=[1,1.25,1.5,2];
+  // Compute sequential end dates per subject per speed
+  var cursors={};
+  speedsSubj.forEach(function(sp){cursors[sp]=today;});
+
+  subjData.forEach(function(sd){
+    var chips='';
+    speedsSubj.forEach(function(sp){
+      var adjLec=sd.lecMin/sp;
+      var totalSubjMins=adjLec+sd.pyqMin;
+      var subjDays=Math.ceil(totalSubjMins/dailyMins);
+      cursors[sp]=addD(cursors[sp],subjDays);
+      var onT=cursors[sp]<=prepTarget;
+      chips+='<div class="sc-subj-chip'+(sp===1.5?' hl':'')+'" style="'+(onT?'':'color:var(--s3);border-color:var(--s3o);')+'">'+fmtShort(cursors[sp])+'</div>';
+    });
+    subjRowsHtml+='<div class="sc-subj-row">'
+      +'<div class="sc-subj-lbl" style="background:'+sd.col+'18;color:'+sd.col+';">'+esc(sd.lbl)+'</div>'
+      +'<div class="sc-subj-name">'+esc(sd.subj)+'</div>'
+      +'<div class="sc-subj-speeds">'+chips+'</div>'
+      +'</div>';
+  });
+  document.getElementById('scSubjectRows').innerHTML=subjRowsHtml;
+
+  // ── Timeline bar ──
+  var tlHtml='<div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mt);margin-bottom:8px;">Timeline</div>'
+    +'<div style="display:grid;grid-template-columns:36px 1fr 80px;gap:6px;align-items:center;margin-bottom:4px;">'
+    +'<div></div>'
+    +'<div style="display:flex;gap:8px;font-size:9px;color:var(--mt);padding:0 2px;">'
+    +'<span style="display:flex;align-items:center;gap:3px;"><span style="width:8px;height:8px;border-radius:2px;background:var(--s1);display:inline-block;"></span>Lectures</span>'
+    +'<span style="display:flex;align-items:center;gap:3px;"><span style="width:8px;height:8px;border-radius:2px;background:var(--s3);display:inline-block;"></span>PYQs (fixed)</span>'
+    +'</div><div></div></div>';
+
+  speeds.forEach(function(sp){
+    var adjLecMins=totalLecMin/sp;
+    var totalMins=adjLecMins+totalPyqMin;
+    var lecPct=totalMins>0?Math.round(adjLecMins/totalMins*100):100;
+    var pyqPct=100-lecPct;
+    var lecDays=Math.ceil(adjLecMins/dailyMins);
+    var pyqDays=Math.ceil(totalPyqMin/dailyMins);
+    var lecEnd=addDays(today,lecDays);
+    var pyqEnd=addDays(lecEnd,pyqDays);
+    var spLabel=sp===1?'1x':sp+'x';
+    var onTrack=pyqEnd<=prepTarget;
+    tlHtml+='<div class="sc-tl-row">'
+      +'<div class="sc-tl-speed">'+spLabel+'</div>'
+      +'<div class="sc-tl-bar-wrap">'
+      +'<div class="sc-tl-lec" style="width:'+lecPct+'%;"></div>'
+      +'<div class="sc-tl-pyq" style="width:'+pyqPct+'%;"></div>'
+      +'</div>'
+      +'<div class="sc-tl-dates" style="color:'+(onTrack?'var(--s2)':'var(--s3)')+';">→ '+fmtShort(pyqEnd)+'</div>'
+      +'</div>';
+    tlHtml+='<div style="font-size:9px;color:var(--mt);margin:-3px 0 6px 44px;">'
+      +'Lec ends: '+fmtShort(lecEnd)+' · PYQ: '+fmtShort(lecEnd)+'→'+fmtShort(pyqEnd)
+      +'</div>';
+  });
+  document.getElementById('scTimeline').innerHTML='<div class="sc-timeline">'+tlHtml+'</div>';
+};
+
 // ═══════════════════════════════════════════════════════════════════════════
 // Returns tasks that were scheduled in the last 3 days but are not yet done
 function getCarryForwardTasks(sched){
