@@ -1,0 +1,140 @@
+{
+  "type": "studyos_subject_patch",
+  "subject_name": "Discrete Mathematics",
+  "color": "#89b4fa",
+  "label": "DMS",
+  "units": [
+    {
+      "name": "Unit 01 : Graph Theory",
+      "lectures": [
+        { "name": "Graph and Basic Terminology", "duration": "2:18:30" },
+        { "name": "Type Of Graph - SG, RG, CG, AG", "duration": "2:07:53" },
+        { "name": "Bipartite Graph and Star Graph", "duration": "1:45:12" },
+        { "name": "Complement of Graph, Distance, Eccentricity, Radius", "duration": "1:27:07" },
+        { "name": "Degree Sequence and Sum of Degree", "duration": "1:28:05" },
+        { "name": "Isomorphism and Question Practice on Isomorphism", "duration": "1:21:12" },
+        { "name": "Planar Graph", "duration": "1:13:43" },
+        { "name": "Question Practice Discussion with Detailed Solution", "duration": "1:25:57" },
+        { "name": "Vertex Colouring and Vertex Chromatic Number", "duration": "1:12:49" },
+        { "name": "Matching and Perfect Matching", "duration": "1:06:13" },
+        { "name": "Perfect Matching and Question Practice", "duration": "1:01:52" },
+        { "name": "Line Covering", "duration": "1:13:41" },
+        { "name": "Vertex Covering and Independent Vertex Set", "duration": "1:12:52" },
+        { "name": "Spanning Tree Part 1", "duration": "0:27:16" },
+        { "name": "Minimum Spanning Tree", "duration": "1:34:26" },
+        { "name": "Connectivity - Edge Connectivity and Vertex Connectivity", "duration": "1:31:00" },
+        { "name": "IMP Points for Simple Graph", "duration": "1:19:15" },
+        { "name": "Euler Graph and Question Discussion", "duration": "1:19:30" },
+        { "name": "Hamiltonian Graph", "duration": "1:08:59" },
+        { "name": "PYQ on Graph Theory", "duration": "1:34:42" }
+      ]
+    },
+    {
+      "name": "Unit 02 : Set Theory",
+      "lectures": [
+        { "name": "About Set, Membership, Subset and Power Set", "duration": "1:30:52" },
+        { "name": "Question Discussion on Set Theory", "duration": "1:07:11" },
+        { "name": "Set Property and Question Discussion", "duration": "1:19:47" },
+        { "name": "MultiSet and Question Practice", "duration": "1:01:19" }
+      ]
+    },
+    {
+      "name": "Unit 03 : Relations",
+      "lectures": [
+        { "name": "Cartesian Product and Relation", "duration": "1:52:28" },
+        { "name": "Type of Relations", "duration": "2:01:54" },
+        { "name": "ER, POR and CR", "duration": "1:07:11" },
+        { "name": "Closure Part 1", "duration": "1:21:44" },
+        { "name": "Closure Part 2", "duration": "0:20:06" },
+        { "name": "Equivalence Class and Question Discussion", "duration": "1:43:48" },
+        { "name": "Bell Triangle and Question Discussion on ER and EC", "duration": "1:53:08" }
+      ]
+    },
+    {
+      "name": "Unit 04 : Lattice",
+      "lectures": [
+        { "name": "POSET and Hasse Diagram", "duration": "1:27:59" },
+        { "name": "Maximal, Minimal, Lower, Upper, LUB and GLB Elements", "duration": "1:24:42" },
+        { "name": "Lattice and Question Discussion", "duration": "0:56:08" },
+        { "name": "SubLattice, Complemented, Distributive and Boolean Lattice", "duration": "2:13:10" },
+        { "name": "Free Square Integer and Question Discussion", "duration": "1:39:44" }
+      ]
+    },
+    {
+      "name": "Unit 05 : Function",
+      "lectures": [
+        { "name": "About Function and Type of Function", "duration": "2:08:56" },
+        { "name": "Type Of Function and Question Discussion", "duration": "0:42:09" },
+        { "name": "PYQ Discussion", "duration": "0:41:52" },
+        { "name": "Composition of Function", "duration": "0:28:36" },
+        { "name": "PYQ and Practice Question Discussion", "duration": "1:45:18" }
+      ]
+    },
+    {
+      "name": "Unit 06 : Group Theory",
+      "lectures": [
+        { "name": "About Group Theory - SemiGroup, Monoid, Group and Abelian Group", "duration": "1:45:05" },
+        { "name": "Question Discussion on Group Theory", "duration": "0:47:20" },
+        { "name": "Question Discussion, Finite Group and Order of Group", "duration": "1:07:58" },
+        { "name": "PYQ and Question Discussion on Group", "duration": "1:46:57" },
+        { "name": "Order of Element", "duration": "0:22:06" },
+        { "name": "Subgroup and Theorem Proof", "duration": "1:52:16" },
+        { "name": "Cyclic Group and Question Discussion", "duration": "1:27:23" },
+        { "name": "Ring, Integral Domain and Field", "duration": "0:47:55" },
+        { "name": "IMP Points and Question Discussion on Cyclic Group", "duration": "0:35:25" },
+        { "name": "PYQ Question Discussion", "duration": "0:55:22" }
+      ]
+    },
+    {
+      "name": "Unit 07 : Mathematical Logic",
+      "lectures": [
+        { "name": "Propositional Logic", "duration": "1:42:31" },
+        { "name": "Q&A on TL, V, S", "duration": "1:11:22" },
+        { "name": "Inference Rule", "duration": "1:48:46" },
+        { "name": "Question and Answer on Inference", "duration": "1:40:24" },
+        { "name": "Predicate Logic and Q&A", "duration": "1:08:15" },
+        { "name": "Universal and Existential Qualifiers", "duration": "1:24:15" },
+        { "name": "Question and Answer on Predicate Logic", "duration": "1:23:39" },
+        { "name": "Question and Answer on Predicate", "duration": "1:32:44" },
+        { "name": "Multiple Quantifiers", "duration": "1:59:52" }
+      ]
+    },
+    {
+      "name": "Unit 08 : Combinatorics",
+      "lectures": [
+        { "name": "Lecture 01", "duration": "1:16:27" },
+        { "name": "Lecture 02", "duration": "1:27:41" },
+        { "name": "Lecture 03", "duration": "1:24:23" },
+        { "name": "Lecture 04", "duration": "1:11:12" },
+        { "name": "Lecture 05", "duration": "1:27:57" },
+        { "name": "Lecture 06", "duration": "1:29:51" },
+        { "name": "Lecture 07", "duration": "1:29:09" },
+        { "name": "Lecture 08", "duration": "1:47:09" },
+        { "name": "Lecture 09", "duration": "1:12:36" },
+        { "name": "Lecture 10", "duration": "1:26:13" },
+        { "name": "Lecture 11", "duration": "1:29:25" },
+        { "name": "Lecture 12", "duration": "1:30:50" },
+        { "name": "Lecture 13", "duration": "0:23:34" },
+        { "name": "Lecture 14", "duration": "0:55:34" },
+        { "name": "Lecture 15", "duration": "1:08:54" },
+        { "name": "Lecture 16", "duration": "1:14:02" },
+        { "name": "Lecture 17", "duration": "1:19:17" },
+        { "name": "Lecture 18", "duration": "1:01:23" },
+        { "name": "Lecture 19", "duration": "1:19:40" },
+        { "name": "Lecture 20", "duration": "1:10:35" },
+        { "name": "Lecture 21", "duration": "1:01:49" },
+        { "name": "Lecture 22", "duration": "1:21:16" },
+        { "name": "Lecture 23", "duration": "1:34:18" },
+        { "name": "Lecture 24", "duration": "1:09:16" },
+        { "name": "Lecture 25", "duration": "1:13:05" },
+        { "name": "Lecture 26", "duration": "0:20:15" },
+        { "name": "Lecture 27", "duration": "0:39:21" },
+        { "name": "Lecture 28", "duration": "1:25:37" },
+        { "name": "Lecture 29", "duration": "1:02:23" },
+        { "name": "Lecture 30", "duration": "0:54:54" },
+        { "name": "Lecture 31", "duration": "1:19:09" }
+      ]
+    }
+  ],
+  "pyq_action": "keep"
+}
