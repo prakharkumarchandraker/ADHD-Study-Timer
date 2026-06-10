@@ -6,8 +6,8 @@
   "scope": "./",
   "display": "fullscreen",
   "orientation": "portrait-primary",
-  "background_color": "#0d0d10",
-  "theme_color": "#0d0d10",
+  "background_color": "#0f1113",
+  "theme_color": "#0f1113",
   "lang": "en",
   "categories": [
     "education",
