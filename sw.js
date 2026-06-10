@@ -1,12 +1,12 @@
 // ── Study OS · Service Worker ──────────────────────────────────────────────
 // DEPLOY CHECKLIST: bump CACHE string on every deploy to force cache refresh on all devices.
-// v19 — 2026-06-09: curriculum manager mobile redesign, CM auto-apply, bug fixes (B1-B8)
-const CACHE = 'studyos-v19';
+// v22 — 2026-06-10: FOCUS MODE 2.0 (wake lock, hold-to-exit, distraction shield, parking lot, calm dim)
+const CACHE = 'studyos-v22';
 
 // Static assets that are safe to cache forever (fonts, CDN libraries)
 // index.html is intentionally NOT cached here — it uses network-first below
 const STATIC_ASSETS = [
-  'https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@400;500;600;700&display=swap',
+  'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap',
   'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'
 ];
 
