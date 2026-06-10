@@ -1,7 +1,7 @@
 // ── Study OS · Service Worker ──────────────────────────────────────────────
 // DEPLOY CHECKLIST: bump CACHE string on every deploy to force cache refresh on all devices.
-// v25 — 2026-06-10: FINAL — getPace crash fix, rotation-aware daily-min tiers, full test pass (37 tests)
-const CACHE = 'studyos-v25';
+// v26 — 2026-06-10: light-mode fixes (habit modal, calendars, stats), float-safe week deltas
+const CACHE = 'studyos-v26';
 
 // Static assets that are safe to cache forever (fonts, CDN libraries)
 // index.html is intentionally NOT cached here — it uses network-first below

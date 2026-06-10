@@ -379,10 +379,10 @@ body.light #sideDrawer{background:var(--sf);}
 .hist-month-nav:hover{border-color:var(--s2);color:var(--s2);}
 .hist-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:8px;}
 .hist-cal-label{font-size:8px;font-weight:600;color:var(--mt);text-align:center;letter-spacing:.04em;text-transform:uppercase;}
-.hist-cal-day{aspect-ratio:1;border-radius:5px;cursor:pointer;position:relative;display:flex;align-items:center;justify-content:center;font-size:8px;font-family:var(--mo);color:rgba(255,255,255,.3);transition:all .15s;border:1px solid transparent;}
-.hist-cal-day:hover{border-color:rgba(255,255,255,.15);}
+.hist-cal-day{aspect-ratio:1;border-radius:5px;cursor:pointer;position:relative;display:flex;align-items:center;justify-content:center;font-size:8px;font-family:var(--mo);color:var(--mt);transition:all .15s;border:1px solid transparent;}
+.hist-cal-day:hover{border-color:var(--bd2);}
 .hist-cal-day.today-marker{border-color:var(--s1o)!important;color:var(--s1)!important;}
-.hist-cal-day.has-data{color:rgba(255,255,255,.6);}
+.hist-cal-day.has-data{color:var(--mt2);}
 .hist-cal-day.selected{border-color:#fff!important;color:#fff!important;}
 .hist-cal-day.empty{background:transparent!important;cursor:default;}
 .hcd-0{background:var(--sf2);}
@@ -395,7 +395,7 @@ body.light #sideDrawer{background:var(--sf);}
 .hms-num{font-family:var(--mo);font-size:16px;font-weight:500;line-height:1;}
 .hms-lbl{font-size:8px;color:var(--mt);letter-spacing:.06em;text-transform:uppercase;margin-top:2px;}
 .hist-day-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);margin-bottom:5px;cursor:pointer;transition:all .15s;}
-.hist-day-row:hover{border-color:rgba(255,255,255,.1);}
+.hist-day-row:hover{border-color:var(--bd2);}
 .hist-day-row.expanded{border-color:var(--s1o);border-radius:var(--r) var(--r) 0 0;margin-bottom:0;}
 .hist-day-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
 .hist-day-date{font-family:var(--mo);font-size:11px;font-weight:700;min-width:60px;}
@@ -462,7 +462,7 @@ body.light #sideDrawer{background:var(--sf);}
 .routine-block{margin-bottom:10px;}
 .routine-time{font-family:var(--mo);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--am);margin-bottom:6px;padding:3px 8px;background:var(--amb);border-radius:5px;display:inline-block;}
 .routine-item{display:flex;align-items:flex-start;gap:9px;padding:7px 10px;border-radius:8px;background:var(--sf2);border:1px solid var(--bd);margin-bottom:4px;transition:all .2s;cursor:pointer;}
-.routine-item:hover{border-color:rgba(255,255,255,.1);}
+.routine-item:hover{border-color:var(--bd2);}
 .routine-item.done{opacity:.5;}
 .routine-chk{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--bd2);background:transparent;display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent;flex-shrink:0;margin-top:1px;transition:all .2s;}
 .routine-item.done .routine-chk{background:var(--s2b);border-color:var(--s2);color:var(--s2);}
@@ -543,7 +543,7 @@ body.light #sideDrawer{background:var(--sf);}
 /* SUBJECT CARDS */
 #subj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-bottom:10px;}
 .scard{background:var(--sf2);border:1px solid var(--bd);border-radius:12px;padding:11px;cursor:pointer;transition:all .2s;}
-.scard:hover{border-color:rgba(255,255,255,.12);background:var(--sf3);}
+.scard:hover{border-color:var(--bd2);background:var(--sf3);}
 .scard-top{display:flex;align-items:center;gap:7px;margin-bottom:6px;}
 .slbl{font-size:9px;font-weight:700;padding:2px 6px;border-radius:5px;font-family:var(--mo);flex-shrink:0;}
 .scard-name{font-size:11px;font-weight:600;flex:1;}
@@ -676,7 +676,7 @@ body.light #sideDrawer{background:var(--sf);}
 .ec-rtxt.rpend-txt{color:#f2545b;}
 .ec-footer{margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;}
 .ec-stats{font-family:'JetBrains Mono',monospace;font-size:10px;color:#7b828c;}
-.ec-brand{font-family:'JetBrains Mono',monospace;font-size:9px;color:#3a3748;letter-spacing:.1em;}
+.ec-brand{font-family:'JetBrains Mono',monospace;font-size:9px;color:#5b6168;letter-spacing:.1em;}
 
 /* ── HABITS TAB ── */
 .hab-card{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:14px;margin-bottom:10px;position:relative;overflow:hidden;}
@@ -698,12 +698,12 @@ body.light #sideDrawer{background:var(--sf);}
 .hab-check-btn{flex:1;padding:9px;border-radius:10px;font-family:var(--fn);font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;border:1px solid;}
 .hab-check-btn.done{background:rgba(62,207,142,.12);border-color:rgba(62,207,142,.35);color:#3ecf8e;}
 .hab-check-btn.failed{background:rgba(242,84,91,.1);border-color:rgba(242,84,91,.3);color:#f2545b;}
-.hab-check-btn.neutral-build{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.1);color:var(--mt);}
-.hab-check-btn.neutral-quit{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.1);color:var(--mt);}
+.hab-check-btn.neutral-build{background:var(--sf2);border-color:var(--bd2);color:var(--mt);}
+.hab-check-btn.neutral-quit{background:var(--sf2);border-color:var(--bd2);color:var(--mt);}
 .hab-detail-btn{padding:9px 12px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:var(--mt);font-family:var(--fn);font-size:11px;cursor:pointer;flex-shrink:0;}
 .hab-week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:8px;}
-.hab-day-cell{aspect-ratio:1;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:8px;font-family:var(--mo);color:var(--mt);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.05);cursor:pointer;transition:all .12s;user-select:none;}
-.hab-day-cell:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);}
+.hab-day-cell{aspect-ratio:1;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:8px;font-family:var(--mo);color:var(--mt);background:var(--sf2);border:1px solid var(--bd);cursor:pointer;transition:all .12s;user-select:none;}
+.hab-day-cell:hover{background:var(--sf3);border-color:var(--bd2);}
 .hab-day-cell:active{transform:scale(.92);}
 .hab-day-cell.done-build{background:rgba(62,207,142,.2);border-color:rgba(62,207,142,.4);color:#3ecf8e;}
 .hab-day-cell.done-quit{background:rgba(62,207,142,.2);border-color:rgba(62,207,142,.4);color:#3ecf8e;}
@@ -934,7 +934,7 @@ body.focus-mode .hero-cd{font-size:96px!important;letter-spacing:-4px;}
 .tt-clear-all-btn{width:100%;background:none;border:1px dashed rgba(239,68,68,.35);color:#f87171;border-radius:10px;padding:7px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--fn);margin-top:8px;transition:all .15s;}
 .tt-clear-all-btn:hover{background:rgba(239,68,68,.08);}
 .tt-day-btn.act{background:var(--s1b);border-color:var(--s1o);color:var(--s1);}
-.tt-day-btn.has-slots{border-color:rgba(255,255,255,.15);color:var(--tx);}
+.tt-day-btn.has-slots{border-color:var(--bd2);color:var(--tx);}
 /* ── TIMETABLE COPY PANEL ── */
 .tt-copy-panel{background:var(--sf2);border:1px solid var(--bd);border-radius:12px;padding:10px 12px;margin-bottom:12px;}
 .tt-copy-panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
@@ -1031,7 +1031,7 @@ body.focus-mode .hero-cd{font-size:96px!important;letter-spacing:-4px;}
 #emojiPickerOverlay{display:none;position:fixed;inset:0;z-index:9900;align-items:flex-end;justify-content:center;}
 #emojiPickerOverlay.show{display:flex;}
 #emojiPickerBg{position:absolute;inset:0;background:rgba(8,8,14,.55);backdrop-filter:blur(4px);}
-#emojiPickerSheet{position:relative;z-index:1;background:#16161e;border:1px solid rgba(255,255,255,.08);border-bottom:none;border-radius:20px 20px 0 0;padding:16px 14px 28px;width:min(420px,100vw);transform:translateY(100%);transition:transform .28s cubic-bezier(.32,1.1,.58,1);}
+#emojiPickerSheet{position:relative;z-index:1;background:var(--sf);border:1px solid var(--bd2);border-bottom:none;border-radius:20px 20px 0 0;padding:16px 14px 28px;width:min(420px,100vw);transform:translateY(100%);transition:transform .28s cubic-bezier(.32,1.1,.58,1);}
 #emojiPickerSheet.open{transform:translateY(0);}
 .ep-title{font-size:12px;font-weight:700;color:var(--mt2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;text-align:center;}
 .ep-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;}
@@ -1818,9 +1818,9 @@ window.onerror=function(msg,src,line,col,err){
   <!-- ADD HABIT MODAL -->
   <div id="addHabitOverlay" style="display:none;position:fixed;inset:0;z-index:9800;align-items:flex-end;justify-content:center;">
     <div style="position:absolute;inset:0;background:rgba(8,8,14,.6);backdrop-filter:blur(6px);" onclick="closeAddHabitModal()"></div>
-    <div id="addHabitSheet" style="position:relative;z-index:1;background:#16161e;border:1px solid rgba(255,255,255,.08);border-bottom:none;border-radius:20px 20px 0 0;padding:20px 18px 32px;width:min(520px,100vw);box-shadow:0 -16px 60px rgba(0,0,0,.6);transform:translateY(100%);transition:transform .3s cubic-bezier(.32,1.1,.58,1);">
-      <div style="width:36px;height:4px;background:rgba(255,255,255,.12);border-radius:2px;margin:0 auto 18px;"></div>
-      <div style="font-size:15px;font-weight:700;color:#eceef0;margin-bottom:16px;" id="addHabitModalTitle">Add Habit</div>
+    <div id="addHabitSheet" style="position:relative;z-index:1;background:var(--sf);border:1px solid var(--bd2);border-bottom:none;border-radius:20px 20px 0 0;padding:20px 18px 32px;width:min(520px,100vw);box-shadow:0 -16px 60px rgba(0,0,0,.6);transform:translateY(100%);transition:transform .3s cubic-bezier(.32,1.1,.58,1);">
+      <div style="width:36px;height:4px;background:var(--bd2);border-radius:2px;margin:0 auto 18px;"></div>
+      <div style="font-size:15px;font-weight:700;color:var(--tx);margin-bottom:16px;" id="addHabitModalTitle">Add Habit</div>
 
       <!-- Type toggle -->
       <div style="display:flex;gap:6px;margin-bottom:14px;">
@@ -1830,14 +1830,14 @@ window.onerror=function(msg,src,line,col,err){
 
       <!-- Name input -->
       <input id="habNameInput" type="text" placeholder="Habit name… e.g. Wake up by 6am" maxlength="60"
-        style="width:100%;padding:11px 13px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:var(--tx);font-family:var(--fn);font-size:13px;outline:none;margin-bottom:10px;">
+        style="width:100%;padding:11px 13px;background:var(--sf2);border:1px solid var(--bd2);border-radius:10px;color:var(--tx);font-family:var(--fn);font-size:13px;outline:none;margin-bottom:10px;">
 
       <!-- Last quit date (only for quitting habits) -->
       <div id="habQuitDateWrap" style="display:none;margin-bottom:10px;">
         <div style="font-size:10px;color:var(--mt);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">When did you last use / slip?</div>
         <div style="font-size:11px;color:var(--mt2);margin-bottom:7px;">Leave blank to start from today. Set a past date to backfill your clean streak.</div>
         <input id="habQuitDateInput" type="date"
-          style="width:100%;padding:10px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:var(--tx);font-family:var(--fn);font-size:13px;outline:none;">
+          style="width:100%;padding:10px 12px;background:var(--sf2);border:1px solid var(--bd2);border-radius:10px;color:var(--tx);font-family:var(--fn);font-size:13px;outline:none;">
       </div>
 
       <!-- Emoji picker -->
@@ -1851,7 +1851,7 @@ window.onerror=function(msg,src,line,col,err){
   <!-- HABIT DETAIL MODAL -->
   <div id="habitDetailOverlay" style="display:none;position:fixed;inset:0;z-index:9800;align-items:flex-end;justify-content:center;">
     <div style="position:absolute;inset:0;background:rgba(8,8,14,.6);backdrop-filter:blur(6px);" onclick="closeHabitDetail()"></div>
-    <div id="habitDetailSheet" style="position:relative;z-index:1;background:#16161e;border:1px solid rgba(255,255,255,.08);border-bottom:none;border-radius:20px 20px 0 0;padding:20px 18px 32px;width:min(520px,100vw);box-shadow:0 -16px 60px rgba(0,0,0,.6);max-height:88vh;overflow-y:auto;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,1.1,.58,1);">
+    <div id="habitDetailSheet" style="position:relative;z-index:1;background:var(--sf);border:1px solid var(--bd2);border-bottom:none;border-radius:20px 20px 0 0;padding:20px 18px 32px;width:min(520px,100vw);box-shadow:0 -16px 60px rgba(0,0,0,.6);max-height:88vh;overflow-y:auto;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,1.1,.58,1);">
       <div style="width:36px;height:4px;background:rgba(255,255,255,.12);border-radius:2px;margin:0 auto 14px;"></div>
       <div id="habitDetailContent"></div>
     </div>
@@ -1913,10 +1913,10 @@ window.onerror=function(msg,src,line,col,err){
 <!-- ── EXPORT CUSTOMIZER MODAL ─────────────────────────────────────────── -->
 <div id="exportCustomizerOverlay" style="display:none;position:fixed;inset:0;z-index:9800;align-items:flex-end;justify-content:center;">
   <div style="position:absolute;inset:0;background:rgba(8,8,14,.6);backdrop-filter:blur(6px);" onclick="closeExportCustomizer()"></div>
-  <div id="exportCustomizerSheet" style="position:relative;z-index:1;background:#16161e;border:1px solid rgba(255,255,255,.08);border-bottom:none;border-radius:20px 20px 0 0;padding:20px 18px 32px;width:min(520px,100vw);box-shadow:0 -16px 60px rgba(0,0,0,.6);max-height:88vh;overflow-y:auto;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,1.1,.58,1);">
-    <div style="width:36px;height:4px;background:rgba(255,255,255,.12);border-radius:2px;margin:0 auto 18px;"></div>
+  <div id="exportCustomizerSheet" style="position:relative;z-index:1;background:var(--sf);border:1px solid var(--bd2);border-bottom:none;border-radius:20px 20px 0 0;padding:20px 18px 32px;width:min(520px,100vw);box-shadow:0 -16px 60px rgba(0,0,0,.6);max-height:88vh;overflow-y:auto;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,1.1,.58,1);">
+    <div style="width:36px;height:4px;background:var(--bd2);border-radius:2px;margin:0 auto 18px;"></div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-      <div id="ecCustomTitle" style="font-size:15px;font-weight:700;color:#eceef0;">Export Options</div>
+      <div id="ecCustomTitle" style="font-size:15px;font-weight:700;color:var(--tx);">Export Options</div>
       <div id="ecCustomBadge" style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(232,179,57,.14);color:#e8b339;border:1px solid rgba(232,179,57,.3);">Morning</div>
     </div>
 
@@ -4464,7 +4464,7 @@ function buildWeeklyReview(){
   }
   var thisW=weekData(weekStart(0));
   var lastW=weekData(weekStart(1));
-  function delta(a,b){if(b===0)return a>0?'+'+a:'—';var d=a-b;return (d>0?'+':'')+d;}
+  function delta(a,b){if(b===0)return a>0?'+'+a:'—';var d=Math.round((a-b)*10)/10;return (d>0?'+':'')+d;}
   function deltaColor(a,b){return a>b?'var(--s2)':a<b?'var(--s3)':'var(--mt)';}
   function row(icon,label,thisVal,lastVal,unit){
     var d=delta(thisVal,lastVal);var col=deltaColor(thisVal,lastVal);
