@@ -8464,7 +8464,7 @@ function renderVelocity(){
   var grid=document.getElementById('vel-grid');
   var summary=document.getElementById('vel-summary');
   if(!grid)return;
-  var p=getPace();
+  var p=getPace(getStudyDays());
   if(summary)summary.textContent='';
   var today=getToday();
   var noData=!p.avgH||p.avgH<=0;
@@ -8499,6 +8499,29 @@ function renderVelocity(){
 function dmBuildTierList(budgetMins, done){
   var result=[];
   var remaining=budgetMins;
+  // Rotation mode: walk the real schedule in order so tiers match the interleaved plan
+  if(typeof getRotation==='function'&&getRotation()){
+    var sched=buildSched();
+    var seen={};
+    var dks=Object.keys(sched).sort();
+    for(var di=0;di<dks.length&&remaining>0.5;di++){
+      var dayP=sched[dks[di]];
+      for(var si=0;si<dayP.sessions.length&&remaining>0.5;si++){
+        var items=dayP.sessions[si].items||[];
+        for(var ii=0;ii<items.length&&remaining>0.5;ii++){
+          var it=items[ii];
+          if(seen[it.taskId])continue;
+          var t=null;for(var x=0;x<ALL_TASKS.length;x++){if(ALL_TASKS[x].id===it.taskId){t=ALL_TASKS[x];break;}}
+          if(!t||done.has(t.id)||isPyqAllDone(t.id))continue;
+          seen[it.taskId]=1;
+          var chunkR=Math.min(t.duration,remaining);
+          result.push({task:t,chunk:Math.round(chunkR*10)/10,isPartial:(chunkR<t.duration-0.5)});
+          remaining-=chunkR;
+        }
+      }
+    }
+    return result;
+  }
   var subjOrd=getSubjOrder();
   // Build ordered undone tasks (same order as buildSched)
   var ordered=ALL_TASKS.filter(function(t){

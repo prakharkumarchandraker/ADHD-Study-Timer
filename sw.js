@@ -1,7 +1,7 @@
 // ── Study OS · Service Worker ──────────────────────────────────────────────
 // DEPLOY CHECKLIST: bump CACHE string on every deploy to force cache refresh on all devices.
-// v24 — 2026-06-10: live syllabus progress card, simplified pace tracker, phase picker disables assigned subjects
-const CACHE = 'studyos-v24';
+// v25 — 2026-06-10: FINAL — getPace crash fix, rotation-aware daily-min tiers, full test pass (37 tests)
+const CACHE = 'studyos-v25';
 
 // Static assets that are safe to cache forever (fonts, CDN libraries)
 // index.html is intentionally NOT cached here — it uses network-first below
