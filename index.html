@@ -1413,7 +1413,7 @@ window.onerror=function(msg,src,line,col,err){
   <!-- ═══════════════════════════════════════════ TAB: GATE ═══ -->
   <div class="tab-panel" id="tab-gate">
 
-  <div class="card" style="margin-bottom:0;"><div class="tt-summary-title">📦 Total Syllabus Content</div><div style="font-size:11px;color:var(--mt);margin-bottom:10px;">This is how much you have to watch in total — across all 11 subjects.</div><div class="tt-summary-row"><div class="tt-summary-label" style="width:80px;color:var(--tx);">C Programming</div><div class="tt-summary-bar-wrap"><div class="tt-summary-bar" style="width:8%;background:#a6e3a1;"></div></div><div style="font-size:10px;font-family:var(--mo);color:var(--mt);width:72px;text-align:right;flex-shrink:0;">45 lec · 73.1h</div></div><div class="tt-summary-row"><div class="tt-summary-label" style="width:80px;color:var(--tx);">Data Structures</div><div class="tt-summary-bar-wrap"><div class="tt-summary-bar" style="width:10%;background:#f38ba8;"></div></div><div style="font-size:10px;font-family:var(--mo);color:var(--mt);width:72px;text-align:right;flex-shrink:0;">61 lec · 89.6h</div></div><div class="tt-summary-row"><div class="tt-summary-label" style="width:80px;color:var(--tx);">Algorithms</div><div class="tt-summary-bar-wrap"><div class="tt-summary-bar" style="width:8%;background:#89dceb;"></div></div><div style="font-size:10px;font-family:var(--mo);color:var(--mt);width:72px;text-align:right;flex-shrink:0;">53 lec · 73.4h</div></div><div class="tt-summary-row"><div class="tt-summary-label" style="width:80px;color:var(--tx);">TOC</div><div class="tt-summary-bar-wrap"><div class="tt-summary-bar" style="width:11%;background:#f9e2af;"></div></div><div style="font-size:10px;font-family:var(--mo);color:var(--mt);width:72px;text-align:right;flex-shrink:0;">73 lec · 99.4h</div></div><div class="tt-summary-row"><div class="tt-summary-label" style="width:80px;color:var(--tx);">Compiler Design</div><div class="tt-summary-bar-wrap"><div class="tt-summary-bar" style="width:5%;background:#b4befe;"></div></div><div style="font-size:10px;font-family:var(--mo);color:var(--mt);width:72px;text-align:right;flex-shrink:0;">32 lec · 48.8h</div></div><div class="tt-summary-row"><div class="tt-summary-label" style="width:80px;color:var(--tx);">CO</div><div class="tt-summary-bar-wrap"><div class="tt-summary-bar" style="width:15%;background:#fab387;"></div></div><div style="font-size:10px;font-family:var(--mo);color:var(--mt);width:72px;text-align:right;flex-shrink:0;">80 lec · 136.6h</div></div><div class="tt-summary-row"><div class="tt-summary-label" style="width:80px;color:var(--tx);">OS</div><div class="tt-summary-bar-wrap"><div class="tt-summary-bar" style="width:11%;background:#89b4fa;"></div></div><div style="font-size:10px;font-family:var(--mo);color:var(--mt);width:72px;text-align:right;flex-shrink:0;">63 lec · 103.6h</div></div><div class="tt-summary-row"><div class="tt-summary-label" style="width:80px;color:var(--tx);">CN</div><div class="tt-summary-bar-wrap"><div class="tt-summary-bar" style="width:13%;background:#cba6f7;"></div></div><div style="font-size:10px;font-family:var(--mo);color:var(--mt);width:72px;text-align:right;flex-shrink:0;">63 lec · 118.4h</div></div><div class="tt-summary-row"><div class="tt-summary-label" style="width:80px;color:var(--tx);">DBMS</div><div class="tt-summary-bar-wrap"><div class="tt-summary-bar" style="width:7%;background:#f5c2e7;"></div></div><div style="font-size:10px;font-family:var(--mo);color:var(--mt);width:72px;text-align:right;flex-shrink:0;">47 lec · 68.9h</div></div><div class="tt-summary-row"><div class="tt-summary-label" style="width:80px;color:var(--tx);">DLD</div><div class="tt-summary-bar-wrap"><div class="tt-summary-bar" style="width:6%;background:#94e2d5;"></div></div><div style="font-size:10px;font-family:var(--mo);color:var(--mt);width:72px;text-align:right;flex-shrink:0;">31 lec · 59.2h</div></div><div class="tt-summary-row"><div class="tt-summary-label" style="width:80px;color:var(--tx);">Aptitude</div><div class="tt-summary-bar-wrap"><div class="tt-summary-bar" style="width:5%;background:#eba0ac;"></div></div><div style="font-size:10px;font-family:var(--mo);color:var(--mt);width:72px;text-align:right;flex-shrink:0;">31 lec · 50.4h</div></div><div class="tt-summary-total-row" style="margin-top:8px;"><div class="tt-summary-total-label">Total lectures</div><div class="tt-summary-total-val">579 lectures</div></div><div class="tt-summary-total-row" style="border-top:none;padding-top:2px;"><div class="tt-summary-total-label">Total watch time</div><div class="tt-summary-total-val" style="color:var(--s1);">921h of content</div></div></div>
+  <div class="card" id="syllabusCard" style="margin-bottom:0;"></div>
 
     <!-- GATE COUNTDOWN BANNER -->
     <div id="gate-banner">🎯 Loading GATE countdown…</div>
@@ -1502,7 +1502,7 @@ window.onerror=function(msg,src,line,col,err){
     <!-- SUBJECT VELOCITY -->
     <div class="card" id="vel-card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-        <div class="ct" style="margin-bottom:0;">📈 Velocity Tracker</div>
+        <div class="ct" style="margin-bottom:0;">📈 Pace — am I on track?</div>
         <span id="vel-summary" style="font-family:var(--mo);font-size:9px;color:var(--mt);"></span>
       </div>
       <div class="vel-grid" id="vel-grid"></div>
@@ -1521,6 +1521,9 @@ window.onerror=function(msg,src,line,col,err){
     </div>
 
     <!-- SPEED CALCULATOR -->
+    <!-- SUBJECT ROTATION (parallel subjects) -->
+    <div class="card" id="rotCard" style="display:none;"></div>
+
     <div class="card" id="speedCalcCard">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
         <div class="ct" style="margin-bottom:0;">⚡ Speed Completion Calculator</div>
@@ -2776,7 +2779,7 @@ function daysBetween(a,b){return Math.round((fromStr(b)-fromStr(a))/86400000);}
 function hmColor(m){if(!m||m<1)return '#1a1a2e';var h=m/60;if(h<2)return '#1e3b2e';if(h<4)return '#2d5e3a';if(h<6)return '#3d8c4e';if(h<8)return '#5ab86b';return '#a6e3a1';}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 
-function defaultState(){return{done:{},pyqTopics:{},potato:[],viewDate:null,skips:[],expanded:[],flags:{},revisions:{},revDone:{},live:{},subjOrder:null,pinnedNext:null,revUnits:{},revSubjects:{},revBlockMode:'B'};}
+function defaultState(){return{done:{},pyqTopics:{},potato:[],viewDate:null,skips:[],expanded:[],flags:{},revisions:{},revDone:{},live:{},subjOrder:null,pinnedNext:null,revUnits:{},revSubjects:{},revBlockMode:'B',rotation:null};}
 function loadGateState(){try{var s=localStorage.getItem('gate2027v6');if(s){var p=JSON.parse(s);var d=defaultState();for(var k in d)if(p[k]===undefined)p[k]=d[k];return p;}}catch(e){}return defaultState();}
 var _saveGateTimer=null;
 function saveGateState(){
@@ -2859,6 +2862,63 @@ function buildSched(){
       rem2-=chunk2;sRem-=chunk2;isFirst2=false;
     }
   }
+  // ── ROTATION MODE: interleave 1-4 subjects per day with equal time shares ──
+  var rot=(typeof getRotation==='function')?getRotation():null;
+  if(rot){
+    var queues={};rot.master.forEach(function(s){queues[s]=[];});
+    var restR=ALL_TASKS.filter(function(t){return !done.has(t.id)&&(!pinnedTask||t.id!==pinnedTask.id);});
+    restR.sort(function(a,b){return a.id-b.id;});
+    restR.forEach(function(t){if(queues[t.subject])queues[t.subject].push(t);});
+    var qi={},laid={};rot.master.forEach(function(s){qi[s]=0;laid[s]=0;});
+    function unfin(s){return queues[s]&&qi[s]<queues[s].length;}
+    function activeSet(dateStr){
+      var un=rot.master.filter(unfin);
+      if(!un.length)return[];
+      var wd=new Date(dateStr+'T12:00:00').getDay();
+      if(rot.days&&rot.days[wd]&&rot.days[wd].length){
+        var ov=rot.days[wd].filter(unfin);
+        if(ov.length)return ov.slice(0,4);
+      }
+      var first=un[0],K=1;
+      for(var p=0;p<rot.phases.length;p++){if(rot.phases[p].indexOf(first)>=0){K=rot.phases[p].length;break;}}
+      return un.slice(0,Math.min(Math.max(K,1),4));
+    }
+    var guardD=0;
+    while(rot.master.some(unfin)&&guardD++<500){
+      var dayStr=cur;
+      var dayMins=sRem;for(var si2=sIdx+1;si2<SESSIONS.length;si2++)dayMins+=SESSIONS[si2].dur;
+      var act=activeSet(dayStr);
+      if(!act.length)break;
+      var share=dayMins/act.length;
+      for(var aI=0;aI<act.length;aI++){
+        var sb=act[aI],bud=share;
+        while(bud>0.5&&unfin(sb)&&cur===dayStr){
+          if(sRem<5){nextSes();if(cur!==dayStr)break;}
+          ensureDay(cur);
+          var taskR=queues[sb][qi[sb]];
+          var taskRem=taskR.duration-laid[sb];
+          var chunkR=Math.min(taskRem,sRem,bud);
+          if(chunkR<0.5)break;
+          var isF=laid[sb]<0.5,isL=(taskRem-chunkR)<0.5;
+          sched[cur].sessions[sIdx].items.push({taskId:taskR.id,type:taskR.type,subject:taskR.subject,unit:taskR.unit||'',name:taskR.type==='pyq'?taskR.subject+' — PYQ':taskR.name,num:taskR.num||0,chunk:Math.round(chunkR*10)/10,totalDur:taskR.duration,isFirst:isF,isLast:isL,isSplit:(!isF||!isL),topics:taskR.topics||[],isPinned:false});
+          laid[sb]+=chunkR;sRem-=chunkR;bud-=chunkR;
+          if(isL){qi[sb]++;laid[sb]=0;}
+        }
+        if(cur!==dayStr)break;
+      }
+      if(cur===dayStr){var g2=0;while(cur===dayStr&&g2++<30)nextSes();}
+    }
+    // trim empty day(s) created by the final cursor advance — but only those
+    // AFTER the last day with items (keeps today's shell when all is done)
+    var dKeys=Object.keys(sched).sort();
+    var lastWith=null;
+    dKeys.forEach(function(dk){if(sched[dk].sessions.some(function(s){return s.items.length>0;}))lastWith=dk;});
+    if(lastWith)dKeys.forEach(function(dk){
+      if(dk>lastWith&&!sched[dk].sessions.some(function(s){return s.items.length>0;}))delete sched[dk];
+    });
+    return sched;
+  }
+  // ── SEQUENTIAL MODE (rotation off): original behavior ──
   // Sort ALL_TASKS by subject order, then by task id within subject
   var subjOrd=getSubjOrder();
   var ordered=ALL_TASKS.filter(function(t){return !done.has(t.id)&&(!pinnedTask||t.id!==pinnedTask.id);});
@@ -6561,7 +6621,10 @@ function startSync(){
     var localSubjOrderStr=JSON.stringify(ST.subjOrder||null);
     var remoteSubjOrderStr=JSON.stringify(remoteSubjOrder);
     var subjOrderChanged=remoteSubjOrder&&remoteSubjOrderStr!==localSubjOrderStr;
-    if(changed||remoteDone>localDone||subjOrderChanged){
+    // rotation plan: last-write-wins like subjOrder
+    var remoteRot=(val.rotation&&typeof val.rotation==='object')?val.rotation:null;
+    var rotChanged=JSON.stringify(remoteRot)!==JSON.stringify(ST.rotation||null)&&remoteRot!==null;
+    if(changed||remoteDone>localDone||subjOrderChanged||rotChanged){
       ST.done=mergedDone;ST.flags=mergedFlags;ST.pyqTopics=mergedPyq;
       ST.potato=mergedPotato;ST.skips=mergedSkips;
       // Take other fields from remote if they're more recent
@@ -6571,6 +6634,7 @@ function startSync(){
       if(val.revBlockMode)ST.revBlockMode=val.revBlockMode;
       if(val.revDone)ST.revDone=val.revDone;
       if(remoteSubjOrder)ST.subjOrder=remoteSubjOrder; // sync subject order
+      if(rotChanged)ST.rotation=remoteRot; // sync rotation plan
       var d=defaultState();for(var k in d)if(ST[k]===undefined)ST[k]=d[k];
       localStorage.setItem('gate2027v6',JSON.stringify(ST));
       renderGate();
@@ -8396,37 +8460,35 @@ function getSubjectVelocity(){
 }
 
 function renderVelocity(){
+  // Simple pace view: doing vs need vs projected finish. One verdict, three numbers.
   var grid=document.getElementById('vel-grid');
   var summary=document.getElementById('vel-summary');
   if(!grid)return;
-  var data=getSubjectVelocity();
-  var onTrack=data.filter(function(d){return d.status==='ok'||d.status==='done';}).length;
-  if(summary)summary.textContent=onTrack+'/'+data.length+' on track';
-  var html='';
-  data.forEach(function(d){
-    var col=COLORS[d.subj]||'#4d9fec';
-    if(d.status==='done'){
-      html+='<div class="vel-row">'
-        +'<span class="vel-lbl" style="background:rgba(62,207,142,.12);color:var(--s2);">'+esc(LABELS[d.subj]||d.subj)+'</span>'
-        +'<span class="vel-subj">'+esc(d.subj)+'</span>'
-        +'<span class="vel-bar-wrap"><span class="vel-bar-fill" style="width:100%;background:var(--s2);"></span></span>'
-        +'<span class="vel-eta vel-ok">✓ Done</span></div>';
-      return;
-    }
-    var cls=d.status==='ok'?'vel-ok':d.status==='warn'?'vel-warn':'vel-behind';
-    var etaStr=d.eta>GATE_DATE?'After GATE':d.eta<=getToday()?'Overdue':fmtShort(d.eta);
-    // Dim future subjects slightly
-    var opacity=d.isFuture?'opacity:.6;':'';
-    var rateStr=d.rate7>0?(Math.round(d.rate7*10)/10)+'/d':'—';
-    var tip=d.remaining+' tasks left'+(d.isFuture?' · sequential (starts after previous subject)':' · pace '+rateStr);
-    html+='<div class="vel-row" style="'+opacity+'">'
-      +'<span class="vel-lbl" style="background:'+col+'18;color:'+col+';">'+esc(LABELS[d.subj]||d.subj)+'</span>'
-      +'<span class="vel-subj">'+esc(d.subj)+'</span>'
-      +'<span class="vel-bar-wrap"><span class="vel-bar-fill" style="width:'+d.pct+'%;background:'+col+';"></span></span>'
-      +'<span class="vel-eta '+cls+'" title="'+tip+'">'+etaStr+'</span>'
-      +'</div>';
-  });
-  grid.innerHTML=html||'<div style="font-size:11px;color:var(--mt);text-align:center;padding:10px;">Start marking tasks done to see velocity.</div>';
+  var p=getPace();
+  if(summary)summary.textContent='';
+  var today=getToday();
+  var noData=!p.avgH||p.avgH<=0;
+  var verdict,vCol;
+  if(p.remMin<=0){verdict='🎉 Syllabus complete';vCol='var(--s2)';}
+  else if(noData){verdict='No study logged in the last 7 days';vCol='var(--mt)';}
+  else if(p.onTrack){verdict='✓ On track — keep this pace';vCol='var(--s2)';}
+  else{verdict='Behind pace — add '+(Math.round((p.needH-p.avgH)*10)/10)+'h/day to catch up';vCol='var(--s3)';}
+  var etaStr=noData?'—':(p.eta>TARGET_DATE?fmtShort(p.eta)+' ⚠':fmtShort(p.eta));
+  var etaCol=noData?'var(--mt)':(p.eta>TARGET_DATE?'var(--s3)':'var(--s2)');
+  grid.innerHTML=
+    '<div style="font-size:13px;font-weight:700;color:'+vCol+';margin-bottom:12px;">'+verdict+'</div>'
+    +'<div style="display:flex;gap:8px;text-align:center;">'
+    +'<div style="flex:1;background:var(--sf2);border-radius:10px;padding:10px 6px;">'
+      +'<div style="font-family:var(--mo);font-size:19px;font-weight:700;color:var(--tx);">'+(noData?'0':p.avgH)+'h</div>'
+      +'<div style="font-size:9px;color:var(--mt);text-transform:uppercase;letter-spacing:.06em;margin-top:3px;">Doing /day<br>(7-day avg)</div></div>'
+    +'<div style="flex:1;background:var(--sf2);border-radius:10px;padding:10px 6px;">'
+      +'<div style="font-family:var(--mo);font-size:19px;font-weight:700;color:var(--am);">'+p.needH+'h</div>'
+      +'<div style="font-size:9px;color:var(--mt);text-transform:uppercase;letter-spacing:.06em;margin-top:3px;">Need /day<br>(to hit target)</div></div>'
+    +'<div style="flex:1;background:var(--sf2);border-radius:10px;padding:10px 6px;">'
+      +'<div style="font-family:var(--mo);font-size:15px;font-weight:700;color:'+etaCol+';padding-top:3px;">'+etaStr+'</div>'
+      +'<div style="font-size:9px;color:var(--mt);text-transform:uppercase;letter-spacing:.06em;margin-top:5px;">Done by<br>(at current pace)</div></div>'
+    +'</div>'
+    +'<div style="font-size:10px;color:var(--mt);margin-top:9px;">'+Math.round(p.remMin/60)+'h of syllabus left · target '+fmtShort(TARGET_DATE)+'. Per-subject dates live in the Speed Calculator.</div>';
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -8829,6 +8891,27 @@ window.renderSpeedCalc=function(){
     +'</div>';
 
   var speedsSubj=[1,1.25,1.5,2];
+  var rotSC=(typeof getRotation==='function')?getRotation():null;
+  if(rotSC&&typeof rotSimFinishDates==='function'){
+    // ── Rotation mode: subjects run in parallel — simulate shared daily time ──
+    var simBySpeed={};
+    speedsSubj.forEach(function(sp){simBySpeed[sp]=rotSimFinishDates(rotSC,subjData,sp,dailyMins,today);});
+    subjData.forEach(function(sd){
+      var chips='';
+      speedsSubj.forEach(function(sp){
+        var fin=simBySpeed[sp][sd.subj]||prepTarget;
+        var onT=fin<=prepTarget;
+        chips+='<div class="sc-subj-chip'+(sp===1.5?' hl':'')+'" style="'+(onT?'':'color:var(--s3);border-color:var(--s3o);')+'">'+fmtShort(fin)+'</div>';
+      });
+      subjRowsHtml+='<div class="sc-subj-row">'
+        +'<div class="sc-subj-lbl" style="background:'+sd.col+'18;color:'+sd.col+';">'+esc(sd.lbl)+'</div>'
+        +'<div class="sc-subj-name">'+esc(sd.subj)+' <span style="font-family:var(--mo);font-size:8px;color:var(--s1);">∥</span></div>'
+        +'<div class="sc-subj-speeds">'+chips+'</div>'
+        +'</div>';
+    });
+    document.getElementById('scSubjectRows').innerHTML=subjRowsHtml;
+  }else{
+  // ── Sequential mode: original cascade ──
   // Compute sequential end dates per subject per speed
   var cursors={};
   speedsSubj.forEach(function(sp){cursors[sp]=today;});
@@ -8850,6 +8933,7 @@ window.renderSpeedCalc=function(){
       +'</div>';
   });
   document.getElementById('scSubjectRows').innerHTML=subjRowsHtml;
+  }
 
   // ── Timeline bar ──
   var tlHtml='<div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mt);margin-bottom:8px;">Timeline</div>'
@@ -10567,6 +10651,319 @@ function mountFocusExtras(){
   }
 }
 document.addEventListener('DOMContentLoaded',function(){if(_foActive)mountFocusExtras();},{once:true});
+})();
+</script>
+
+<style>
+/* ── SUBJECT ROTATION ── */
+.rot-mb{background:var(--sf2);border:1px solid var(--bd2);color:var(--mt2);border-radius:7px;width:26px;height:26px;font-size:11px;cursor:pointer;font-family:var(--fn);}
+.rot-mb:active{background:var(--sf3);}
+#rotPickOv{position:fixed;inset:0;z-index:100001;display:flex;align-items:center;justify-content:center;padding:20px;}
+#rotPickOv .rp-bg{position:absolute;inset:0;background:rgba(10,12,14,.78);backdrop-filter:blur(5px);}
+#rotPickOv .rp-modal{position:relative;z-index:1;background:var(--sf);border:1px solid var(--bd2);border-radius:16px;width:min(380px,94vw);padding:20px;}
+#rotPickOv .rp-title{font-size:14px;font-weight:800;color:var(--tx);margin-bottom:4px;}
+#rotPickOv .rp-hint{font-size:10px;color:var(--mt);margin-bottom:13px;}
+#rotPickOv .rp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+#rotPickOv .rp-save{flex:1;background:var(--s1);border:none;color:#fff;border-radius:10px;padding:11px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fn);}
+#rotPickOv .rp-clear{flex:1;background:transparent;border:1px solid var(--bd2);color:var(--mt2);border-radius:10px;padding:11px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--fn);}
+</style>
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// ── SUBJECT ROTATION · run 1-4 subjects in parallel ─────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// ST.rotation = { on:1, phases:[["C Programming","Data Structures"],...], days:{0:[..],..6:[..]} }
+// master order = phases flattened, then any unassigned subjects (sequential, one at a time).
+// Backfill: when a subject finishes, the next unfinished subject in master order joins.
+// Day rules: per-weekday explicit subject override (0=Sun … 6=Sat).
+(function(){
+'use strict';
+
+// ── Validated config (null when off/invalid) — used by buildSched + speed calc ──
+window.getRotation=function(){
+  try{
+    var r=ST&&ST.rotation;
+    if(!r||!r.on||!Array.isArray(r.phases))return null;
+    var seen={},phases=[];
+    r.phases.forEach(function(ph){
+      if(!Array.isArray(ph))return;
+      var clean=ph.filter(function(s){return SUBJ.indexOf(s)>=0&&!seen[s]&&(seen[s]=1);}).slice(0,4);
+      if(clean.length)phases.push(clean);
+    });
+    if(!phases.length)return null;
+    var master=[];phases.forEach(function(ph){ph.forEach(function(s){master.push(s);});});
+    // unassigned subjects trail in subjOrder, one at a time (implicit solo phases)
+    getSubjOrder().forEach(function(s){if(master.indexOf(s)<0){master.push(s);phases.push([s]);}});
+    var days={};
+    if(r.days&&typeof r.days==='object'){
+      Object.keys(r.days).forEach(function(k){
+        var arr=Array.isArray(r.days[k])?r.days[k].filter(function(s){return SUBJ.indexOf(s)>=0;}).slice(0,4):[];
+        if(arr.length)days[+k]=arr;
+      });
+    }
+    return{phases:phases,master:master,days:days};
+  }catch(e){return null;}
+};
+
+// ── Minute-level finish-date simulation for the Speed Calculator ────────────
+// Same active-set rules as buildSched, on subject totals instead of lectures.
+window.rotSimFinishDates=function(rot,subjData,speed,dailyMins,today){
+  var rem={};
+  subjData.forEach(function(sd){rem[sd.subj]=sd.lecMin/speed+sd.pyqMin;});
+  function unfin(s){return rem[s]!==undefined&&rem[s]>0.5;}
+  var fin={},d=today,guard=0;
+  while(rot.master.some(unfin)&&guard++<700){
+    var un=rot.master.filter(unfin);
+    var wd=new Date(d+'T12:00:00').getDay();
+    var act=null;
+    if(rot.days[wd]){var ov=rot.days[wd].filter(unfin);if(ov.length)act=ov;}
+    if(!act){
+      var first=un[0],K=1;
+      for(var p=0;p<rot.phases.length;p++){if(rot.phases[p].indexOf(first)>=0){K=rot.phases[p].length;break;}}
+      act=un.slice(0,Math.min(Math.max(K,1),4));
+    }
+    var share=dailyMins/act.length;
+    act.forEach(function(s){
+      rem[s]-=share;
+      if(rem[s]<=0.5&&!fin[s])fin[s]=d;
+    });
+    d=addD(d,1);
+  }
+  // anything never finished within guard window: mark far date
+  rot.master.forEach(function(s){if(rem[s]!==undefined&&!fin[s])fin[s]=addD(today,699);});
+  return fin;
+};
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+var DAY_LBL=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+function rotState(){if(!ST.rotation||typeof ST.rotation!=='object')ST.rotation={on:0,phases:[],days:{}};if(!Array.isArray(ST.rotation.phases))ST.rotation.phases=[];if(!ST.rotation.days)ST.rotation.days={};return ST.rotation;}
+function rotSave(){
+  try{saveGateState();}catch(e){}
+  try{if(typeof dmRefreshSnap==='function')dmRefreshSnap();}catch(e){}
+  try{if(typeof buildSchedule==='function')buildSchedule();}catch(e){}
+  try{if(typeof renderDailyMinimum==='function')renderDailyMinimum();}catch(e){}
+  try{if(typeof window.renderSpeedCalc==='function')window.renderSpeedCalc();}catch(e){}
+  try{if(typeof window.panicRenderCard==='function')window.panicRenderCard();}catch(e){}
+  rotRender();
+}
+function rotEsc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function rotLbl(s){try{return LABELS[s]||s;}catch(e){return s;}}
+function rotCol(s){try{return (typeof COLORS!=='undefined'&&COLORS[s])||'#4d9fec';}catch(e){return '#4d9fec';}}
+
+// ── Editor card render ───────────────────────────────────────────────────────
+function rotRender(){
+  var card=document.getElementById('rotCard');
+  if(!card)return;
+  card.style.display='';
+  var r=rotState();
+  var on=!!r.on;
+  var h='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:'+(on?'10px':'2px')+';">'
+    +'<div class="ct" style="margin-bottom:0;">🔀 Subject Rotation</div>'
+    +'<button onclick="rotToggle()" style="background:'+(on?'var(--s2b)':'var(--sf2)')+';border:1px solid '+(on?'var(--s2o)':'var(--bd2)')+';color:'+(on?'var(--s2)':'var(--mt2)')+';border-radius:8px;padding:3px 11px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--fn);">'+(on?'● ON':'OFF')+'</button>'
+    +'</div>';
+  if(!on){
+    h+='<div style="font-size:11px;color:var(--mt);line-height:1.5;">Run 1–4 subjects in parallel instead of one after another. Daily study time splits equally between them.</div>';
+    card.innerHTML=h;return;
+  }
+  // phases
+  if(!r.phases.length){
+    h+='<div style="font-size:11px;color:var(--mt);font-style:italic;margin-bottom:8px;">No phases yet — add your first group of subjects.</div>';
+  }
+  r.phases.forEach(function(ph,i){
+    var chips=ph.map(function(s,j){
+      return '<span style="font-family:var(--mo);font-size:10px;padding:2px 8px;border-radius:8px;background:'+rotCol(s)+'18;color:'+rotCol(s)+';border:1px solid '+rotCol(s)+'40;">'+(j+1)+'·'+rotEsc(rotLbl(s))+'</span>';
+    }).join(' ');
+    h+='<div style="display:flex;align-items:center;gap:7px;padding:8px 0;border-bottom:1px solid var(--bd);">'
+      +'<div style="font-family:var(--mo);font-size:9px;color:var(--mt);min-width:42px;">PHASE '+(i+1)+'<br><span style="color:var(--s1);">∥'+ph.length+'</span></div>'
+      +'<div style="flex:1;display:flex;flex-wrap:wrap;gap:4px;">'+chips+'</div>'
+      +'<div style="display:flex;gap:3px;">'
+      +(i>0?'<button onclick="rotMovePhase('+i+',-1)" class="rot-mb">↑</button>':'')
+      +(i<r.phases.length-1?'<button onclick="rotMovePhase('+i+',1)" class="rot-mb">↓</button>':'')
+      +'<button onclick="rotEditPhase('+i+')" class="rot-mb">✎</button>'
+      +'<button onclick="rotDelPhase('+i+')" class="rot-mb" style="color:var(--s3);">✕</button>'
+      +'</div></div>';
+  });
+  h+='<button onclick="rotEditPhase(-1)" style="width:100%;margin-top:8px;background:var(--s1b);border:1px dashed var(--s1o);color:var(--s1);border-radius:9px;padding:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--fn);">+ Add phase</button>';
+  // unassigned info
+  try{
+    var assigned={};r.phases.forEach(function(ph){ph.forEach(function(s){assigned[s]=1;});});
+    var rest=getSubjOrder().filter(function(s){return !assigned[s];});
+    if(rest.length)h+='<div style="font-size:10px;color:var(--mt);margin-top:8px;line-height:1.5;">After phases (solo, in order): '+rest.map(rotLbl).map(rotEsc).join(' → ')+'</div>';
+  }catch(e){}
+  // day rules
+  h+='<div style="font-family:var(--mo);font-size:9px;color:var(--mt);letter-spacing:.08em;text-transform:uppercase;margin:14px 0 6px;">Day rules (optional)</div><div style="display:flex;gap:4px;flex-wrap:wrap;">';
+  for(var d=0;d<7;d++){
+    var has=r.days[d]&&r.days[d].length;
+    h+='<button onclick="rotEditDay('+d+')" style="flex:1;min-width:38px;background:'+(has?'var(--amb)':'var(--sf2)')+';border:1px solid '+(has?'var(--amo)':'var(--bd2)')+';color:'+(has?'var(--am)':'var(--mt2)')+';border-radius:8px;padding:6px 2px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--fn);">'+DAY_LBL[d]+(has?'<br><span style="font-size:8px;font-weight:400;">'+r.days[d].map(rotLbl).join('·')+'</span>':'')+'</button>';
+  }
+  h+='</div>';
+  // today preview
+  try{
+    var rot=window.getRotation();
+    if(rot){
+      var doneSet={};Object.keys(ST.done).forEach(function(k){doneSet[k]=1;});
+      var remBy={};rot.master.forEach(function(s){remBy[s]=0;});
+      ALL_TASKS.forEach(function(t){if(!doneSet[t.id]&&remBy[t.subject]!==undefined)remBy[t.subject]+=t.duration;});
+      function unf(s){return remBy[s]>0.5;}
+      var un=rot.master.filter(unf),act=null;
+      if(un.length){
+        var wd=new Date(getToday()+'T12:00:00').getDay();
+        if(rot.days[wd]){var ov=rot.days[wd].filter(unf);if(ov.length)act=ov;}
+        if(!act){var first=un[0],K=1;for(var p=0;p<rot.phases.length;p++){if(rot.phases[p].indexOf(first)>=0){K=rot.phases[p].length;break;}}act=un.slice(0,Math.min(K,4));}
+        var dayMins=0;try{dayMins=SESSIONS.reduce(function(a,s){return a+s.dur;},0);}catch(e){}
+        var shareH=act.length?Math.round(dayMins/act.length/6)/10:0;
+        h+='<div style="margin-top:12px;padding:9px 11px;background:var(--s1b);border:1px solid var(--s1o);border-radius:9px;font-size:11px;color:var(--tx);">Today → '+act.map(function(s){return '<b style="color:'+rotCol(s)+';">'+rotEsc(rotLbl(s))+'</b> '+shareH+'h';}).join(' · ')+'</div>';
+      }
+    }
+  }catch(e){}
+  card.innerHTML=h;
+}
+window.rotRender=rotRender;
+
+// ── Actions ──────────────────────────────────────────────────────────────────
+window.rotToggle=function(){
+  var r=rotState();r.on=r.on?0:1;
+  try{if(typeof haptic==='function')haptic([30]);}catch(e){}
+  if(r.on&&!r.phases.length){rotSave();window.rotEditPhase(-1);return;}
+  rotSave();
+  try{showT(r.on?'🔀 Rotation ON':'➡ Rotation OFF',r.on?'Subjects now run in parallel.':'Back to one subject at a time.');}catch(e){}
+};
+window.rotMovePhase=function(i,dir){
+  var r=rotState();var j=i+dir;
+  if(j<0||j>=r.phases.length)return;
+  var t=r.phases[i];r.phases[i]=r.phases[j];r.phases[j]=t;
+  rotSave();
+};
+window.rotDelPhase=function(i){
+  var r=rotState();r.phases.splice(i,1);
+  if(!r.phases.length)r.on=0;
+  rotSave();
+};
+
+// ── Subject-pick modal (ordered by tap, max 4) — used for phases & day rules ─
+var _pickSel=[],_pickCb=null,_pickDis={};
+function openPicker(title,preset,allowClear,cb,disabled){
+  _pickSel=(preset||[]).slice(0,4);_pickCb=cb;_pickDis=disabled||{};
+  var old=document.getElementById('rotPickOv');if(old)old.remove();
+  var ov=document.createElement('div');ov.id='rotPickOv';
+  ov.innerHTML='<div class="rp-bg" onclick="rotPickCancel()"></div>'
+    +'<div class="rp-modal"><div class="rp-title">'+rotEsc(title)+'</div>'
+    +'<div class="rp-hint">Tap in the order you want to study them (max 4).</div>'
+    +'<div class="rp-grid" id="rpGrid"></div>'
+    +'<div style="display:flex;gap:7px;margin-top:14px;">'
+    +(allowClear?'<button class="rp-clear" onclick="rotPickClear()">Use default</button>':'')
+    +'<button class="rp-save" onclick="rotPickSave()">Save</button>'
+    +'</div></div>';
+  document.body.appendChild(ov);
+  drawPicker();
+}
+function drawPicker(){
+  var g=document.getElementById('rpGrid');if(!g)return;
+  g.innerHTML=SUBJ.map(function(s){
+    var idx=_pickSel.indexOf(s);
+    var sel=idx>=0;
+    var dis=_pickDis[s];
+    if(dis){
+      return '<button disabled style="position:relative;background:var(--sf);border:1px dashed var(--bd);color:var(--mt);border-radius:9px;padding:9px 4px;font-size:11px;font-weight:600;font-family:var(--fn);opacity:.45;cursor:not-allowed;">'
+        +'<span style="position:absolute;top:3px;right:5px;font-family:var(--mo);font-size:8px;">'+rotEsc(dis)+'</span>'
+        +rotEsc(rotLbl(s))+'</button>';
+    }
+    return '<button onclick="rotPickTap(\''+s.replace(/'/g,"\\'")+'\')" style="position:relative;background:'+(sel?rotCol(s)+'22':'var(--sf2)')+';border:1px solid '+(sel?rotCol(s):'var(--bd2)')+';color:'+(sel?rotCol(s):'var(--mt2)')+';border-radius:9px;padding:9px 4px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--fn);">'
+      +(sel?'<span style="position:absolute;top:3px;right:5px;font-family:var(--mo);font-size:9px;">'+(idx+1)+'</span>':'')
+      +rotEsc(rotLbl(s))+'</button>';
+  }).join('');
+}
+window.rotPickTap=function(s){
+  var i=_pickSel.indexOf(s);
+  if(i>=0)_pickSel.splice(i,1);
+  else{if(_pickSel.length>=4){try{showT('Max 4 subjects','Remove one first.');}catch(e){}return;}_pickSel.push(s);}
+  try{if(typeof haptic==='function')haptic([15]);}catch(e){}
+  drawPicker();
+};
+window.rotPickCancel=function(){var ov=document.getElementById('rotPickOv');if(ov)ov.remove();_pickCb=null;};
+window.rotPickClear=function(){if(_pickCb)_pickCb(null);window.rotPickCancel();};
+window.rotPickSave=function(){
+  if(!_pickSel.length){try{showT('Pick at least 1 subject','');}catch(e){}return;}
+  if(_pickCb)_pickCb(_pickSel.slice());
+  window.rotPickCancel();
+};
+
+window.rotEditPhase=function(i){
+  var r=rotState();
+  var preset=i>=0?r.phases[i]:[];
+  var dis={};
+  r.phases.forEach(function(ph,j){if(j!==i)ph.forEach(function(s){dis[s]='P'+(j+1);});});
+  openPicker(i>=0?'Edit Phase '+(i+1):'New Phase',preset,false,function(sel){
+    if(!sel)return;
+    // remove chosen subjects from other phases (a subject lives in one phase)
+    r.phases=r.phases.map(function(ph,j){return j===i?ph:ph.filter(function(s){return sel.indexOf(s)<0;});}).filter(function(ph){return ph.length;});
+    if(i>=0&&i<r.phases.length)r.phases[i]=sel;else r.phases.push(sel);
+    r.on=1;
+    rotSave();
+  },dis);
+};
+window.rotEditDay=function(d){
+  var r=rotState();
+  openPicker(DAY_LBL[d]+' override',r.days[d]||[],true,function(sel){
+    if(sel===null)delete r.days[d];
+    else r.days[d]=sel;
+    rotSave();
+  });
+};
+
+// keep card fresh when GATE tab re-renders
+try{
+  var _origRG=renderGate;
+  renderGate=function(){_origRG.apply(this,arguments);try{rotRender();}catch(e){}};
+  window.renderGate=renderGate;
+}catch(e){}
+document.addEventListener('DOMContentLoaded',function(){try{rotRender();}catch(e){}},{once:true});
+})();
+</script>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// ── LIVE SYLLABUS PROGRESS CARD ──────────────────────────────────────────────
+// Replaces the old hardcoded "Total Syllabus Content" block. Renders from the
+// live curriculum (ALL_TASKS) + done state, so curriculum edits always reflect.
+// Bars now show PROGRESS (done %), not content size.
+(function(){
+'use strict';
+function sylRender(){
+  var card=document.getElementById('syllabusCard');
+  if(!card)return;
+  try{
+    var done=new Set(Object.keys(ST.done).map(Number));
+    var rows='',totLec=0,totMin=0,doneLec=0,doneMin=0;
+    getSubjOrder().forEach(function(subj){
+      var ts=ALL_TASKS.filter(function(t){return t.subject===subj&&t.type==='lecture';});
+      if(!ts.length)return;
+      var tMin=0,dMin=0,dCnt=0;
+      ts.forEach(function(t){tMin+=t.duration;if(done.has(t.id)){dMin+=t.duration;dCnt++;}});
+      totLec+=ts.length;totMin+=tMin;doneLec+=dCnt;doneMin+=dMin;
+      var pct=tMin>0?Math.round(dMin/tMin*100):0;
+      var col=(typeof COLORS!=='undefined'&&COLORS[subj])||'#4d9fec';
+      rows+='<div class="tt-summary-row">'
+        +'<div class="tt-summary-label" style="width:80px;color:var(--tx);">'+esc(LABELS[subj]||subj)+'</div>'
+        +'<div class="tt-summary-bar-wrap"><div class="tt-summary-bar" style="width:'+pct+'%;background:'+col+';"></div></div>'
+        +'<div style="font-size:10px;font-family:var(--mo);color:'+(pct>0?'var(--tx)':'var(--mt)')+';width:86px;text-align:right;flex-shrink:0;">'+pct+'% · '+dCnt+'/'+ts.length+'</div>'
+        +'</div>';
+    });
+    var totPct=totMin>0?Math.round(doneMin/totMin*100):0;
+    card.innerHTML='<div class="tt-summary-title">📦 Syllabus Progress</div>'
+      +'<div style="font-size:11px;color:var(--mt);margin-bottom:10px;">How much of each subject you have actually finished.</div>'
+      +rows
+      +'<div class="tt-summary-total-row" style="margin-top:8px;"><div class="tt-summary-total-label">Lectures done</div><div class="tt-summary-total-val">'+doneLec+' / '+totLec+'</div></div>'
+      +'<div class="tt-summary-total-row" style="border-top:none;padding-top:2px;"><div class="tt-summary-total-label">Watch time done</div><div class="tt-summary-total-val" style="color:var(--s1);">'+Math.round(doneMin/60)+'h / '+Math.round(totMin/60)+'h · '+totPct+'%</div></div>';
+  }catch(e){console.warn('[syllabus]',e);}
+}
+window.sylRender=sylRender;
+// re-render whenever the GATE tab re-renders (chains onto existing wrapper)
+try{
+  var _rg2=renderGate;
+  renderGate=function(){_rg2.apply(this,arguments);try{sylRender();}catch(e){}};
+  window.renderGate=renderGate;
+}catch(e){}
+document.addEventListener('DOMContentLoaded',function(){try{sylRender();}catch(e){}},{once:true});
 })();
 </script>
 </body>

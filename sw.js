@@ -1,7 +1,7 @@
 // ── Study OS · Service Worker ──────────────────────────────────────────────
 // DEPLOY CHECKLIST: bump CACHE string on every deploy to force cache refresh on all devices.
-// v22 — 2026-06-10: FOCUS MODE 2.0 (wake lock, hold-to-exit, distraction shield, parking lot, calm dim)
-const CACHE = 'studyos-v22';
+// v24 — 2026-06-10: live syllabus progress card, simplified pace tracker, phase picker disables assigned subjects
+const CACHE = 'studyos-v24';
 
 // Static assets that are safe to cache forever (fonts, CDN libraries)
 // index.html is intentionally NOT cached here — it uses network-first below
