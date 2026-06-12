@@ -4329,7 +4329,7 @@ function isFocusActive(){
   return ALL_SLOTS.some(function(s){return slotActive(s);});
 }
 function tickSlotFocus(){
-  if(document.visibilityState!=='visible'||window._ffPaused)return;
+  if(document.visibilityState!=='visible'||window._ffPaused||window._stPause)return;
   ALL_SLOTS.forEach(function(s,i){
     if(slotActive(s)){slotFocusSecs[s.id]=(slotFocusSecs[s.id]||0)+1;}
   });
@@ -4338,7 +4338,7 @@ function tickSlotFocus(){
 function startFocusClock(){
   if(focusInterval)clearInterval(focusInterval); // always clear first — safe to restart
   focusInterval=setInterval(function(){
-    if(isFocusActive()&&!window._ffPaused){
+    if(isFocusActive()&&!window._ffPaused&&!window._stPause){
       // Guard against day rollover: if localStorage day key changed, reset in-memory counter
       var storedSecs=parseInt(localStorage.getItem('v5_focus_'+today)||'0');
       if(storedSecs<focusSecs-2) focusSecs=storedSecs; // another device reset it
@@ -9374,7 +9374,7 @@ function renderRoutineFromTimetable(){
   // Include 'other' slots always, and 'class' slots that have items — merged by time
   var allSlots=getTodaySlots();
   var routineSlots=allSlots.filter(function(s){
-    return s.type==='other'||(s.type==='class'&&s.items&&s.items.length>0)||(s.type==='study'&&s.items&&s.items.length>0);
+    return s.type==='other'||(s.type==='class'&&s.items&&s.items.length>0)||(s.type==='study'&&s.items&&s.items.length>0)||(s.type==='revision'&&s.items&&s.items.length>0);
   });
   if(routineSlots.length===0){
     list.innerHTML='<div style=\"text-align:center;padding:16px;font-size:12px;color:var(--mt);font-style:italic;\">No routine today. Add Routine/Recorded/Gate Lecture tasks in the Timetable tab.</div>';
@@ -9392,9 +9392,9 @@ function renderRoutineFromTimetable(){
   var sumEl=document.getElementById('routineSummaryTop');if(sumEl)sumEl.textContent=done+'/'+total+' done \u00b7 '+pct+'%';
   var html='';
   routineSlots.forEach(function(s){
-    var isClass=s.type==='class'; var isStudy=s.type==='study';
-    var headerColor=isStudy?'var(--s1)':isClass?'var(--s2)':'var(--am)';
-    var classBadge=isStudy?' <span style=\"font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(77,159,236,.12);color:var(--s1);border:1px solid rgba(77,159,236,.25);\">GATE</span>':isClass?' <span style=\"font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(62,207,142,.12);color:var(--s2);border:1px solid rgba(62,207,142,.25);\">RECORDED</span>':'';
+    var isClass=s.type==='class'; var isStudy=s.type==='study'; var isRev=s.type==='revision';
+    var headerColor=isStudy?'var(--s1)':isClass?'var(--s2)':isRev?'#a78bfa':'var(--am)';
+    var classBadge=isStudy?' <span style=\"font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(77,159,236,.12);color:var(--s1);border:1px solid rgba(77,159,236,.25);\">GATE</span>':isClass?' <span style=\"font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(62,207,142,.12);color:var(--s2);border:1px solid rgba(62,207,142,.25);\">RECORDED</span>':isRev?' <span style=\"font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(167,139,250,.12);color:#a78bfa;border:1px solid rgba(167,139,250,.25);\">REVISION</span>':'';
     html+='<div class=\"routine-block\">';
     html+='<div class=\"routine-time\" style=\"color:'+headerColor+';\">'+(s.emoji||'\u26a1')+' '+esc(s.name)+' \u00b7 '+pad(s.sh)+':'+pad(s.sm)+classBadge+'</div>';
     if(!s.items||s.items.length===0){
@@ -9431,11 +9431,12 @@ function renderTTSummary(){
   var TYPE_CONFIG={
     study:{label:'Gate Lectures',color:'#4d9fec'},
     class:{label:'Recorded',color:'#45c4a0'},
+    revision:{label:'Revision',color:'#a78bfa'},
     other:{label:'Routine',color:'#f0ac4e'}
   };
 
   function calcMins(slots){
-    var result={study:0,class:0,other:0,total:0};
+    var result={study:0,class:0,revision:0,other:0,total:0};
     (slots||[]).forEach(function(s){
       var dur=Math.max(0,(s.eh*60+s.em)-(s.sh*60+s.sm));
       var t=TYPE_CONFIG[s.type]?s.type:'other';
@@ -9446,10 +9447,10 @@ function renderTTSummary(){
 
   var mins,modeLabel;
   if(_ttSummaryWeekMode){
-    mins={study:0,class:0,other:0,total:0};
+    mins={study:0,class:0,revision:0,other:0,total:0};
     TT_DAYS.forEach(function(d){
       var m=calcMins(_timetable[d]||[]);
-      mins.study+=m.study;mins.class+=m.class;mins.other+=m.other;mins.total+=m.total;
+      mins.study+=m.study;mins.class+=m.class;mins.revision+=m.revision;mins.other+=m.other;mins.total+=m.total;
     });
     modeLabel='This week · tap for today';
   } else {
@@ -9470,7 +9471,7 @@ function renderTTSummary(){
     +'<span class="tt-summary-week-toggle" onclick="_ttSummaryWeekMode=!_ttSummaryWeekMode;renderTTSummary();">'+modeLabel+'</span>'
     +'</div>';
 
-  ['study','class','other'].forEach(function(t){
+  ['study','class','revision','other'].forEach(function(t){
     if(mins[t]===0)return;
     var pct=mins.total>0?Math.round(mins[t]/mins.total*100):0;
     var cfg=TYPE_CONFIG[t];
@@ -9585,7 +9586,7 @@ function makeTTSlotCard(s,i,day,conflicts){
   div.ondragstart=function(e){_ttDragIdx=i;_ttDragDay=day;e.dataTransfer.effectAllowed='move';};
   div.ondragover=function(e){e.preventDefault();div.classList.add('drag-over');};
   div.ondragleave=function(){div.classList.remove('drag-over');};
-  div.ondrop=function(e){e.preventDefault();div.classList.remove('drag-over');if(_ttDragIdx<0||_ttDragIdx===i||_ttDragDay!==day)return;var arr=_timetable[day];var moved=arr.splice(_ttDragIdx,1)[0];arr.splice(i,0,moved);_ttDragIdx=-1;_ttDragDay=null;saveTimetable();};
+  div.ondrop=function(e){e.preventDefault();div.classList.remove('drag-over');if(_ttDragIdx<0||_ttDragIdx===i||_ttDragDay!==day)return;var arr=_timetable[day];var moved=arr.splice(_ttDragIdx,1)[0];arr.splice(i,0,moved);_ttDragIdx=-1;_ttDragDay=null;saveTimetable(true);};
   div.ondragend=function(){_ttDragIdx=-1;_ttDragDay=null;document.querySelectorAll('.tt-slot').forEach(function(c){c.classList.remove('drag-over');});};
 
   // ── TOUCH DRAG (mobile) ── long-press on the ⠇ handle to initiate drag
@@ -9724,9 +9725,9 @@ function makeTTSlotCard(s,i,day,conflicts){
     +'<span class="tt-dur-badge" style="align-self:center;margin-left:4px;">'+durStr+(dur===0?' <span style="color:var(--s3)">!</span>':'')+'</span>'
     +'</div>';
 
-  // Sub-items (Other + Class)
-  if(s.type==='other'||s.type==='class'||s.type==='study'){
-    var subHtml='<div class="tt-sub-section"><div class="tt-sub-title">'+(s.type==='study'?'📚 Gate Lecture Tasks':s.type==='class'?'📡 Recorded Tasks':'🗓 Routine Items')+'</div>';
+  // Sub-items (Other + Class + Study + Revision)
+  if(s.type==='other'||s.type==='class'||s.type==='study'||s.type==='revision'){
+    var subHtml='<div class="tt-sub-section"><div class="tt-sub-title">'+(s.type==='study'?'📚 Gate Lecture Tasks':s.type==='class'?'📡 Recorded Tasks':s.type==='revision'?'🔄 Revision Tasks':'🗓 Routine Items')+'</div>';
     (s.items||[]).forEach(function(item,ii){
       subHtml+='<div class="tt-sub-item" id="ttsi_'+s.id+'_'+ii+'">'
         +'<span class="tt-sub-item-drag">\u2807</span>'
@@ -12828,6 +12829,441 @@ function ptRender(){
   ov.innerHTML=inner;
 }
 window.ptRender=ptRender;
+})();
+</script>
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// v32 MODULE 1 — SUB-ITEM DESKTOP DRAG (mouse) inside slot cards
+// Touch drag existed; desktop had no way to reorder tasks. Wraps makeTTSlotCard.
+// ═══════════════════════════════════════════════════════════════════════════
+(function(){
+try{
+  if(typeof window.makeTTSlotCard!=='function')return;
+  var _origMake=window.makeTTSlotCard;
+  window._subDragIdx=-1;window._subDragSlot=null;
+  window.makeTTSlotCard=function(s,i,day,conflicts){
+    var div=_origMake(s,i,day,conflicts);
+    try{
+      var items=div.querySelectorAll('.tt-sub-item');
+      items.forEach(function(itemDiv,ii){
+        var handle=itemDiv.querySelector('.tt-sub-item-drag');
+        if(!handle||handle._mDragInit)return;
+        handle._mDragInit=true;
+        handle.setAttribute('draggable','true');
+        handle.style.cursor='grab';
+        handle.addEventListener('dragstart',function(e){
+          e.stopPropagation(); // don't trigger the slot-level drag
+          window._subDragIdx=ii;window._subDragSlot=s.id;
+          if(e.dataTransfer){e.dataTransfer.effectAllowed='move';try{e.dataTransfer.setData('text/plain','sub');}catch(err){}}
+        });
+        itemDiv.addEventListener('dragover',function(e){
+          if(window._subDragSlot!==s.id)return;
+          e.preventDefault();e.stopPropagation();
+          itemDiv.classList.add('drag-over');
+        });
+        itemDiv.addEventListener('dragleave',function(){itemDiv.classList.remove('drag-over');});
+        itemDiv.addEventListener('drop',function(e){
+          if(window._subDragSlot!==s.id)return;
+          e.preventDefault();e.stopPropagation();
+          itemDiv.classList.remove('drag-over');
+          var from=window._subDragIdx;
+          window._subDragIdx=-1;window._subDragSlot=null;
+          if(from<0||from===ii)return;
+          try{
+            var s2=ttFindSlot(day,s.id);
+            if(s2&&s2.items&&from<s2.items.length){
+              var mv=s2.items.splice(from,1)[0];
+              s2.items.splice(ii,0,mv);
+              saveTimetable(true);
+            }
+          }catch(err){console.warn('[subdrag]',err);}
+        });
+        itemDiv.addEventListener('dragend',function(){
+          window._subDragIdx=-1;window._subDragSlot=null;
+          div.querySelectorAll('.tt-sub-item').forEach(function(el){el.classList.remove('drag-over');});
+        });
+      });
+    }catch(e){console.warn('[subdrag init]',e);}
+    return div;
+  };
+}catch(e){console.warn('[v32 m1]',e);}
+})();
+
+// ═══════════════════════════════════════════════════════════════════════════
+// v32 MODULE 2 — SCREEN-TIME PAUSE BUTTON
+// Big floating ⏸ button → pauses screen-time counting (slot focus + on-tab
+// clock) when Prakhar is doing non-study work during study hours.
+// Separate flag from _ffPaused so multi-device presence logic can't auto-resume it.
+// Persists across reloads for the same logical day (v5_stpause).
+// ═══════════════════════════════════════════════════════════════════════════
+(function(){
+try{
+  var P_KEY='v5_stpause';
+  window._stPause=false;
+  var _since=0;
+
+  // restore (same logical day only)
+  try{
+    var st=JSON.parse(localStorage.getItem(P_KEY)||'null');
+    if(st&&st.day===getToday()&&st.since){window._stPause=true;_since=st.since;}
+    else if(st){localStorage.removeItem(P_KEY);}
+  }catch(e){}
+
+  function fmtP(ms){
+    var m=Math.floor(ms/60000);
+    if(m<60)return m+'m';
+    return Math.floor(m/60)+'h '+(m%60)+'m';
+  }
+
+  function render(){
+    // FAB
+    var fab=document.getElementById('stPauseFab');
+    if(!fab){
+      fab=document.createElement('button');
+      fab.id='stPauseFab';
+      fab.style.cssText='position:fixed;right:14px;bottom:calc(88px + env(safe-area-inset-bottom,0px));width:54px;height:54px;border-radius:50%;z-index:7500;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(0,0,0,.45);font-family:var(--fn);transition:transform .15s,background .2s;user-select:none;-webkit-user-select:none;';
+      fab.onclick=function(){window.stPauseToggle();};
+      document.body.appendChild(fab);
+    }
+    var paused=window._stPause;
+    fab.textContent=paused?'▶':'⏸';
+    fab.title=paused?'Resume screen time':'Pause screen time';
+    fab.style.background=paused?'rgba(62,207,142,.18)':'rgba(232,179,57,.16)';
+    fab.style.border=paused?'2px solid rgba(62,207,142,.6)':'2px solid rgba(232,179,57,.5)';
+    fab.style.color=paused?'#3ecf8e':'#e8b339';
+
+    // Banner
+    var b=document.getElementById('stPauseBanner');
+    if(paused){
+      if(!b){
+        b=document.createElement('div');
+        b.id='stPauseBanner';
+        b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:7900;background:rgba(232,179,57,.13);border-bottom:1px solid rgba(232,179,57,.45);padding:9px 14px;display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--fn);font-size:12px;font-weight:700;color:#e8b339;backdrop-filter:blur(8px);cursor:pointer;';
+        b.onclick=function(){window.stPauseToggle();};
+        document.body.appendChild(b);
+      }
+      b.innerHTML='⏸ Screen time PAUSED · <span id="stPauseMins">'+fmtP(Date.now()-_since)+'</span> &nbsp;<span style="font-weight:600;color:var(--mt2,#aaa);">— tap to resume</span>';
+    } else if(b){b.remove();}
+  }
+
+  window.stPauseToggle=function(){
+    window._stPause=!window._stPause;
+    if(window._stPause){
+      _since=Date.now();
+      try{localStorage.setItem(P_KEY,JSON.stringify({day:getToday(),since:_since}));}catch(e){}
+      try{if(typeof haptic==='function')haptic([30,40,30]);}catch(e){}
+      try{showT('⏸ Paused','Screen time counting paused. Tap ▶ when you\u2019re back to studying.');}catch(e){}
+    } else {
+      try{localStorage.removeItem(P_KEY);}catch(e){}
+      try{if(typeof haptic==='function')haptic([40]);}catch(e){}
+      try{showT('▶ Resumed','Screen time counting resumed.');}catch(e){}
+    }
+    render();
+  };
+
+  // tick: update paused-minutes label + day rollover safety
+  setInterval(function(){
+    if(!window._stPause)return;
+    try{
+      var st=JSON.parse(localStorage.getItem(P_KEY)||'null');
+      if(!st||st.day!==getToday()){ // 4am rollover → auto-resume fresh day
+        window._stPause=false;_since=0;
+        try{localStorage.removeItem(P_KEY);}catch(e){}
+        render();return;
+      }
+    }catch(e){}
+    var el=document.getElementById('stPauseMins');
+    if(el)el.textContent=fmtP(Date.now()-_since);
+  },30000);
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',render);
+  else render();
+}catch(e){console.warn('[v32 m2 pause]',e);}
+})();
+
+// ═══════════════════════════════════════════════════════════════════════════
+// v32 MODULE 3 — SPEED COMPLETION CALCULATOR 2.0
+// Overrides window.renderSpeedCalc with an options-aware version:
+//   • Include toggles: PYQs / Tests / Analysis time
+//   • Speed-applies-to toggles: PYQ solving / PYQ analysis (lectures always scale;
+//     test sitting time never scales — you can't take a mock at 1.5x)
+//   • PYQ analysis share % (PYQ durations are one number; split is configurable)
+// Per-subject breakdown + timeline rebuilt with the same math, wrapped in
+// try/catch that prints errors visibly instead of silently leaving the section blank.
+// Options persist in v5_scopts (per device).
+// ═══════════════════════════════════════════════════════════════════════════
+(function(){
+try{
+  var O_KEY='v5_scopts';
+  function getOpts(){
+    var d={pyq:1,tests:1,ana:1,sp:0,spa:0,apct:50};
+    try{
+      var s=JSON.parse(localStorage.getItem(O_KEY)||'null');
+      if(s&&typeof s==='object'){for(var k in d)if(s[k]!==undefined)d[k]=s[k];}
+    }catch(e){}
+    d.apct=Math.min(90,Math.max(0,parseInt(d.apct,10)||0));
+    return d;
+  }
+  function setOpts(o){try{localStorage.setItem(O_KEY,JSON.stringify(o));}catch(e){}}
+
+  window.scOptToggle=function(key){
+    var o=getOpts();o[key]=o[key]?0:1;setOpts(o);
+    if(typeof window.renderSpeedCalc==='function')window.renderSpeedCalc();
+  };
+  window.scOptPct=function(val){
+    var o=getOpts();o.apct=Math.min(90,Math.max(0,parseInt(val,10)||0));setOpts(o);
+    if(typeof window.renderSpeedCalc==='function')window.renderSpeedCalc();
+  };
+
+  // Remaining test minutes split into sitting-time vs analysis-time.
+  // Mirrors tstRemainingFixedMins inclusion rules.
+  function testSplit(){
+    var r={test:0,ana:0};
+    try{
+      if(typeof tstList!=='function')return r;
+      tstList().forEach(function(t){
+        var att=(typeof tArr==='function')?tArr(t.attempts):(Array.isArray(t.attempts)?t.attempts:[]);
+        if(att.length&&!t.retake){if(!t.analyzed&&t.wave===1)r.ana+=tstAmin(t);return;}
+        if(t.wave!==1&&!t.planned)return;
+        if(typeof tstHasUnmapped==='function'&&tstHasUnmapped(t)&&!t.planned)return;
+        r.test+=(t.min||0);
+        r.ana+=tstAmin(t);
+      });
+    }catch(e){}
+    return r;
+  }
+
+  function fmtH(min){return Math.round(min/60*10)/10;}
+
+  function chip(label,on,key,color){
+    var c=color||'var(--s1)';
+    return '<button onclick="scOptToggle(\''+key+'\')" style="background:'+(on?'rgba(77,159,236,.10)':'var(--sf2)')+';border:1px solid '+(on?c:'var(--bd2)')+';color:'+(on?c:'var(--mt2)')+';border-radius:7px;padding:3px 9px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--fn);">'+(on?'✓ ':'')+label+'</button>';
+  }
+
+  window.renderSpeedCalc=function(){
+    try{
+      if(!window._speedCalcOpen)return;
+      var body=document.getElementById('speedCalcBody');
+      if(!body)return;
+
+      var opts=getOpts();
+      var aFrac=opts.apct/100;
+
+      // ── Options row (inject once, refresh every render) ──
+      var optEl=document.getElementById('scOptsRow');
+      if(!optEl){
+        optEl=document.createElement('div');
+        optEl.id='scOptsRow';
+        var rowsEl0=document.getElementById('scSpeedRows');
+        if(rowsEl0&&rowsEl0.parentNode)rowsEl0.parentNode.insertBefore(optEl,rowsEl0);
+        else body.insertBefore(optEl,body.firstChild);
+      }
+      optEl.innerHTML=
+        '<div style="background:var(--sf2);border:1px solid var(--bd);border-radius:10px;padding:9px 10px;margin-bottom:12px;">'
+        +'<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:7px;">'
+        +'<span style="font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mt);min-width:88px;">Include</span>'
+        +chip('PYQs',opts.pyq,'pyq','var(--s3)')
+        +chip('Tests',opts.tests,'tests','var(--am)')
+        +chip('Analysis time',opts.ana,'ana','#a78bfa')
+        +'</div>'
+        +'<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">'
+        +'<span style="font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mt);min-width:88px;">Speed applies to</span>'
+        +'<span style="font-size:10px;color:var(--mt2);border:1px solid var(--bd);border-radius:7px;padding:3px 9px;">✓ Lectures (always)</span>'
+        +chip('PYQ solving',opts.sp,'sp','var(--s2)')
+        +chip('PYQ analysis',opts.spa,'spa','var(--s2)')
+        +'<span style="margin-left:auto;display:flex;align-items:center;gap:4px;font-size:10px;color:var(--mt);">PYQ analysis: '
+        +'<input type="number" min="0" max="90" value="'+opts.apct+'" onchange="scOptPct(this.value)" style="width:40px;background:var(--sf3,var(--sf2));border:1px solid var(--bd2);border-radius:6px;padding:2px 4px;font-family:var(--mo);font-size:10px;color:var(--tx);text-align:center;outline:none;">%</span>'
+        +'</div></div>';
+
+      // ── Hours/day ──
+      var hoursData=(typeof scGetDailyHours==='function')?scGetDailyHours():{auto:0,manual:null};
+      var autoEl=document.getElementById('scAutoHours');
+      if(autoEl)autoEl.textContent=hoursData.auto+'h';
+      var dailyHours=hoursData.manual||hoursData.auto;
+      var rowsEl=document.getElementById('scSpeedRows');
+      if(!dailyHours||dailyHours<=0){
+        if(rowsEl)rowsEl.innerHTML='<div style="font-size:11px;color:var(--mt);font-style:italic;">No study slots found in today\u2019s timetable. Enter manual hours above.</div>';
+        return;
+      }
+      var dailyMins=dailyHours*60;
+
+      // ── Remaining work ──
+      var done=new Set(Object.keys(ST.done).map(Number));
+      var subjOrder=getSubjOrder();
+      var subjData=[];
+      subjOrder.forEach(function(subj){
+        var lecTasks=ALL_TASKS.filter(function(t){return t.subject===subj&&t.type==='lecture'&&!done.has(t.id);});
+        var pyqTask=ALL_TASKS.find(function(t){return t.subject===subj&&t.type==='pyq'&&!done.has(t.id)&&!isPyqAllDone(t.id);});
+        var pyqRemMin=0;
+        if(pyqTask){
+          var doneTopics=ST.pyqTopics&&ST.pyqTopics[pyqTask.id]?ST.pyqTopics[pyqTask.id].length:0;
+          var totalTopics=pyqTask.topics?pyqTask.topics.length:1;
+          pyqRemMin=pyqTask.duration*(1-(doneTopics/Math.max(1,totalTopics)));
+        }
+        var lecRemMin=lecTasks.reduce(function(s,t){return s+t.duration;},0);
+        if(lecRemMin>0||pyqRemMin>0){
+          subjData.push({subj:subj,lecMin:lecRemMin,pyqMin:pyqRemMin,col:(typeof COLORS!=='undefined'&&COLORS[subj])||'#4d9fec',lbl:(typeof LABELS!=='undefined'&&LABELS[subj])||subj});
+        }
+      });
+
+      var totalLecMin=subjData.reduce(function(s,d){return s+d.lecMin;},0);
+      var totalPyqMin=subjData.reduce(function(s,d){return s+d.pyqMin;},0);
+      var ts=testSplit();
+
+      // ── Effective minutes under current options ──
+      // pyqMin → solve share + analysis share, each optionally speed-scaled
+      function effPyq(pyqMin,speed){
+        if(!opts.pyq||pyqMin<=0)return 0;
+        var solve=pyqMin*(1-aFrac), ana=pyqMin*aFrac;
+        var m=solve/(opts.sp?speed:1);
+        if(opts.ana)m+=ana/(opts.spa?speed:1);
+        return m;
+      }
+      function effTests(){
+        if(!opts.tests)return 0;
+        return ts.test+(opts.ana?ts.ana:0);
+      }
+      function calcDays(speed){
+        var total=totalLecMin/speed+effPyq(totalPyqMin,speed)+effTests();
+        return Math.ceil(total/dailyMins);
+      }
+
+      var speeds=[1,1.25,1.5,1.75,2];
+      var prepTarget=TARGET_DATE;
+      var today=getToday();
+      var maxDays=Math.max(1,calcDays(1));
+
+      // ── Summary line ──
+      var parts=['<span style="color:var(--s1);">'+fmtH(totalLecMin)+'h lectures</span>'];
+      if(opts.pyq){
+        var pyqShown=opts.ana?totalPyqMin:totalPyqMin*(1-aFrac);
+        var pyqTag=(opts.sp||opts.spa)?(opts.sp&&opts.spa?'speed-scaled':'partly speed-scaled'):'fixed';
+        parts.push('<span style="color:var(--s3);">'+fmtH(pyqShown)+'h PYQs ('+pyqTag+(opts.ana?'':', no analysis')+')</span>');
+      }
+      var tMins=effTests();
+      if(opts.tests&&tMins>0)parts.push('<span style="color:var(--am);">'+fmtH(tMins)+'h tests (fixed'+(opts.ana?'':', no analysis')+')</span>');
+      var html='<div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mt);margin-bottom:8px;">Remaining: '
+        +parts.join(' + ')+' \u00b7 '+dailyHours+'h/day</div>';
+
+      // ── Overall speed rows ──
+      speeds.forEach(function(sp){
+        var days=calcDays(sp);
+        var finDate=addD(today,days);
+        var onTrack=finDate<=prepTarget;
+        var barPct=Math.max(8,Math.round((1-(days/maxDays))*100));
+        var highlight=onTrack&&sp!==1;
+        html+='<div class="sc-speed-row'+(highlight?' highlight':'')+'">'
+          +'<div class="sc-speed-lbl">'+(sp===1?'1x':sp+'x')+'</div>'
+          +'<div class="sc-speed-bar-wrap"><div class="sc-speed-bar" style="width:'+barPct+'%;background:'+(onTrack?'var(--s2)':'var(--s1)')+';"></div></div>'
+          +'<div class="sc-speed-days">'+days+'d'+(sp!==1?' (\u2212'+(calcDays(1)-days)+'d)':'')+'</div>'
+          +'<div class="sc-speed-date" style="color:'+(onTrack?'var(--s2)':'var(--s3)')+';">'+fmtShort(finDate)+'</div>'
+          +'</div>';
+      });
+      if(rowsEl)rowsEl.innerHTML=html;
+
+      // ── Per-subject breakdown ──
+      var subjEl=document.getElementById('scSubjectRows');
+      try{
+        var speedsSubj=[1,1.25,1.5,2];
+        var subjHtml='<div style="display:grid;grid-template-columns:auto 1fr repeat(4,52px);gap:4px;align-items:center;margin-bottom:6px;">'
+          +'<div style="font-size:9px;color:var(--mt);">Subj</div><div></div>'
+          +speedsSubj.map(function(sp){return '<div style="font-size:9px;color:var(--mt);text-align:center;">'+(sp===1?'1x':sp+'x')+'</div>';}).join('')
+          +'</div>';
+        if(!subjData.length){
+          subjHtml+='<div style="font-size:11px;color:var(--mt);font-style:italic;">Nothing remaining \u2014 syllabus complete \uD83C\uDF89</div>';
+        } else {
+          var rotSC=(typeof getRotation==='function')?getRotation():null;
+          if(rotSC&&typeof rotSimFinishDates==='function'){
+            // rotation: subjects run in parallel — sim shares daily time.
+            // Pass option-adjusted pyq mins per speed (sim adds pyqMin raw, scales only lecMin).
+            var simBySpeed={};
+            speedsSubj.forEach(function(sp){
+              var sd2=subjData.map(function(sd){return{subj:sd.subj,lecMin:sd.lecMin,pyqMin:effPyq(sd.pyqMin,sp)};});
+              // note: effPyq already applies speed to the chosen shares, so pass result as fixed mins
+              simBySpeed[sp]=rotSimFinishDates(rotSC,sd2,sp,dailyMins,today);
+            });
+            subjData.forEach(function(sd){
+              var chips='';
+              speedsSubj.forEach(function(sp){
+                var fin=(simBySpeed[sp]&&simBySpeed[sp][sd.subj])||prepTarget;
+                var onT=fin<=prepTarget;
+                chips+='<div class="sc-subj-chip'+(sp===1.5?' hl':'')+'" style="'+(onT?'':'color:var(--s3);border-color:var(--s3o);')+'">'+fmtShort(fin)+'</div>';
+              });
+              subjHtml+='<div class="sc-subj-row">'
+                +'<div class="sc-subj-lbl" style="background:'+sd.col+'18;color:'+sd.col+';">'+esc(sd.lbl)+'</div>'
+                +'<div class="sc-subj-name">'+esc(sd.subj)+' <span style="font-family:var(--mo);font-size:8px;color:var(--s1);">\u2225</span></div>'
+                +'<div class="sc-subj-speeds">'+chips+'</div>'
+                +'</div>';
+            });
+          } else {
+            // sequential cascade
+            var cursors={};
+            speedsSubj.forEach(function(sp){cursors[sp]=today;});
+            subjData.forEach(function(sd){
+              var chips='';
+              speedsSubj.forEach(function(sp){
+                var totalSubjMins=sd.lecMin/sp+effPyq(sd.pyqMin,sp);
+                cursors[sp]=addD(cursors[sp],Math.ceil(totalSubjMins/dailyMins));
+                var onT=cursors[sp]<=prepTarget;
+                chips+='<div class="sc-subj-chip'+(sp===1.5?' hl':'')+'" style="'+(onT?'':'color:var(--s3);border-color:var(--s3o);')+'">'+fmtShort(cursors[sp])+'</div>';
+              });
+              subjHtml+='<div class="sc-subj-row">'
+                +'<div class="sc-subj-lbl" style="background:'+sd.col+'18;color:'+sd.col+';">'+esc(sd.lbl)+'</div>'
+                +'<div class="sc-subj-name">'+esc(sd.subj)+'</div>'
+                +'<div class="sc-subj-speeds">'+chips+'</div>'
+                +'</div>';
+            });
+          }
+        }
+        if(subjEl)subjEl.innerHTML=subjHtml;
+      }catch(eSub){
+        if(subjEl)subjEl.innerHTML='<div style="font-size:11px;color:var(--s3);">\u26a0 Per-subject breakdown error: '+String(eSub&&eSub.message||eSub).slice(0,120)+'</div>';
+        console.warn('[speedcalc subj]',eSub);
+      }
+
+      // ── Timeline ──
+      var tlEl=document.getElementById('scTimeline');
+      try{
+        var tlHtml='<div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mt);margin-bottom:8px;">Timeline</div>'
+          +'<div style="display:grid;grid-template-columns:36px 1fr 80px;gap:6px;align-items:center;margin-bottom:4px;"><div></div>'
+          +'<div style="display:flex;gap:8px;font-size:9px;color:var(--mt);padding:0 2px;">'
+          +'<span style="display:flex;align-items:center;gap:3px;"><span style="width:8px;height:8px;border-radius:2px;background:var(--s1);display:inline-block;"></span>Lectures</span>'
+          +(opts.pyq?'<span style="display:flex;align-items:center;gap:3px;"><span style="width:8px;height:8px;border-radius:2px;background:var(--s3);display:inline-block;"></span>PYQs</span>':'')
+          +(opts.tests&&tMins>0?'<span style="display:flex;align-items:center;gap:3px;"><span style="width:8px;height:8px;border-radius:2px;background:var(--am);display:inline-block;"></span>Tests</span>':'')
+          +'</div><div></div></div>';
+        speeds.forEach(function(sp){
+          var lec=totalLecMin/sp, pyq=effPyq(totalPyqMin,sp), tst=effTests();
+          var tot=Math.max(1,lec+pyq+tst);
+          var lecPct=Math.round(lec/tot*100), pyqPct=Math.round(pyq/tot*100), tstPct=Math.max(0,100-lecPct-pyqPct);
+          var lecEnd=addD(today,Math.ceil(lec/dailyMins));
+          var pyqEnd=addD(lecEnd,Math.ceil(pyq/dailyMins));
+          var allEnd=addD(today,Math.ceil(tot/dailyMins));
+          var onTrack=allEnd<=prepTarget;
+          tlHtml+='<div class="sc-tl-row">'
+            +'<div class="sc-tl-speed">'+(sp===1?'1x':sp+'x')+'</div>'
+            +'<div class="sc-tl-bar-wrap">'
+            +'<div class="sc-tl-lec" style="width:'+lecPct+'%;"></div>'
+            +(pyq>0?'<div class="sc-tl-pyq" style="width:'+pyqPct+'%;"></div>':'')
+            +(tst>0?'<div style="width:'+tstPct+'%;background:var(--am);height:100%;display:inline-block;"></div>':'')
+            +'</div>'
+            +'<div class="sc-tl-dates" style="color:'+(onTrack?'var(--s2)':'var(--s3)')+';">\u2192 '+fmtShort(allEnd)+'</div>'
+            +'</div>';
+          tlHtml+='<div style="font-size:9px;color:var(--mt);margin:-3px 0 6px 44px;">Lec ends: '+fmtShort(lecEnd)
+            +(pyq>0?' \u00b7 PYQ: \u2192'+fmtShort(pyqEnd):'')
+            +(tst>0?' \u00b7 Tests: \u2192'+fmtShort(allEnd):'')+'</div>';
+        });
+        if(tlEl)tlEl.innerHTML='<div class="sc-timeline">'+tlHtml+'</div>';
+      }catch(eTl){
+        if(tlEl)tlEl.innerHTML='<div style="font-size:11px;color:var(--s3);">\u26a0 Timeline error: '+String(eTl&&eTl.message||eTl).slice(0,120)+'</div>';
+        console.warn('[speedcalc tl]',eTl);
+      }
+    }catch(e){
+      var r=document.getElementById('scSpeedRows');
+      if(r)r.innerHTML='<div style="font-size:11px;color:var(--s3);">\u26a0 Speed calculator error: '+String(e&&e.message||e).slice(0,160)+'</div>';
+      console.warn('[speedcalc]',e);
+    }
+  };
+}catch(e){console.warn('[v32 m3 speedcalc]',e);}
 })();
 </script>
 </body>
