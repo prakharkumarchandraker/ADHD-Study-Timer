@@ -966,6 +966,7 @@ body.focus-mode .hero-cd{font-size:96px!important;letter-spacing:-4px;}
 .tt-type-study{background:rgba(77,159,236,.18);color:var(--s1);}
 .tt-type-class{background:rgba(62,207,142,.15);color:var(--s2);}
 .tt-type-other{background:rgba(232,179,57,.12);color:var(--am);}
+.tt-type-revision{background:rgba(180,190,254,.14);color:#b4befe;}
 .tt-chevron{color:var(--mt);font-size:14px;flex-shrink:0;transition:transform .2s;}
 .tt-slot.open .tt-chevron{transform:rotate(90deg);}
 .tt-slot-body{display:none;padding:0 13px 13px;border-top:1px solid var(--bd);}
@@ -981,6 +982,7 @@ body.focus-mode .hero-cd{font-size:96px!important;letter-spacing:-4px;}
 .tt-type-toggle button.act-study{background:rgba(77,159,236,.25);color:var(--s1);}
 .tt-type-toggle button.act-class{background:rgba(62,207,142,.2);color:var(--s2);}
 .tt-type-toggle button.act-other{background:rgba(232,179,57,.15);color:var(--am);}
+.tt-type-toggle button.act-revision{background:rgba(180,190,254,.18);color:#b4befe;}
 .tt-time-pair{display:flex;gap:6px;flex:1;}
 .tt-time-inp{flex:1;background:var(--sf2);border:1px solid var(--bd2);border-radius:8px;padding:6px 8px;font-family:var(--mo);font-size:13px;color:var(--tx);outline:none;}
 .tt-time-inp:focus{border-color:var(--s1o);}
@@ -1272,6 +1274,7 @@ window.onerror=function(msg,src,line,col,err){
       <!-- Curriculum import button — opens the import overlay -->
       <div class="drawer-util">
         <button class="focus-btn" onclick="openCM();closeDrawer();" title="Import or reset curriculum" style="width:100%;font-size:11px;text-align:left;">📚 Curriculum</button>
+        <button class="focus-btn" onclick="openPyqTracker();closeDrawer();" title="Question-level PYQ tracker" style="width:100%;font-size:11px;text-align:left;">🗂 PYQ Tracker</button>
       </div>
       <div class="drawer-util" style="font-family:var(--mo);font-size:10px;color:var(--mt);">
         <span class="sync-dot" id="syncDotDrawer"></span>
@@ -1523,6 +1526,9 @@ window.onerror=function(msg,src,line,col,err){
     <!-- SPEED CALCULATOR -->
     <!-- SUBJECT ROTATION (parallel subjects) -->
     <div class="card" id="rotCard" style="display:none;"></div>
+
+    <!-- TEST SERIES (coaching mock tests) -->
+    <div class="card" id="testsCard" style="display:none;"></div>
 
     <div class="card" id="speedCalcCard">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
@@ -2634,10 +2640,10 @@ function rebuildFromTimetable(){
   ALL_SLOTS=getTodaySlots().map(function(s){
     var dur=(s.eh*60+s.em)-(s.sh*60+s.sm);
     var displayEnd=s.eh>=24?pad(s.eh-24)+':'+pad(s.em):pad(s.eh)+':'+pad(s.em);
-    return {id:s.id,emoji:s.emoji||(s.type==='study'?'📚':s.type==='class'?'📡':'⚡'),
+    return {id:s.id,emoji:s.emoji||(s.type==='study'?'📚':s.type==='class'?'📡':s.type==='revision'?'🔄':'⚡'),
       time:pad(s.sh)+':'+pad(s.sm)+'\u2013'+displayEnd,
       start:[s.sh,s.sm],end:[s.eh,s.em],label:s.name,
-      subs:s.type==='study'?s.name+' \u00b7 '+dur+'m':s.type==='class'?s.name+' \u00b7 Recorded':s.name+' \u00b7 Routine',
+      subs:s.type==='study'?s.name+' \u00b7 '+dur+'m':s.type==='class'?s.name+' \u00b7 Recorded':s.type==='revision'?s.name+' \u00b7 Revision':s.name+' \u00b7 Routine',
       isLive:s.type==='class',liveKey:s.type==='class'?s.id:null,
       type:s.type,dur:dur,items:s.items||[]};
   });
@@ -2779,7 +2785,7 @@ function daysBetween(a,b){return Math.round((fromStr(b)-fromStr(a))/86400000);}
 function hmColor(m){if(!m||m<1)return '#1a1a2e';var h=m/60;if(h<2)return '#1e3b2e';if(h<4)return '#2d5e3a';if(h<6)return '#3d8c4e';if(h<8)return '#5ab86b';return '#a6e3a1';}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 
-function defaultState(){return{done:{},pyqTopics:{},potato:[],viewDate:null,skips:[],expanded:[],flags:{},revisions:{},revDone:{},live:{},subjOrder:null,pinnedNext:null,revUnits:{},revSubjects:{},revBlockMode:'B',rotation:null};}
+function defaultState(){return{done:{},pyqTopics:{},potato:[],viewDate:null,skips:[],expanded:[],flags:{},revisions:{},revDone:{},live:{},subjOrder:null,pinnedNext:null,revUnits:{},revSubjects:{},revBlockMode:'B',rotation:null,tests:null};}
 function loadGateState(){try{var s=localStorage.getItem('gate2027v6');if(s){var p=JSON.parse(s);var d=defaultState();for(var k in d)if(p[k]===undefined)p[k]=d[k];return p;}}catch(e){}return defaultState();}
 var _saveGateTimer=null;
 function saveGateState(){
@@ -2821,7 +2827,7 @@ function buildSched(){
   var cur=getSchedStart();
   var _startSkip=0;while(potato.has(cur)){cur=addD(cur,1);if(++_startSkip>400)break;}
   var sIdx=0,sRem=SESSIONS[0].dur;ensureDay(cur);
-  function nextSes(){sIdx++;if(sIdx>=SESSIONS.length){var _ns=0;do{cur=addD(cur,1);if(++_ns>400)break;}while(potato.has(cur));sIdx=0;}if(!SESSIONS[sIdx])return;sRem=SESSIONS[sIdx].dur;ensureDay(cur);}
+  function nextSes(){sIdx++;if(sIdx>=SESSIONS.length){var _ns=0;do{cur=addD(cur,1);if(++_ns>400)break;}while(potato.has(cur));sIdx=0;}if(!SESSIONS[sIdx])return;sRem=SESSIONS[sIdx].dur;ensureDay(cur);if(typeof flushTests==='function')flushTests();}
   function pushTask(task){
     var rem=task.duration,isFirst=true;
     if(skips.has(task.id)&&rem>sRem)nextSes();
@@ -2830,8 +2836,40 @@ function buildSched(){
       var chunk=Math.min(rem,sRem),isLast=(rem-chunk)<0.5;
       sched[cur].sessions[sIdx].items.push({taskId:task.id,type:task.type,subject:task.subject,unit:task.unit||'',name:task.type==='pyq'?task.subject+' — PYQ':task.name,num:task.num||0,chunk:Math.round(chunk*10)/10,totalDur:task.duration,isFirst:isFirst,isLast:isLast,isSplit:(!isFirst||!isLast),topics:task.topics||[],isPinned:false});
       rem-=chunk;sRem-=chunk;isFirst=false;
+      if(isLast)notifyLast(task);
     }
   }
+  // ── TEST SERIES v28: fixed test/analysis blocks fed by tstSchedInit planner ──
+  // Planner is null when tests feature unused → zero behavior change.
+  var _tq=(typeof window.tstSchedInit==='function')?(function(){try{return window.tstSchedInit();}catch(e){return null;}})():null;
+  var _lastTestFlushDay=null;
+  function dayRemMins(){var r=sRem;for(var _si=sIdx+1;_si<SESSIONS.length;_si++)r+=SESSIONS[_si].dur;return r;}
+  function placeBlock(b){
+    var rem=b.mins,isFirstC=true;
+    while(rem>0.5){
+      if(sRem<5){
+        if(sIdx+1>=SESSIONS.length)return rem; // day exhausted — never cross days inside one block
+        sIdx++;sRem=SESSIONS[sIdx].dur;ensureDay(cur);
+      }
+      var chunkT=Math.min(rem,sRem),isLastC=(rem-chunkT)<0.5;
+      sched[cur].sessions[sIdx].items.push({taskId:'TEST:'+b.test.id,type:b.kind,subject:b.subject,unit:b.test.provider||'',name:b.name,num:0,chunk:Math.round(chunkT*10)/10,totalDur:b.total,isFirst:isFirstC&&!b.cont,isLast:isLastC&&!b.willCarry,isSplit:!!(b.cont||b.willCarry),topics:[],isPinned:false,testId:b.test.id});
+      rem-=chunkT;sRem-=chunkT;isFirstC=false;
+    }
+    return 0;
+  }
+  function flushTests(){
+    if(!_tq||cur===_lastTestFlushDay)return;
+    _lastTestFlushDay=cur;
+    try{
+      var blocks=_tq.take(cur,dayRemMins());
+      for(var bi=0;bi<blocks.length;bi++){
+        var left=placeBlock(blocks[bi]);
+        if(left>0.5){_tq.carry(blocks[bi],left);break;}
+      }
+    }catch(e){}
+  }
+  function notifyLast(task){if(_tq)try{_tq.onLast(task,cur);}catch(e){}}
+  flushTests();
   // Pinned task goes first (if not done)
   var pinnedId=ST.pinnedNext!==null&&ST.pinnedNext!==undefined?Number(ST.pinnedNext):null;
   var pinnedTask=null;
@@ -2860,6 +2898,7 @@ function buildSched(){
       var chunk2=Math.min(rem2,sRem),isLast2=(rem2-chunk2)<0.5;
       sched[cur].sessions[sIdx].items.push({taskId:pinnedTask.id,type:pinnedTask.type,subject:pinnedTask.subject,unit:pinnedTask.unit||'',name:pinnedTask.type==='pyq'?pinnedTask.subject+' — PYQ':pinnedTask.name,num:pinnedTask.num||0,chunk:Math.round(chunk2*10)/10,totalDur:pinnedTask.duration,isFirst:isFirst2,isLast:isLast2,isSplit:(!isFirst2||!isLast2),topics:pinnedTask.topics||[],isPinned:true});
       rem2-=chunk2;sRem-=chunk2;isFirst2=false;
+      if(isLast2)notifyLast(pinnedTask);
     }
   }
   // ── ROTATION MODE: interleave 1-4 subjects per day with equal time shares ──
@@ -2885,6 +2924,7 @@ function buildSched(){
     }
     var guardD=0;
     while(rot.master.some(unfin)&&guardD++<500){
+      flushTests();
       var dayStr=cur;
       var dayMins=sRem;for(var si2=sIdx+1;si2<SESSIONS.length;si2++)dayMins+=SESSIONS[si2].dur;
       var act=activeSet(dayStr);
@@ -2902,12 +2942,14 @@ function buildSched(){
           var isF=laid[sb]<0.5,isL=(taskRem-chunkR)<0.5;
           sched[cur].sessions[sIdx].items.push({taskId:taskR.id,type:taskR.type,subject:taskR.subject,unit:taskR.unit||'',name:taskR.type==='pyq'?taskR.subject+' — PYQ':taskR.name,num:taskR.num||0,chunk:Math.round(chunkR*10)/10,totalDur:taskR.duration,isFirst:isF,isLast:isL,isSplit:(!isF||!isL),topics:taskR.topics||[],isPinned:false});
           laid[sb]+=chunkR;sRem-=chunkR;bud-=chunkR;
-          if(isL){qi[sb]++;laid[sb]=0;}
+          if(isL){qi[sb]++;laid[sb]=0;notifyLast(taskR);}
         }
         if(cur!==dayStr)break;
       }
       if(cur===dayStr){var g2=0;while(cur===dayStr&&g2++<30)nextSes();}
     }
+    // lay remaining test blocks (FLMs / backlog) on days after content
+    if(_tq){var _gT=0;while(_tq.hasPending(cur)&&_gT++<420){var _dT=cur;flushTests();if(cur===_dT){var _gT2=0;while(cur===_dT&&_gT2++<30)nextSes();}}}
     // trim empty day(s) created by the final cursor advance — but only those
     // AFTER the last day with items (keeps today's shell when all is done)
     var dKeys=Object.keys(sched).sort();
@@ -2928,6 +2970,8 @@ function buildSched(){
     return a.id-b.id;
   });
   for(var i=0;i<ordered.length;i++)pushTask(ordered[i]);
+  // lay remaining test blocks (FLMs / backlog) on days after content
+  if(_tq){var _gS=0;while(_tq.hasPending(cur)&&_gS++<420){var _dS=cur;flushTests();if(cur===_dS){var _gS2=0;while(cur===_dS&&_gS2++<30)nextSes();}}}
   return sched;
 }
 
@@ -2990,6 +3034,7 @@ var REV_INTERVALS=[1,3,7,14,30];
 var REV_DYN_PCT=[0.40,0.50,0.60,0.70];
 var REV_BATCH=8;
 var REV_CUTOFF='2026-11-30'; // All revisions must complete by this date (2 months before GATE)
+function revPassCap(){try{return localStorage.getItem('v5_revlite')==='1'?5:9;}catch(e){return 9;}} // Revision Lite caps unit passes at 5
 
 function revDaysToGate(fromDate){var from=fromStr(fromDate||getToday());var cutoff=fromStr(REV_CUTOFF);return Math.max(1,Math.round((cutoff-from)/(1000*60*60*24)));}
 function revInterval(fromDate,passIdx,rating){var base;if(passIdx<5){base=REV_INTERVALS[passIdx];}else{var pct=REV_DYN_PCT[Math.min(passIdx-5,3)];base=Math.max(1,Math.round(revDaysToGate(fromDate)*pct));}if(rating==='hard')base=Math.max(1,Math.round(base*0.5));return base;}
@@ -3010,7 +3055,7 @@ function revCalcMaxPasses(nextRevision){
     if(cursor<=daysAvail){passes++;}
     else{break;}
   }
-  return Math.max(1,passes);
+  return Math.max(1,Math.min(passes,revPassCap()));
 }
 
 // Project pass dates up to maxPasses, no compression needed since we stop at the natural cutoff
@@ -3094,7 +3139,7 @@ function revGetDueToday(){
   var items=[];
   Object.keys(ST.revUnits).forEach(function(key){
     var u=ST.revUnits[key];
-    var mp=u.maxPasses||9;
+    var mp=Math.min(u.maxPasses||9,revPassCap());
     if(u.subjectGraduated||u.passNumber>=9||u.passNumber>=mp)return;
     if(!u.nextRevision||u.nextRevision>today)return;
     var passLbls=['Pass 1','Pass 2','Pass 3','Pass 4','Pass 5','Pass 6','Pass 7','Pass 8','Pass 9'];
@@ -3614,7 +3659,7 @@ function renderGate(){
       dayData.sessions.forEach(function(ses){
         if(ses.items.length===0)return;
         var status=isToday?gateSessionStatus(ses):'future';
-        var doneCnt=ses.items.filter(function(item){return ST.done[item.taskId]||isPyqAllDone(item.taskId);}).length;
+        var doneCnt=ses.items.filter(function(item){return item.type==='test'||item.type==='analysis'||ST.done[item.taskId]||isPyqAllDone(item.taskId);}).length;
         var totalCnt=ses.items.length;
         var pct=totalCnt>0?Math.round(doneCnt/totalCnt*100):0;
         sesCols+='<div class="card" style="margin-bottom:8px;'+(status==='active'?'border-color:rgba(62,207,142,.4);':'')+(status==='past'?'opacity:.6;':'')+'"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;cursor:pointer;" onclick="toggleSesExpanded(\''+ses.idx+'\')"><span style="font-family:var(--mo);font-size:10px;font-weight:700;text-transform:uppercase;color:var(--mt);">'+esc(ses.name)+' · '+ses.time+'</span>'+(status==='active'?'<span class="adot"></span>':'')+'<div style="flex:1;height:3px;background:var(--sf3);border-radius:2px;overflow:hidden;max-width:80px;"><div style="height:100%;width:'+pct+'%;background:var(--s2);border-radius:2px;"></div></div><span style="font-family:var(--mo);font-size:10px;color:var(--mt);">'+doneCnt+'/'+totalCnt+'</span></div>';
@@ -3622,6 +3667,7 @@ function renderGate(){
         var expanded=!ST.expanded||(ST.expanded.indexOf('s'+ses.idx)<0);
         if(expanded){
           ses.items.forEach(function(item){
+            if(item.type==='test'||item.type==='analysis'){sesCols+=(typeof window.tstSchedItemHTML==='function')?window.tstSchedItemHTML(item):'';return;}
             var isDone=ST.done[item.taskId]||isPyqAllDone(item.taskId);
             var col=COLORS[item.subject]||'#4d9fec';
             var lbl=LABELS[item.subject]||item.subject;
@@ -5740,7 +5786,7 @@ function updateFocusOverlay(){
     if(timerEl) timerEl.textContent = fmtSecs(remSecs);
     if(timerLbl) timerLbl.textContent = 'time remaining';
     if(sessionBadge){
-      var _sTypeLabel = activeSlot.type==='class'?'📡 RECORDED':activeSlot.type==='other'?'🗓 ROUTINE':'📚 GATE';
+      var _sTypeLabel = activeSlot.type==='class'?'📡 RECORDED':activeSlot.type==='other'?'🗓 ROUTINE':activeSlot.type==='revision'?'🔄 REVISION':'📚 GATE';
       sessionBadge.textContent = _sTypeLabel+' · '+(activeSlot.label||'SESSION').toUpperCase();
     }
     if(sessionName) sessionName.textContent = activeSlot.label||'Study Session';
@@ -6624,7 +6670,10 @@ function startSync(){
     // rotation plan: last-write-wins like subjOrder
     var remoteRot=(val.rotation&&typeof val.rotation==='object')?val.rotation:null;
     var rotChanged=JSON.stringify(remoteRot)!==JSON.stringify(ST.rotation||null)&&remoteRot!==null;
-    if(changed||remoteDone>localDone||subjOrderChanged||rotChanged){
+    // test series: last-write-wins like rotation
+    var remoteTests=(val.tests&&typeof val.tests==='object')?val.tests:null;
+    var testsChanged=remoteTests!==null&&JSON.stringify(remoteTests)!==JSON.stringify(ST.tests||null);
+    if(changed||remoteDone>localDone||subjOrderChanged||rotChanged||testsChanged){
       ST.done=mergedDone;ST.flags=mergedFlags;ST.pyqTopics=mergedPyq;
       ST.potato=mergedPotato;ST.skips=mergedSkips;
       // Take other fields from remote if they're more recent
@@ -6635,6 +6684,7 @@ function startSync(){
       if(val.revDone)ST.revDone=val.revDone;
       if(remoteSubjOrder)ST.subjOrder=remoteSubjOrder; // sync subject order
       if(rotChanged)ST.rotation=remoteRot; // sync rotation plan
+      if(testsChanged)ST.tests=remoteTests; // sync test series
       var d=defaultState();for(var k in d)if(ST[k]===undefined)ST[k]=d[k];
       localStorage.setItem('gate2027v6',JSON.stringify(ST));
       renderGate();
@@ -8861,6 +8911,7 @@ window.renderSpeedCalc=function(){
   // Total remaining
   var totalLecMin=subjData.reduce(function(s,d){return s+d.lecMin;},0);
   var totalPyqMin=subjData.reduce(function(s,d){return s+d.pyqMin;},0);
+  var totalTestMin=(typeof window.tstRemainingFixedMins==='function')?window.tstRemainingFixedMins():0;
 
   var speeds=[1,1.25,1.5,1.75,2];
   var prepTarget=TARGET_DATE;
@@ -8869,7 +8920,7 @@ window.renderSpeedCalc=function(){
   // For each speed, compute total days
   function calcDays(speed){
     var adjLecMins=totalLecMin/speed;
-    var totalMins=adjLecMins+totalPyqMin;
+    var totalMins=adjLecMins+totalPyqMin+totalTestMin;
     return Math.ceil(totalMins/dailyMins);
   }
   function addDays(date,n){return addD(date,n);}
@@ -8898,6 +8949,7 @@ window.renderSpeedCalc=function(){
   speedRowsHtml='<div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mt);margin-bottom:8px;">'
     +'Remaining: <span style="color:var(--s1);">'+Math.round(totalLecMin/60*10)/10+'h lectures</span>'
     +' + <span style="color:var(--s3);">'+Math.round(totalPyqMin/60*10)/10+'h PYQs (fixed)</span>'
+    +(totalTestMin>0?' + <span style="color:var(--am);">'+Math.round(totalTestMin/60*10)/10+'h tests (fixed)</span>':'')
     +' · '+dailyHours+'h/day</div>'
     +speedRowsHtml;
   document.getElementById('scSpeedRows').innerHTML=speedRowsHtml;
@@ -9515,7 +9567,7 @@ function makeTTSlotCard(s,i,day,conflicts){
 
   // Head (collapsed view)
   var head=document.createElement('div');head.className='tt-slot-head';
-  var _typeLabel=s.type==='study'?'GATE LECTURES':s.type==='class'?'RECORDED':'ROUTINE'; var typePill='<span class="tt-type-pill tt-type-'+s.type+'">'+_typeLabel+'</span>';
+  var _typeLabel=s.type==='study'?'GATE LECTURES':s.type==='class'?'RECORDED':s.type==='revision'?'REVISION':'ROUTINE'; var typePill='<span class="tt-type-pill tt-type-'+s.type+'">'+_typeLabel+'</span>';
   var endStr=s.eh>=24?pad(s.eh-24)+':'+pad(s.em):pad(s.eh)+':'+pad(s.em);
   var timeStr=pad(s.sh)+':'+pad(s.sm)+'\u2013'+endStr;
   var durStr=dur>=60?Math.floor(dur/60)+'h'+(dur%60?' '+dur%60+'m':''):dur+'m';
@@ -9643,6 +9695,7 @@ function makeTTSlotCard(s,i,day,conflicts){
     +'<button class="'+(s.type==='study'?'act-study':'')+'" onclick="ttSetType(\''+s.id+'\',\''+day+'\',\'study\')">Gate Lectures</button>'
     +'<button class="'+(s.type==='class'?'act-class':'')+'" onclick="ttSetType(\''+s.id+'\',\''+day+'\',\'class\')">Recorded</button>'
     +'<button class="'+(s.type==='other'?'act-other':'')+'" onclick="ttSetType(\''+s.id+'\',\''+day+'\',\'other\')">Routine</button>'
+    +'<button class="'+(s.type==='revision'?'act-revision':'')+'" onclick="ttSetType(\''+s.id+'\',\''+day+'\',\'revision\')">Revision</button>'
     +'</div></div>';
 
   // Times with ±15min nudge buttons
@@ -10987,6 +11040,1794 @@ try{
   window.renderGate=renderGate;
 }catch(e){}
 document.addEventListener('DOMContentLoaded',function(){try{sylRender();}catch(e){}},{once:true});
+})();
+</script>
+<style>
+/* ── Test Series v28 ── */
+.tst-load{background:var(--sf2);border:1px solid var(--bd2);color:var(--tx);border-radius:10px;padding:9px 13px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--fn);}
+.tst-hero{display:flex;align-items:center;gap:10px;background:var(--sf2);border:1px solid var(--bd2);border-radius:12px;padding:10px 12px;margin-bottom:12px;cursor:pointer;}
+.tst-hero.hot{border-color:var(--s2o,var(--s2));}
+.tst-hero-k{font-size:8px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--mt);margin-bottom:2px;}
+.tst-hero-n{font-size:13px;font-weight:800;color:var(--tx);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tst-hero-m{font-size:10px;color:var(--mt2);margin-top:2px;}
+.tst-hero-go{background:var(--s1);border:none;color:#fff;border-radius:9px;padding:8px 12px;font-size:11px;font-weight:800;cursor:pointer;font-family:var(--fn);flex-shrink:0;}
+.tst-sec-h{display:flex;align-items:center;justify-content:space-between;padding:7px 2px;font-size:11px;font-weight:700;color:var(--tx);cursor:pointer;border-top:1px solid var(--bd);user-select:none;}
+.tst-rows{padding-bottom:6px;}
+.tst-row{display:flex;align-items:center;gap:8px;padding:6px 2px;cursor:pointer;border-bottom:1px solid var(--bd);}
+.tst-row:last-child{border-bottom:none;}
+.tst-ty{font-family:var(--mo);font-size:8px;font-weight:700;letter-spacing:.05em;padding:2px 5px;border-radius:5px;flex-shrink:0;width:42px;text-align:center;}
+.tst-ty.t-topic{background:var(--sf2);color:var(--s1);border:1px solid var(--bd2);}
+.tst-ty.t-subject_grand{background:var(--sf2);color:var(--s2);border:1px solid var(--bd2);}
+.tst-ty.t-multi_grand{background:var(--sf2);color:var(--am,#e8b339);border:1px solid var(--bd2);}
+.tst-ty.t-flm{background:var(--sf2);color:var(--s3);border:1px solid var(--bd2);}
+.tst-row-mid{flex:1;min-width:0;}
+.tst-row-n{font-size:11px;font-weight:600;color:var(--tx);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tst-row-s{display:flex;gap:4px;flex-wrap:wrap;margin-top:2px;}
+.tst-row-r{display:flex;flex-direction:column;align-items:flex-end;gap:1px;flex-shrink:0;font-family:var(--mo);font-size:10px;}
+.tst-dim{font-size:8px;color:var(--mt);}
+.tst-sj{font-size:8px;font-family:var(--mo);border:1px solid;border-radius:4px;padding:1px 4px;}
+.tst-mi{font-size:9px;font-family:var(--mo);background:var(--sf2);border:1px solid var(--bd2);border-radius:6px;padding:2px 7px;}
+#tstSheetOv,#tstImpOv,#tstSetOv{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9000;display:flex;align-items:flex-end;justify-content:center;}
+.tst-sheet{background:var(--sf,var(--bg));border:1px solid var(--bd2);border-radius:16px 16px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom));width:100%;max-width:560px;max-height:82vh;overflow-y:auto;}
+@media(min-width:600px){#tstSheetOv,#tstImpOv,#tstSetOv{align-items:center;}.tst-sheet{border-radius:16px;}}
+.tst-sh-k{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mt);margin:6px 0;}
+.tst-b{background:var(--sf2);border:1px solid var(--bd2);color:var(--tx);border-radius:8px;padding:6px 11px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--fn);}
+.tst-b.ghost{background:transparent;color:var(--mt2);}
+.tst-in{background:var(--sf2);border:1px solid var(--bd2);border-radius:8px;padding:6px 8px;color:var(--tx);font-family:var(--fn);font-size:11px;outline:none;}
+.tst-filbar{display:flex;gap:5px;flex-wrap:wrap;align-items:center;padding:0 0 8px;}
+.tst-fch{background:var(--sf2);border:1px solid var(--bd2);color:var(--mt2);border-radius:8px;padding:4px 9px;font-size:9px;font-weight:700;cursor:pointer;font-family:var(--fn);}
+.tst-fch span{font-family:var(--mo);opacity:.8;}
+.tst-fch.act{border-color:var(--s1);color:var(--s1);background:rgba(77,159,236,.12);}
+.tst-fch.act.warn{border-color:#e8b339;color:#e8b339;background:rgba(232,179,57,.12);}
+.tst-fsel{background:var(--sf2);border:1px solid var(--bd2);color:var(--mt2);border-radius:8px;padding:4px 6px;font-size:9px;font-family:var(--fn);outline:none;margin-left:auto;}
+</style>
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// ── TEST SERIES · v28 ────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// Providers: MADE EASY (2027 + 2026 OTS) and GO Classes. ACE removed.
+// Tests live in ST.tests = { id: rec, _cfg:{...} } — fully Firebase-synced.
+// rec: {id,provider,name,type,subjects[],q,min,marks,activation,series,
+//       wave(1=core,2=pool), amin(analysis mins), planned, retake(0/1),
+//       analyzed(0/1), attempts:[{d,score,max,pctile}], notes, mistakes[]}
+// Gate: a subject's tests unlock only when ALL its lectures are done (100%).
+// FLMs unlock only when the ENTIRE syllabus (every task) is laid/done.
+// Scheduling: window.tstSchedInit() returns a planner that buildSched calls;
+// test blocks consume real day capacity. Tests are atomic (never split across
+// days); analysis blocks may spill to the next day. Daily test budget applies
+// (FLM days are exclusive). Auto due dates are LIVE projections — only manual
+// `planned` persists. Wave 2 (pool) is never auto-scheduled.
+(function(){
+'use strict';
+
+var EXAM_DATE='2027-02-01';
+var LAST_FLM_BUFFER=5;
+var JAN='2027-01-01';
+
+function p2(n){return (n<10?'0':'')+n;}
+function tEsc(s){try{return esc(s);}catch(e){return String(s).replace(/[<>&"]/g,'');}}
+function tLbl(s){try{return LABELS[s]||s;}catch(e){return s;}}
+function tCol(s){try{return (typeof COLORS!=='undefined'&&COLORS[s])||'#4d9fec';}catch(e){return '#4d9fec';}}
+function maxD(a,b){return a>b?a:b;}
+function tToday(){try{return getToday();}catch(e){var n=new Date();return n.getFullYear()+'-'+p2(n.getMonth()+1)+'-'+p2(n.getDate());}}
+function tArr(x){if(Array.isArray(x))return x;if(x&&typeof x==='object')return Object.keys(x).sort().map(function(k){return x[k];});return [];}
+function tFmt(s){try{return fmtShort(s);}catch(e){return s;}}
+function tMins(m){try{return fmtMins(m);}catch(e){return Math.round(m)+'m';}}
+
+// ── State ────────────────────────────────────────────────────────────────────
+function tstAll(){
+  if(!ST.tests||typeof ST.tests!=='object'||Array.isArray(ST.tests))ST.tests={};
+  return ST.tests;
+}
+var CFG_DEF={budget:120,offFree:2,offPaid:9,offGrand:12,offMulti:3,flmGap:7};
+function tstCfg(){
+  var T=tstAll();
+  if(!T._cfg||typeof T._cfg!=='object')T._cfg={};
+  var c=T._cfg,out={};
+  Object.keys(CFG_DEF).forEach(function(k){out[k]=(typeof c[k]==='number'&&c[k]>=0)?c[k]:CFG_DEF[k];});
+  return out;
+}
+function tstAmin(t){return (typeof t.amin==='number'&&t.amin>=0)?t.amin:(t.min||60);}
+function tstNorm(t){
+  t.subjects=tArr(t.subjects).map(String);
+  t.mistakes=tArr(t.mistakes);
+  t.attempts=tArr(t.attempts);
+  if(t.taken&&!t.attempts.length){t.attempts=[{d:t.taken,score:(t.score==null?null:t.score),max:(t.max==null?null:t.max),pctile:(t.pctile==null?null:t.pctile)}];}
+  if(t.wave!==1&&t.wave!==2)t.wave=1;
+  return t;
+}
+function tstList(){
+  var T=tstAll(),out=[];
+  Object.keys(T).forEach(function(id){
+    if(id.charAt(0)==='_')return;
+    var t=T[id];if(!t||typeof t!=='object')return;
+    out.push(tstNorm(t));
+  });
+  return out;
+}
+function tstSave(){
+  try{saveGateState();}catch(e){}
+  try{if(typeof buildSchedule==='function')buildSchedule();}catch(e){}
+  try{if(typeof window.renderSpeedCalc==='function')window.renderSpeedCalc();}catch(e){}
+  tstRender();
+}
+
+// ── Subject alias table ──────────────────────────────────────────────────────
+// Provider names → curriculum subjects; may map to SEVERAL (e.g. "DSA").
+// Unmappable (Engg Math, Discrete) → [] = manual-date-only, never auto.
+var TST_ALIAS={
+  'programming':['C Programming'],'programming(c)':['C Programming'],'programming (c)':['C Programming'],
+  'c':['C Programming'],'c programming':['C Programming'],'c-programming':['C Programming'],
+  'programming and data structures':['C Programming','Data Structures'],
+  'programming and ds':['C Programming','Data Structures'],
+  'data structures':['Data Structures'],'ds':['Data Structures'],'data structure':['Data Structures'],
+  'data structures and algorithms':['Data Structures','Algorithms'],
+  'data structure and algorithms':['Data Structures','Algorithms'],
+  'algorithms':['Algorithms'],'algo':['Algorithms'],'algorithm':['Algorithms'],
+  'toc':['TOC'],'theory of computation':['TOC'],
+  'compiler design':['Compiler Design'],'cd':['Compiler Design'],'compilers':['Compiler Design'],
+  'coa':['CO'],'co':['CO'],'co and architecture':['CO'],
+  'computer organization':['CO'],'computer organisation':['CO'],
+  'computer organization and architecture':['CO'],'computer organisation and architecture':['CO'],
+  'os':['OS'],'operating system':['OS'],'operating systems':['OS'],
+  'cn':['CN'],'computer networks':['CN'],'computer network':['CN'],'networks':['CN'],
+  'dbms':['DBMS'],'databases':['DBMS'],'database':['DBMS'],
+  'dld':['DLD'],'digital logic':['DLD'],'digital logic design':['DLD'],
+  'aptitude':['Aptitude'],'general aptitude':['Aptitude'],'verbal':['Aptitude'],'verbal aptitude':['Aptitude'],
+  'quant':['Aptitude'],'quantitative':['Aptitude'],'quantitative aptitude':['Aptitude'],
+  'analytical':['Aptitude'],'spatial':['Aptitude'],'analytical/spatial':['Aptitude'],
+  'analytical & spatial aptitude':['Aptitude']
+};
+function tstMapOne(name){
+  var raw=String(name||'').trim();
+  if(SUBJ.indexOf(raw)>=0)return [raw];
+  var k=raw.toLowerCase();
+  if(TST_ALIAS[k])return TST_ALIAS[k].slice();
+  k=k.replace(/[-\s]*\d+$/,'').trim();
+  if(TST_ALIAS[k])return TST_ALIAS[k].slice();
+  return [];
+}
+function tstMappedSubjs(t){
+  var out=[],seen={};
+  tArr(t.subjects).forEach(function(nm){
+    tstMapOne(nm).forEach(function(s){if(!seen[s]){seen[s]=1;out.push(s);}});
+  });
+  return out;
+}
+function tstHasUnmapped(t){
+  if(t.type==='flm')return false;
+  var subs=tArr(t.subjects);
+  if(!subs.length)return true;
+  for(var i=0;i<subs.length;i++)if(!tstMapOne(subs[i]).length)return true;
+  return false;
+}
+
+// ── Subject completion (lectures 100% = gate) ────────────────────────────────
+function tstSubjPct(subj){
+  try{
+    var done=new Set(Object.keys(ST.done).map(Number));
+    var tot=0,d=0;
+    for(var i=0;i<ALL_TASKS.length;i++){
+      var t=ALL_TASKS[i];
+      if(t.subject!==subj||t.type!=='lecture')continue;
+      tot+=t.duration;if(done.has(t.id))d+=t.duration;
+    }
+    return tot>0?Math.round(d/tot*100):100;
+  }catch(e){return 0;}
+}
+function tstSubjComplete(subj){
+  try{
+    var done=new Set(Object.keys(ST.done).map(Number));
+    for(var i=0;i<ALL_TASKS.length;i++){
+      var t=ALL_TASKS[i];
+      if(t.subject===subj&&t.type==='lecture'&&!done.has(t.id))return false;
+    }
+    return true;
+  }catch(e){return false;}
+}
+function tstTotalPct(){
+  try{
+    var done=new Set(Object.keys(ST.done).map(Number));
+    var tot=0,d=0;
+    ALL_TASKS.forEach(function(t){tot+=t.duration;if(done.has(t.id))d+=t.duration;});
+    return tot>0?Math.round(d/tot*100):0;
+  }catch(e){return 0;}
+}
+
+// One-time migration (v30): ME 2026 promoted to Wave 1 core. Imports preserve
+// user fields, so previously-loaded ME26 records get flipped here once.
+function tstMigrate(){
+  try{
+    var T=tstAll();
+    if(!T._cfg||typeof T._cfg!=='object')T._cfg={};
+    if(T._cfg.mig1&&T._cfg.mig2)return;
+    var any=false;
+    if(!T._cfg.mig1){
+      Object.keys(T).forEach(function(k){
+        if(k.indexOf('ME26')===0&&T[k]&&T[k].wave===2){T[k].wave=1;any=true;}
+      });
+      T._cfg.mig1=1;
+    }
+    if(!T._cfg.mig2){
+      var hasGO=Object.keys(T).some(function(k){return k.indexOf('GO-')===0;});
+      if(hasGO&&!T['GO-CN-SW1']){tstImportTests(goBuild());any=true;}
+      T._cfg.mig2=1;
+    }
+    if(any)try{saveGateState();}catch(e){}
+  }catch(e){}
+}
+
+var TYPE_RANK={topic:0,subject_grand:1,multi_grand:2,flm:3};
+var TYPE_LBL={topic:'Topic',subject_grand:'Subject',multi_grand:'Multi',flm:'FLM'};
+
+// ══ SCHEDULER PLANNER — called by buildSched ═════════════════════════════════
+// buildSched calls tstSchedInit() once per build; the planner receives
+// onLast(task,date) for every final chunk laid and take(date,dayRemMins) at
+// each day boundary, returning blocks to lay. Blocks: {kind:'test'|'analysis',
+// test, mins, total, subject, name, willCarry, cont}
+window.tstSchedInit=function(){
+  try{
+    tstMigrate();
+    var L=tstList();
+    if(!L.length)return null;
+    var cfg=tstCfg();
+    var today=tToday();
+    var lastFlm=addD(EXAM_DATE,-LAST_FLM_BUFFER);
+    var done=new Set(Object.keys(ST.done).map(Number));
+    var remLec={},remAll=0;
+    ALL_TASKS.forEach(function(t){
+      if(done.has(t.id))return;
+      remAll++;
+      if(t.type==='lecture')remLec[t.subject]=(remLec[t.subject]||0)+1;
+    });
+    var finish={};
+    SUBJ.forEach(function(s){if(!remLec[s])finish[s]=today;});
+    var allDone=remAll===0?today:null;
+
+    var Q=[];      // {test,kind,due,prio,mapped,mins}
+    var carryQ=[]; // analysis spill-over
+    var usedMap={},flmDay={};
+    var flms=[];
+
+    function dueFor(t,base){
+      var off=t.type==='topic'?(t.series==='2026'?cfg.offFree:cfg.offPaid)
+            :t.type==='subject_grand'?cfg.offGrand
+            :cfg.offMulti;
+      var d=addD(base,off);
+      if(t.activation&&t.activation>d)d=t.activation;
+      if(d<today)d=today;
+      return d;
+    }
+    function resolveEntry(e){
+      if(e.due||e.kind!=='test'||e.test.type==='flm'||e.test.planned)return;
+      if(!e.mapped.length)return;
+      var base=null;
+      for(var i=0;i<e.mapped.length;i++){
+        var f=finish[e.mapped[i]];
+        if(!f)return;
+        if(base===null||f>base)base=f;
+      }
+      e.due=dueFor(e.test,base);
+    }
+    var flmFlip=false;
+    function assignFlms(d0){
+      var cursor=maxD(today,addD(d0,2));
+      flms.sort(function(a,b){return a.test.id<b.test.id?-1:1;});
+      flms.forEach(function(e){
+        var d=maxD(cursor,e.test.activation||today);
+        if(d>lastFlm){e.due=null;e.overflow=true;return;}
+        e.due=d;
+        var step=(d>=JAN)?(flmFlip?4:3):cfg.flmGap;
+        flmFlip=!flmFlip;
+        cursor=addD(d,step);
+      });
+    }
+
+    L.forEach(function(t){
+      var att=tArr(t.attempts);
+      if(att.length&&!t.retake){
+        if(!t.analyzed&&t.wave===1)Q.push({test:t,kind:'analysis',due:today,prio:0,mins:tstAmin(t),mapped:[]});
+        return;
+      }
+      if(t.wave!==1&&!t.planned)return;
+      var mapped=tstMappedSubjs(t);
+      var e={test:t,kind:'test',mins:t.min||60,mapped:mapped,prio:t.retake?3:(t.planned?0:1)};
+      if(t.planned){e.due=t.planned<today?today:t.planned;Q.push(e);return;}
+      if(t.type==='flm'){e.due=null;flms.push(e);Q.push(e);return;}
+      if(!mapped.length)return;
+      e.due=null;resolveEntry(e);
+      Q.push(e);
+    });
+    if(allDone)assignFlms(allDone);
+
+    return{
+      onLast:function(task,date){
+        remAll--;
+        if(task.type==='lecture'&&remLec[task.subject]){
+          remLec[task.subject]--;
+          if(remLec[task.subject]===0){
+            finish[task.subject]=date;
+            Q.forEach(resolveEntry);
+          }
+        }
+        if(remAll===0&&!allDone){allDone=date;assignFlms(date);}
+      },
+      take:function(date,dayRem){
+        var out=[],rem=dayRem;
+        var used=usedMap[date]||0;
+        while(carryQ.length&&rem>5){
+          var c=carryQ[0];
+          var m=Math.min(c.mins,rem);
+          var wc=m<c.mins-0.5;
+          out.push({kind:'analysis',test:c.test,mins:m,total:c.total,subject:c.subject,name:c.name,cont:true,willCarry:wc});
+          rem-=m;
+          if(wc){c.mins-=m;return out;}
+          carryQ.shift();
+        }
+        if(flmDay[date])return out;
+        var cands=Q.filter(function(e){return e.due&&e.due<=date;});
+        cands.sort(function(a,b){
+          if(a.prio!==b.prio)return a.prio-b.prio;
+          if(a.due!==b.due)return a.due<b.due?-1:1;
+          var ra=TYPE_RANK[a.test.type]||0,rb=TYPE_RANK[b.test.type]||0;
+          if(ra!==rb)return ra-rb;
+          return a.test.id<b.test.id?-1:1;
+        });
+        for(var i=0;i<cands.length;i++){
+          var e=cands[i];
+          var t=e.test;
+          var subj=(e.mapped&&e.mapped[0])||tstMappedSubjs(t)[0]||(t.type==='flm'?'FLM':'Test');
+          if(e.kind==='analysis'){
+            if(rem<10)continue;
+            var ma=Math.min(e.mins,rem);
+            var wca=ma<e.mins-0.5;
+            out.push({kind:'analysis',test:t,mins:ma,total:tstAmin(t),subject:subj,name:'📝 Analysis — '+t.name,willCarry:wca});
+            rem-=ma;
+            if(wca)carryQ.push({test:t,mins:e.mins-ma,total:tstAmin(t),subject:subj,name:'📝 Analysis — '+t.name});
+            Q.splice(Q.indexOf(e),1);
+            continue;
+          }
+          if(t.type==='flm'){
+            if(out.length||used>0)continue;
+            if(e.mins>rem)continue;
+            out.push({kind:'test',test:t,mins:e.mins,total:e.mins,subject:'FLM',name:'🧪 '+t.name});
+            rem-=e.mins;
+            var amF=tstAmin(t);
+            var aF=Math.min(amF,rem);
+            if(aF>5){
+              var wcf=aF<amF-0.5;
+              out.push({kind:'analysis',test:t,mins:aF,total:amF,subject:'FLM',name:'📝 Analysis — '+t.name,willCarry:wcf});
+              rem-=aF;
+              if(wcf)carryQ.push({test:t,mins:amF-aF,total:amF,subject:'FLM',name:'📝 Analysis — '+t.name});
+            }else if(amF>5){
+              carryQ.push({test:t,mins:amF,total:amF,subject:'FLM',name:'📝 Analysis — '+t.name});
+            }
+            usedMap[date]=(usedMap[date]||0)+e.mins;
+            flmDay[date]=1;
+            Q.splice(Q.indexOf(e),1);
+            return out;
+          }
+          if(used>0&&used+e.mins>cfg.budget+0.5)continue; // budget caps stacking; first test of the day always allowed
+          if(e.mins>rem)continue;
+          out.push({kind:'test',test:t,mins:e.mins,total:e.mins,subject:subj,name:'🧪 '+t.name});
+          rem-=e.mins;used+=e.mins;
+          var am=tstAmin(t);
+          if(am>5){
+            var af=Math.min(am,rem);
+            if(af>5){
+              var wcn=af<am-0.5;
+              out.push({kind:'analysis',test:t,mins:af,total:am,subject:subj,name:'📝 Analysis — '+t.name,willCarry:wcn});
+              rem-=af;
+              if(wcn)carryQ.push({test:t,mins:am-af,total:am,subject:subj,name:'📝 Analysis — '+t.name});
+            }else{
+              carryQ.push({test:t,mins:am,total:am,subject:subj,name:'📝 Analysis — '+t.name});
+            }
+          }
+          Q.splice(Q.indexOf(e),1);
+        }
+        usedMap[date]=used;
+        return out;
+      },
+      carry:function(b,left){
+        if(b.kind==='analysis')carryQ.push({test:b.test,mins:left,total:b.total,subject:b.subject,name:b.name});
+        else Q.push({test:b.test,kind:'test',due:addD(tToday(),1),prio:1,mapped:tstMappedSubjs(b.test),mins:b.test.min||60});
+      },
+      hasPending:function(){
+        if(carryQ.length)return true;
+        for(var i=0;i<Q.length;i++)if(Q[i].due)return true;
+        return false;
+      },
+      _debug:function(){return{Q:Q,finish:finish,allDone:allDone,carryQ:carryQ};}
+    };
+  }catch(e){console.warn('[tests] planner init',e);return null;}
+};
+
+// Speed Calculator: remaining fixed test minutes (no speed multiplier)
+window.tstRemainingFixedMins=function(){
+  try{
+    var sum=0;
+    tstList().forEach(function(t){
+      var att=tArr(t.attempts);
+      if(att.length&&!t.retake){if(!t.analyzed&&t.wave===1)sum+=tstAmin(t);return;}
+      if(t.wave!==1&&!t.planned)return;
+      if(tstHasUnmapped(t)&&!t.planned)return;
+      sum+=(t.min||0)+tstAmin(t);
+    });
+    return sum;
+  }catch(e){return 0;}
+};
+
+// ══ PROVIDER DATA ════════════════════════════════════════════════════════════
+// MADE EASY — extracted from the official schedule PDF (pages 21-24).
+var ME_DEF=[
+  [1,'Theory of Computation-1','topic',['Theory of Computation'],'2026-04-01'],
+  [2,'Theory of Computation-2','topic',['Theory of Computation'],'2026-04-01'],
+  [3,'Algorithms-1','topic',['Algorithms'],'2026-04-01'],
+  [4,'Algorithms-2','topic',['Algorithms'],'2026-04-01'],
+  [5,'COA-1','topic',['Computer Organization and Architecture'],'2026-04-01'],
+  [6,'COA-2','topic',['Computer Organization and Architecture'],'2026-04-01'],
+  [7,'Databases-1','topic',['Databases'],'2026-04-10'],
+  [8,'Databases-2','topic',['Databases'],'2026-04-10'],
+  [9,'Engineering Mathematics-1','topic',['Engineering Mathematics'],'2026-04-10'],
+  [10,'Engineering Mathematics-2','topic',['Engineering Mathematics'],'2026-04-10'],
+  [11,'General Aptitude-1','topic',['General Aptitude'],'2026-04-10'],
+  [12,'General Aptitude-2','topic',['General Aptitude'],'2026-04-10'],
+  [13,'Operating System-1','topic',['Operating Systems'],'2026-04-20'],
+  [14,'Operating System-2','topic',['Operating Systems'],'2026-04-20'],
+  [15,'Programming and DS-1','topic',['Programming and Data Structures'],'2026-04-20'],
+  [16,'Programming and DS-2','topic',['Programming and Data Structures'],'2026-04-20'],
+  [17,'Computer Networks-1','topic',['Computer Networks'],'2026-04-20'],
+  [18,'Computer Networks-2','topic',['Computer Networks'],'2026-04-20'],
+  [19,'Digital Logic-1','topic',['Digital Logic'],'2026-04-30'],
+  [20,'Digital Logic-2','topic',['Digital Logic'],'2026-04-30'],
+  [21,'Discrete Mathematics-1','topic',['Discrete Mathematics'],'2026-04-30'],
+  [22,'Discrete Mathematics-2','topic',['Discrete Mathematics'],'2026-04-30'],
+  [23,'Compiler Design-1','topic',['Compiler Design'],'2026-04-30'],
+  [24,'Compiler Design-2','topic',['Compiler Design'],'2026-04-30'],
+  [25,'Theory of Computation — Subject','subject_grand',['Theory of Computation'],'2026-05-15'],
+  [26,'Algorithms — Subject','subject_grand',['Algorithms'],'2026-05-15'],
+  [27,'COA — Subject','subject_grand',['Computer Organization and Architecture'],'2026-05-15'],
+  [28,'Operating System — Subject','subject_grand',['Operating Systems'],'2026-05-15'],
+  [29,'Engineering Mathematics — Subject','subject_grand',['Engineering Mathematics'],'2026-05-15'],
+  [30,'General Aptitude — Subject','subject_grand',['General Aptitude'],'2026-05-15'],
+  [31,'Database — Subject','subject_grand',['Databases'],'2026-05-30'],
+  [32,'Programming and DS — Subject','subject_grand',['Programming and Data Structures'],'2026-05-30'],
+  [33,'Computer Networks — Subject','subject_grand',['Computer Networks'],'2026-05-30'],
+  [34,'Digital Logic — Subject','subject_grand',['Digital Logic'],'2026-05-30'],
+  [35,'Compiler Design — Subject','subject_grand',['Compiler Design'],'2026-05-30'],
+  [36,'Discrete Mathematics — Subject','subject_grand',['Discrete Mathematics'],'2026-05-30'],
+  [37,'Full Syllabus Test-1 (Basic)','flm',[],'2026-06-15'],
+  [38,'Full Syllabus Test-2 (Basic)','flm',[],'2026-06-15'],
+  [39,'Full Syllabus Test-3 (Basic)','flm',[],'2026-06-15'],
+  [40,'Full Syllabus Test-4 (Basic)','flm',[],'2026-06-15'],
+  [41,'Full Syllabus Test-5 (Advance)','flm',[],'2026-06-30'],
+  [42,'Full Syllabus Test-6 (Advance)','flm',[],'2026-06-30'],
+  [43,'Full Syllabus Test-7 (Advance)','flm',[],'2026-06-30'],
+  [44,'Full Syllabus Test-8 (Advance)','flm',[],'2026-06-30'],
+  [45,'GATE Mock Test 1 ⚠ GATE-26 admit card','flm',[],'2026-07-30'],
+  [46,'GATE Mock Test 2 ⚠ GATE-26 admit card','flm',[],'2026-07-30'],
+  [47,'GATE Mock Test 3 ⚠ GATE-26 admit card','flm',[],'2026-07-30'],
+  [48,'GATE Mock Test 4 ⚠ GATE-26 admit card','flm',[],'2026-07-30']
+];
+// ME 2026 OTS extras: 6 multi-subject tests exist only in the 2026 series
+var ME26_MULTI=[
+  ['M1','TOC + Compiler Design','multi_grand',['Theory of Computation','Compiler Design']],
+  ['M2','Algorithms + Programming and DS','multi_grand',['Algorithms','Programming and Data Structures']],
+  ['M3','COA + Operating System','multi_grand',['Computer Organization and Architecture','Operating Systems']],
+  ['M4','Digital Logic + Discrete Mathematics','multi_grand',['Digital Logic','Discrete Mathematics']],
+  ['M5','Computer Networks + Databases','multi_grand',['Computer Networks','Databases']],
+  ['M6','Engineering Mathematics + General Aptitude','multi_grand',['Engineering Mathematics','General Aptitude']]
+];
+function meDims(type){return type==='flm'?[65,100,180]:(type==='topic'?[17,25,45]:[33,50,90]);}
+function meBuild(series){
+  var out=[];
+  ME_DEF.forEach(function(d){
+    var dims=meDims(d[2]);
+    out.push({id:'ME'+series.slice(2)+'-T'+p2(d[0]),provider:'MADE EASY',name:d[1],type:d[2],
+      subjects:d[3].slice(),q:dims[0],marks:dims[1],min:dims[2],
+      activation:series==='2027'?d[4]:'',series:series,wave:1});
+  });
+  if(series==='2026'){
+    ME26_MULTI.forEach(function(d){
+      out.push({id:'ME26-'+d[0],provider:'MADE EASY',name:d[1],type:d[2],subjects:d[3].slice(),
+        q:33,marks:50,min:90,activation:'',series:'2026',wave:1});
+    });
+  }
+  return out;
+}
+
+// GO Classes — from the enrolled GateOverflow listing (83 tests, all live).
+// [idSuffix, name, type, subjects, q, marks, min, series, wave]
+var GO_DEF=[
+  ['TOC-TW1','TOC TW1 — Finite Automata','topic',['Theory of Computation'],15,25,45,'2027',1],
+  ['TOC-TW2','TOC TW2 — Regular Expression','topic',['Theory of Computation'],15,25,45,'2027',1],
+  ['TOC-TW3','TOC TW3 — CFG, PDA','topic',['Theory of Computation'],15,25,45,'2027',1],
+  ['TOC-TW4','TOC TW4 — Closure, Language Class','topic',['Theory of Computation'],15,25,45,'2027',1],
+  ['TOC-TW5','TOC TW5 — Decidability','topic',['Theory of Computation'],15,25,45,'2027',1],
+  ['TOC-TW6','TOC TW6 — Countability','topic',['Theory of Computation'],15,25,45,'2027',1],
+  ['TOC-SW1','TOC — Subject Wise Test 1','subject_grand',['Theory of Computation'],30,50,90,'2027',1],
+  ['TOC-SW2','TOC — Subject Wise Test 2','subject_grand',['Theory of Computation'],30,45,90,'2027',1],
+  ['ALG-TW1','Algo TW1 — Divide and Conquer','topic',['Algorithms'],15,25,45,'2027',1],
+  ['ALG-TW2','Algo TW2 — Recurrence Relation','topic',['Algorithms'],15,25,45,'2027',1],
+  ['ALG-TW3','Algo TW3 — Greedy Algorithms','topic',['Algorithms'],15,25,45,'2027',1],
+  ['ALG-TW4','Algo TW4 — Dynamic Programming','topic',['Algorithms'],15,25,45,'2027',1],
+  ['DSA-TW1','DS & Algorithms — Topic Wise Test 1','topic',['Data Structures and Algorithms'],15,25,45,'2027',1],
+  ['DSA-TW2','DS & Algorithms — Topic Wise Test 2','topic',['Data Structures and Algorithms'],15,25,45,'2027',1],
+  ['DSA-TW3','DS & Algorithms — Topic Wise Test 3','topic',['Data Structures and Algorithms'],15,25,45,'2027',1],
+  ['DSA26-TW2','DS & Algorithms (2026) — Topic Wise Test 2','topic',['Data Structures and Algorithms'],15,25,45,'2026',2],
+  ['DSA26-TW3','DS & Algorithms (2026) — Topic Wise Test 3','topic',['Data Structures and Algorithms'],15,25,45,'2026',2],
+  ['DADSA-TW1','DS & Algorithms (DA) — Topic Wise Test 1','topic',['Data Structures and Algorithms'],15,25,45,'2027',2],
+  ['DADSA-TW4','DS & Algorithms (DA) — Topic Wise Test 4','topic',['Data Structures and Algorithms'],15,25,45,'2027',2],
+  ['DADSA-TW5','DS & Algorithms (DA) — Topic Wise Test 5','topic',['Data Structures and Algorithms'],15,25,45,'2027',2],
+  ['DS-TW4','DS TW4 — Combinatorics in Trees','topic',['Data Structures'],15,25,45,'2027',1],
+  ['DS-TW5','DS TW5 — Hashing with Probability','topic',['Data Structures'],15,25,45,'2027',1],
+  ['OS-TW1','OS TW1 — Scheduling','topic',['Operating Systems'],15,25,45,'2027',1],
+  ['OS-TW2','OS TW2 — Synchronisation, Deadlock','topic',['Operating Systems'],15,25,45,'2027',1],
+  ['OS-TW3','OS TW3 — Memory Management','topic',['Operating Systems'],15,25,45,'2027',1],
+  ['OS-TW4','OS TW4 — File System, Fork, Syscalls','topic',['Operating Systems'],15,25,45,'2027',1],
+  ['CO-TW1','CO TW1 — Basics, Addressing, Control Unit','topic',['CO and Architecture'],15,25,45,'2027',1],
+  ['CO-TW2','CO TW2 — Pipelining','topic',['CO and Architecture'],15,25,45,'2027',1],
+  ['CO-TW3','CO TW3 — Cache Memory','topic',['CO and Architecture'],15,25,45,'2027',1],
+  ['CO-TW4','CO TW4 — I/O Interfacing, Magnetic Disk','topic',['CO and Architecture'],15,25,45,'2027',1],
+  ['CD-TW1','CD TW1 — Lexical, Syntax, Parsers','topic',['Compiler Design'],15,25,45,'2027',1],
+  ['CD-TW2','CD TW2 — Semantic, SDT, SDD','topic',['Compiler Design'],15,25,45,'2027',1],
+  ['CD-TW3','CD TW3 — Intermediate Code, DAG, Code Opt','topic',['Compiler Design'],15,25,45,'2027',1],
+  ['CN-TW1','CN TW1 — IP Addressing, Data Link','topic',['Computer Networks'],15,25,45,'2027',1],
+  ['CN-TW2','CN TW2 — Network Layer','topic',['Computer Networks'],15,25,45,'2027',1],
+  ['CN-TW3','CN TW3 — Routing, Transport','topic',['Computer Networks'],15,25,45,'2027',1],
+  ['CN-TW4','CN TW4 — Transport, Application Layer','topic',['Computer Networks'],10,15,25,'2027',1],
+  ['C-TW1','C Programming — Topic Wise Test 1','topic',['C-Programming'],15,25,45,'2027',1],
+  ['C-TW2','C Programming — Topic Wise Test 2','topic',['C-Programming'],15,25,45,'2027',1],
+  ['C-TW3','C Programming — Topic Wise Test 3','topic',['C-Programming'],15,25,45,'2027',1],
+  ['C-SW1','C Programming — Subject Wise Test 1','subject_grand',['C programming'],30,50,90,'2027',1],
+  ['C-SW2','C Programming — Subject Wise Test 2','subject_grand',['C programming'],30,45,90,'2027',1],
+  ['C-SW3','C Programming — Subject Wise Test 3','subject_grand',['C programming'],30,45,90,'2027',1],
+  ['DB-TW1','Databases — Topic Wise Test 1','topic',['Databases'],15,25,45,'2027',1],
+  ['DB-TW2','Databases — Topic Wise Test 2','topic',['Databases'],15,25,45,'2027',1],
+  ['DB-TW3','Databases — Topic Wise Test 3','topic',['Databases'],15,25,45,'2027',1],
+  ['DB-TW4','Databases — Topic Wise Test 4','topic',['Databases'],15,25,45,'2027',1],
+  ['DB-TW5','Databases — Topic Wise Test 5','topic',['Databases'],15,25,45,'2027',1],
+  ['DB-SW1','DBMS — Subject Wise Test 1','subject_grand',['DBMS'],30,50,90,'2027',1],
+  ['DB-SW2','DBMS — Subject Wise Test 2','subject_grand',['DBMS'],25,50,90,'2027',1],
+  ['DB-SW3','DBMS — Subject Wise Test 3','subject_grand',['DBMS'],30,50,90,'2027',1],
+  ['DL-TW1','Digital Logic — Topic Wise Test 1','topic',['Digital Logic'],15,25,45,'2027',1],
+  ['DL-TW2','Digital Logic — Topic Wise Test 2','topic',['Digital Logic'],15,25,45,'2027',1],
+  ['DL-TW3','Digital Logic — Topic Wise Test 3','topic',['Digital Logic'],15,25,45,'2027',1],
+  ['DL-SW1','Digital Logic — Subject Wise Test 1','subject_grand',['Digital Logic'],30,50,90,'2027',1],
+  ['DL-SW2','Digital Logic — Subject Wise Test 2','subject_grand',['Digital Logic'],25,45,78,'2027',1],
+  ['DL-SW3','Digital Logic — Subject Wise Test 3','subject_grand',['Digital Logic'],25,45,78,'2027',1],
+  ['MOCK-1','Mock GATE — Test 1','flm',[],65,100,180,'2027',1],
+  ['MOCK-2','Mock GATE — Test 2','flm',[],65,100,180,'2027',1],
+  ['MOCK-3','Mock GATE — Test 3','flm',[],65,100,180,'2027',1],
+  ['MOCK-4','Mock GATE — Test 4','flm',[],65,100,180,'2027',1],
+  ['MOCK-5','Mock GATE — Test 5','flm',[],65,100,180,'2027',1],
+  ['FL-1','Mixed Subjects — Full Length Test 1','flm',[],65,100,180,'2027',1],
+  ['EM-SW1','Engineering Mathematics — Subject Wise Test 1','subject_grand',['Engineering Mathematics'],30,50,90,'2027',1],
+  ['EM-SW2','Engineering Mathematics — Subject Wise Test 2','subject_grand',['Engineering Mathematics'],30,40,90,'2027',1],
+  ['EM-SW3','Engineering Mathematics — Subject Wise Test 3','subject_grand',['Engineering Mathematics'],30,45,90,'2027',1],
+  ['EM-CAL5','Calculus — Topic Wise Test 5','topic',['Engineering Mathematics'],20,30,60,'2027',1],
+  ['EM-PRB3','Probability — Topic Wise Test 3','topic',['Engineering Mathematics'],20,35,60,'2027',1],
+  ['EM-BAYES','Probability & Statistics — Bayes Theorem','topic',['Engineering Mathematics'],15,25,45,'2027',1],
+  ['EM-COUNT','Probability & Statistics — Counting','topic',['Engineering Mathematics'],15,25,45,'2027',1],
+  ['EM-LA1','Linear Algebra — Topic Wise Test 1','topic',['Engineering Mathematics'],20,30,60,'2027',1],
+  ['EM-LA2','Linear Algebra — Topic Wise Test 2','topic',['Engineering Mathematics'],20,35,60,'2027',1],
+  ['DM-TW1','Discrete Mathematics — Topic Wise Test 1','topic',['Discrete Mathematics'],15,25,45,'2027',1],
+  ['DM-TW2','Discrete Mathematics — Topic Wise Test 2','topic',['Discrete Mathematics'],15,25,45,'2027',1],
+  ['DM-TW3','Discrete Mathematics — Topic Wise Test 3','topic',['Discrete Mathematics'],15,25,45,'2027',1],
+  ['DM-TW4','Discrete Mathematics — Topic Wise Test 4','topic',['Discrete Mathematics'],15,25,45,'2027',1],
+  ['DM-TW5','Discrete Mathematics — Topic Wise Test 5','topic',['Discrete Mathematics'],15,25,45,'2027',1],
+  ['DM-SW1','Discrete Mathematics — Subject Wise Test 1','subject_grand',['Discrete Mathematics'],30,50,90,'2027',1],
+  ['DM-SW2','Discrete Mathematics — Subject Wise Test 2','subject_grand',['Discrete Mathematics'],30,50,90,'2027',1],
+  ['DM-SW3','Discrete Mathematics — Subject Wise Test 3','subject_grand',['Discrete Mathematics'],30,50,90,'2027',1],
+  ['DM-COMB','Combinatorics | Counting — Extra Test 1','topic',['Discrete Mathematics'],15,25,45,'2027',1],
+  ['APT-QZ5','Aptitude — Monthly Quiz 5','topic',['Aptitude'],30,50,90,'2027',1],
+  ['APT-QZ6','Aptitude — Monthly Quiz 6','topic',['Aptitude'],30,50,90,'2027',1],
+  // ── official-site additions (Coming Soon on GO; no activation date yet — set it in Edit when announced) ──
+  ['TOC-SW3','TOC — Subject Wise Test 3','subject_grand',['Theory of Computation'],30,50,90,'2027',1],
+  ['CN-SW1','Computer Networks — Subject Wise Test 1','subject_grand',['Computer Networks'],30,50,90,'2027',1],
+  ['CN-SW2','Computer Networks — Subject Wise Test 2','subject_grand',['Computer Networks'],30,50,90,'2027',1],
+  ['CN-SW3','Computer Networks — Subject Wise Test 3','subject_grand',['Computer Networks'],30,50,90,'2027',1],
+  ['CD-SW1','Compiler Design — Subject Wise Test 1','subject_grand',['Compiler Design'],30,50,90,'2027',1],
+  ['CD-SW2','Compiler Design — Subject Wise Test 2','subject_grand',['Compiler Design'],30,50,90,'2027',1],
+  ['CO-SW1','CO & Architecture — Subject Wise Test 1','subject_grand',['CO and Architecture'],30,50,90,'2027',1],
+  ['CO-SW2','CO & Architecture — Subject Wise Test 2','subject_grand',['CO and Architecture'],30,50,90,'2027',1],
+  ['CO-SW3','CO & Architecture — Subject Wise Test 3','subject_grand',['CO and Architecture'],30,50,90,'2027',1],
+  ['OS-SW1','Operating Systems — Subject Wise Test 1','subject_grand',['Operating Systems'],30,50,90,'2027',1],
+  ['OS-SW2','Operating Systems — Subject Wise Test 2','subject_grand',['Operating Systems'],30,50,90,'2027',1],
+  ['OS-SW3','Operating Systems — Subject Wise Test 3','subject_grand',['Operating Systems'],30,50,90,'2027',1],
+  ['DS-SW1','Data Structures — Subject Wise Test 1','subject_grand',['Data Structures'],30,50,90,'2027',1],
+  ['DS-SW2','Data Structures — Subject Wise Test 2','subject_grand',['Data Structures'],30,50,90,'2027',1],
+  ['DS-SW3','Data Structures — Subject Wise Test 3','subject_grand',['Data Structures'],30,50,90,'2027',1],
+  ['ALG-SW1','Algorithms — Subject Wise Test 1','subject_grand',['Algorithms'],30,50,90,'2027',1],
+  ['ALG-SW2','Algorithms — Subject Wise Test 2','subject_grand',['Algorithms'],30,50,90,'2027',1],
+  ['ALG-SW3','Algorithms — Subject Wise Test 3','subject_grand',['Algorithms'],30,50,90,'2027',1],
+  ['MOCK-6','Mock GATE — Test 6','flm',[],65,100,180,'2027',1],
+  ['MOCK-7','Mock GATE — Test 7','flm',[],65,100,180,'2027',1],
+  ['MOCK-8','Mock GATE — Test 8','flm',[],65,100,180,'2027',1],
+  ['MOCK-9','Mock GATE — Test 9','flm',[],65,100,180,'2027',1],
+  ['MOCK-10','Mock GATE — Test 10','flm',[],65,100,180,'2027',1],
+  ['MOCK-11','Mock GATE — Test 11','flm',[],65,100,180,'2027',1],
+  ['MOCK-12','Mock GATE — Test 12','flm',[],65,100,180,'2027',1],
+  ['MOCK-13','Mock GATE — Test 13','flm',[],65,100,180,'2027',1],
+  ['MOCK-14','Mock GATE — Test 14','flm',[],65,100,180,'2027',1],
+  ['MOCK-15','Mock GATE — Test 15','flm',[],65,100,180,'2027',1],
+  ['MOCK-16','Mock GATE — Test 16','flm',[],65,100,180,'2027',1],
+  ['MOCK-17','Mock GATE — Test 17','flm',[],65,100,180,'2027',1],
+  ['MOCK-18','Mock GATE — Test 18','flm',[],65,100,180,'2027',1],
+  ['MOCK-19','Mock GATE — Test 19','flm',[],65,100,180,'2027',1],
+  ['MOCK-20','Mock GATE — Test 20','flm',[],65,100,180,'2027',1],
+  ['MOCK-21','Mock GATE — Test 21','flm',[],65,100,180,'2027',1]
+];
+function goBuild(){
+  return GO_DEF.map(function(d){
+    return{id:'GO-'+d[0],provider:'GO Classes',name:d[1],type:d[2],subjects:d[3].slice(),
+      q:d[4],marks:d[5],min:d[6],activation:'',series:d[7],wave:d[8]};
+  });
+}
+
+// ── Import / merge ───────────────────────────────────────────────────────────
+function tstImportTests(arr,providerFallback){
+  var T=tstAll(),added=0,updated=0;
+  tArr(arr).forEach(function(t){
+    if(!t||!t.id)return;
+    var id=String(t.id);
+    if(id.charAt(0)==='_')return;
+    var ex=T[id];
+    var rec={id:id,provider:String(t.provider||providerFallback||'?'),name:String(t.name||id),
+      type:TYPE_RANK[t.type]!==undefined?String(t.type):'topic',
+      subjects:tArr(t.subjects).map(String),q:+t.q||0,min:+t.min||60,marks:+t.marks||0,
+      activation:String(t.activation||''),series:String(t.series||''),
+      wave:(t.wave===2?2:1)};
+    if(typeof t.amin==='number')rec.amin=t.amin;
+    if(ex){
+      rec.planned=ex.planned||null;rec.retake=ex.retake?1:0;rec.analyzed=ex.analyzed?1:0;
+      rec.attempts=tArr(ex.attempts);rec.notes=ex.notes||'';rec.mistakes=tArr(ex.mistakes);
+      rec.wave=(ex.wave===2?2:1);
+      if(typeof ex.amin==='number')rec.amin=ex.amin;
+      if(ex.taken&&!rec.attempts.length)rec.attempts=[{d:ex.taken,score:ex.score==null?null:ex.score,max:ex.max==null?null:ex.max,pctile:ex.pctile==null?null:ex.pctile}];
+      updated++;
+    }else{
+      rec.planned=null;rec.retake=0;rec.analyzed=0;rec.attempts=[];rec.notes='';rec.mistakes=[];
+      added++;
+    }
+    T[id]=rec;
+  });
+  return{added:added,updated:updated};
+}
+window.tstImportJSON=function(raw){
+  try{
+    var obj=JSON.parse(raw);
+    var arr=Array.isArray(obj)?obj:obj.tests;
+    if(!Array.isArray(arr)||!arr.length)throw new Error('Expected {"provider":"…","tests":[…]}');
+    try{if(typeof pushUndo==='function')pushUndo();}catch(e){}
+    var res=tstImportTests(arr,obj.provider);
+    tstSave();
+    try{showT('🧪 Imported','+'+res.added+' new · '+res.updated+' updated');}catch(e){}
+    tstCloseImport();
+  }catch(e){
+    var el=document.getElementById('tstImpErr');
+    if(el)el.textContent='Import failed: '+(e.message||e);
+  }
+};
+window.tstLoadBuiltin=function(which){
+  try{if(typeof pushUndo==='function')pushUndo();}catch(e){}
+  var data=which==='go'?goBuild():(which==='me26'?meBuild('2026'):meBuild('2027'));
+  var res=tstImportTests(data);
+  tstSave();
+  try{showT('🧪 Loaded','+'+res.added+' tests'+(res.updated?' · '+res.updated+' refreshed':''));}catch(e){}
+};
+
+// ── Extraction prompt (locked schema + canonical vocabulary) ─────────────────
+function tstPrompt(){
+  return 'I am giving you a coaching test-series schedule (PDF/screenshot/text). Extract EVERY test into this exact JSON, nothing else:\n\n'
+  +'{"provider":"<PROVIDER NAME>","tests":[{"id":"<PREFIX>-T01","name":"<short test name>","type":"topic|subject_grand|multi_grand|flm","subjects":["<subject>"],"q":15,"min":45,"marks":25,"activation":"YYYY-MM-DD","series":"2027","wave":1}]}\n\n'
+  +'Rules:\n'
+  +'- type: topic = part-syllabus topicwise; subject_grand = one full subject; multi_grand = 2+ subjects combined; flm = full-syllabus mock (subjects must be [])\n'
+  +'- min = duration in MINUTES (1.5 hrs -> 90). q = question count. marks = max marks.\n'
+  +'- activation = unlock date; "" if already live.\n'
+  +'- series = "2027" main series, "2026" previous-year practice pool. wave: 1 = core (auto-scheduled), 2 = bonus pool — use 2 for previous-year pools.\n'
+  +'- subjects: names EXACTLY as printed. My app auto-maps aliases of: C Programming, Data Structures, Algorithms, TOC, Compiler Design, CO, OS, CN, DBMS, DLD, Aptitude. Engineering Mathematics / Discrete Mathematics are fine too (manual-schedule, no lectures).\n'
+  +'- id prefix: short provider code + sequence (e.g. "XX27-T01"). IDs unique and stable.\n'
+  +'- Output ONLY the JSON. No commentary, no markdown fences.';
+}
+window.tstCopyPrompt=function(){
+  var txt=tstPrompt();
+  try{
+    navigator.clipboard.writeText(txt).then(function(){
+      try{showT('📋 Copied','Ye prompt + schedule PDF Claude ko do, JSON wapas paste karo.');}catch(e){}
+    });
+  }catch(e){
+    try{window.prompt('Copy this prompt:',txt);}catch(e2){}
+  }
+};
+
+// ══ TODAY'S BLOCKS (from the live schedule) ══════════════════════════════════
+function tstWalkBlocks(maxDays){
+  var out=[];
+  try{
+    var sched=buildSched();
+    var dates=Object.keys(sched).sort();
+    var today=tToday();
+    var lim=maxDays||30;
+    for(var di=0;di<dates.length;di++){
+      var dk=dates[di];
+      if(dk>addD(today,lim))break;
+      sched[dk].sessions.forEach(function(s){
+        s.items.forEach(function(it){
+          if(it.type==='test'||it.type==='analysis')out.push({date:dk,item:it});
+        });
+      });
+    }
+  }catch(e){}
+  return out;
+}
+
+// ── Schedule item card (called by the core renderer for test/analysis items) ─
+window.tstSchedItemHTML=function(item){
+  var isT=item.type==='test';
+  var col=isT?'var(--am,#e8b339)':'var(--s1)';
+  return '<div onclick="tstOpenSheet(\''+tEsc(item.testId)+'\')" style="display:flex;align-items:center;gap:9px;padding:11px;border-radius:9px;margin-bottom:5px;background:var(--sf2);border:1px dashed '+col+'55;border-left:3px solid '+col+';cursor:pointer;">'
+    +'<div style="font-size:16px;flex-shrink:0;">'+(isT?'🧪':'📝')+'</div>'
+    +'<div style="flex:1;min-width:0;">'
+    +'<div style="font-size:12px;font-weight:700;color:var(--tx);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+tEsc(item.name)+'</div>'
+    +'<div style="font-size:10px;color:var(--mt);">'+tEsc(item.unit||'')+' · '+tMins(item.chunk)+(item.isSplit?' · part':'')+(isT?' · atomic':'')+'</div>'
+    +'</div>'
+    +'<span style="font-size:9px;font-weight:700;padding:3px 9px;border-radius:7px;background:'+col+'22;color:'+col+';flex-shrink:0;">'+(isT?'▶ START':'LOG ✍')+'</span>'
+    +'</div>';
+};
+
+// ── Filter / sort (card lists) ───────────────────────────────────────────────
+var _tstFil={prov:'all',sort:'def',unm:false};
+window.tstFilProv=function(v){_tstFil.prov=(_tstFil.prov===v)?'all':v;tstRender();};
+window.tstFilUnm=function(){_tstFil.unm=!_tstFil.unm;tstRender();};
+window.tstFilSort=function(v){_tstFil.sort=v||'def';tstRender();};
+function tstProvGroup(t){
+  var id=String(t.id||'');
+  if(id.indexOf('GO-')===0)return 'go';
+  if(id.indexOf('ME27')===0)return 'me27';
+  if(id.indexOf('ME26')===0)return 'me26';
+  return 'oth';
+}
+function tstFilt(arr,get){
+  return arr.filter(function(x){
+    var t=get(x);if(!t||!t.id)return true;
+    if(_tstFil.prov!=='all'&&tstProvGroup(t)!==_tstFil.prov)return false;
+    if(_tstFil.unm&&!tstHasUnmapped(t))return false;
+    return true;
+  });
+}
+function tstSort(arr,get){
+  if(_tstFil.sort==='def')return arr;
+  var f=_tstFil.sort;
+  return arr.slice().sort(function(a,b){
+    var x=get(a),y=get(b);
+    if(f==='subj'){var sx=tArr(x.subjects)[0]||'~~',sy=tArr(y.subjects)[0]||'~~';return sx<sy?-1:sx>sy?1:0;}
+    if(f==='type')return (TYPE_RANK[x.type]||0)-(TYPE_RANK[y.type]||0);
+    if(f==='min')return (x.min||0)-(y.min||0);
+    if(f==='prov'){var px=tstProvGroup(x),py=tstProvGroup(y);return px<py?-1:px>py?1:0;}
+    return (x.name||'')<(y.name||'')?-1:1;
+  });
+}
+function tstFilBar(list){
+  var n={go:0,me27:0,me26:0,unm:0};
+  list.forEach(function(t){var g=tstProvGroup(t);if(n[g]!==undefined)n[g]++;if(tstHasUnmapped(t))n.unm++;});
+  function chip(v,lbl,cnt){
+    var act=_tstFil.prov===v;
+    return '<button class="tst-fch'+(act?' act':'')+'" onclick="tstFilProv(\''+v+'\')">'+lbl+' <span>'+cnt+'</span></button>';
+  }
+  var h='<div class="tst-filbar">'
+    +chip('go','GO',n.go)+chip('me27','ME27',n.me27)+chip('me26','ME26',n.me26)
+    +'<button class="tst-fch'+(_tstFil.unm?' act warn':'')+'" onclick="tstFilUnm()">⚠ <span>'+n.unm+'</span></button>'
+    +'<select class="tst-fsel" onchange="tstFilSort(this.value)">'
+    +'<option value="def"'+(_tstFil.sort==='def'?' selected':'')+'>Sort: default</option>'
+    +'<option value="subj"'+(_tstFil.sort==='subj'?' selected':'')+'>Sort: subject</option>'
+    +'<option value="type"'+(_tstFil.sort==='type'?' selected':'')+'>Sort: type</option>'
+    +'<option value="min"'+(_tstFil.sort==='min'?' selected':'')+'>Sort: duration</option>'
+    +'<option value="prov"'+(_tstFil.sort==='prov'?' selected':'')+'>Sort: provider</option>'
+    +'<option value="name"'+(_tstFil.sort==='name'?' selected':'')+'>Sort: name</option>'
+    +'</select></div>';
+  if(_tstFil.prov!=='all'||_tstFil.unm)h+='<div style="font-size:9px;color:var(--mt);padding:0 2px 6px;">Filter on — chip dobara tap = off.</div>';
+  return h;
+}
+
+// ══ MAIN CARD ════════════════════════════════════════════════════════════════
+var _tstOpenSec={sched:true,wait:false,pool:false,done:false};
+window.tstToggleSec=function(k){_tstOpenSec[k]=!_tstOpenSec[k];tstRender();};
+function tstAttempted(t){return tArr(t.attempts).length>0&&!t.retake;}
+function tstBestScore(t){
+  var a=tArr(t.attempts);
+  if(!a.length)return '—';
+  var last=a[a.length-1];
+  var s=(last.score==null?'—':last.score)+(last.max?'/'+last.max:'');
+  if(a.length>1)s=(a[0].score==null?'—':a[0].score)+' → '+s;
+  return s;
+}
+function tstRender(){
+  var card=document.getElementById('testsCard');
+  if(!card)return;
+  try{
+    card.style.display='';
+    var list=tstList();
+    var today=tToday();
+    var head='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
+      +'<div class="ct" style="margin-bottom:0;">🧪 Test Series</div>'
+      +'<div style="display:flex;gap:6px;">'
+      +'<button onclick="tstOpenSettings()" style="background:var(--sf2);border:1px solid var(--bd2);color:var(--mt2);border-radius:8px;padding:3px 9px;font-size:10px;cursor:pointer;font-family:var(--fn);">⚙</button>'
+      +'<button onclick="tstOpenImport()" style="background:var(--sf2);border:1px solid var(--bd2);color:var(--mt2);border-radius:8px;padding:3px 11px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--fn);">＋ Import</button>'
+      +'</div></div>';
+    if(!list.length){
+      card.innerHTML=head
+        +'<div style="font-size:11px;color:var(--mt);line-height:1.5;margin-bottom:10px;">Load your test series — har test apne aap schedule me lagega jab subject 100% hoga. Test + analysis asli blocks bante hain din me.</div>'
+        +'<div style="display:flex;gap:8px;flex-wrap:wrap;">'
+        +'<button onclick="tstLoadBuiltin(\'go\')" class="tst-load">⤓ GO Classes (117)</button>'
+        +'<button onclick="tstLoadBuiltin(\'me27\')" class="tst-load">⤓ MADE EASY 2027 (48)</button>'
+        +'<button onclick="tstLoadBuiltin(\'me26\')" class="tst-load">⤓ ME 2026 pool (54)</button>'
+        +'</div>';
+      return;
+    }
+    tstMigrate();
+    var h=head;
+    var blocks=tstWalkBlocks(30);
+    var todayBlocks=blocks.filter(function(b){return b.date===today;});
+    var byId={};list.forEach(function(t){byId[t.id]=t;});
+
+    if(todayBlocks.length){
+      var tb=todayBlocks[0];
+      var ht=byId[tb.item.testId];
+      h+='<div class="tst-hero hot" onclick="tstOpenSheet(\''+tEsc(tb.item.testId)+'\')">'
+        +'<div style="flex:1;min-width:0;">'
+        +'<div class="tst-hero-k">'+(tb.item.type==='test'?'Aaj ka test':'Aaj ka analysis')+'</div>'
+        +'<div class="tst-hero-n">'+tEsc(ht?ht.name:tb.item.name)+'</div>'
+        +'<div class="tst-hero-m">'+tEsc(ht?ht.provider:'')+(ht?' · '+ht.q+'Q · '+ht.min+'min · '+ht.marks+'M':'')+'</div>'
+        +'</div>'
+        +(tb.item.type==='test'&&ht?'<button class="tst-hero-go" onclick="event.stopPropagation();tstStartTimer(\''+tEsc(ht.id)+'\')">▶ '+ht.min+'m</button>':'')
+        +'</div>';
+    }else if(blocks.length){
+      var nb=blocks[0];var nt=byId[nb.item.testId];
+      h+='<div class="tst-hero" onclick="tstOpenSheet(\''+tEsc(nb.item.testId)+'\')">'
+        +'<div style="flex:1;min-width:0;">'
+        +'<div class="tst-hero-k">Next test</div>'
+        +'<div class="tst-hero-n">'+tEsc(nt?nt.name:nb.item.name)+'</div>'
+        +'<div class="tst-hero-m">'+tFmt(nb.date)+(nt?' · '+nt.provider:'')+'</div>'
+        +'</div></div>';
+    }
+    var readyPool=list.filter(function(t){
+      if(tstAttempted(t)||t.planned)return false;
+      if(t.wave!==2)return false;
+      if(tstHasUnmapped(t))return false;
+      var m=tstMappedSubjs(t);
+      return m.length&&m.every(tstSubjComplete);
+    });
+    if(!todayBlocks.length&&readyPool.length){
+      h+='<button onclick="tstOneMore()" style="width:100%;background:var(--sf2);border:1px dashed var(--s2o,var(--s2));color:var(--s2);border-radius:10px;padding:9px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--fn);margin-bottom:10px;">➕ Aaj ek aur? Pool me '+readyPool.length+' ready hai</button>';
+    }
+
+    function section(key,icon,title,arr,row){
+      var open=_tstOpenSec[key];
+      var s='<div class="tst-sec-h" onclick="tstToggleSec(\''+key+'\')">'
+        +'<span>'+icon+' '+title+' <span style="color:var(--mt);font-family:var(--mo);font-size:10px;">'+arr.length+'</span></span>'
+        +'<span style="color:var(--mt);font-size:10px;">'+(open?'▲':'▼')+'</span></div>';
+      if(open){
+        if(!arr.length)s+='<div style="font-size:10px;color:var(--mt);padding:4px 2px 8px;font-style:italic;">none</div>';
+        else s+='<div class="tst-rows">'+arr.map(row).join('')+'</div>';
+      }
+      return s;
+    }
+    h+=tstFilBar(list);
+    var schedSeen={},schedRows=[];
+    blocks.forEach(function(b){
+      if(b.item.type!=='test'||schedSeen[b.item.testId])return;
+      schedSeen[b.item.testId]=1;
+      schedRows.push(b);
+    });
+    schedRows=tstSort(tstFilt(schedRows,function(b){return byId[b.item.testId]||{};}),function(b){return byId[b.item.testId]||{};});
+    h+=section('sched','📅','Scheduled (30 din)',schedRows,function(b){
+      var t=byId[b.item.testId]||{};
+      return '<div class="tst-row" onclick="tstOpenSheet(\''+tEsc(b.item.testId)+'\')">'
+        +'<span class="tst-ty t-'+(t.type||'topic')+'">'+(TYPE_LBL[t.type]||'?')+'</span>'
+        +'<div class="tst-row-mid"><div class="tst-row-n">'+tEsc(t.name||b.item.name)+'</div>'
+        +'<div class="tst-row-s" style="color:var(--mt);font-size:9px;">'+tEsc(t.provider||'')+(t.planned?' · 📌 pinned':'')+(t.retake?' · 🔁 retake':'')+'</div></div>'
+        +'<div class="tst-row-r"><span style="color:'+(b.date===today?'var(--s2)':'var(--tx)')+';">'+(b.date===today?'TODAY':tFmt(b.date))+'</span><span class="tst-dim">'+(t.min||'?')+'min</span></div>'
+        +'</div>';
+    });
+    var waiting=list.filter(function(t){
+      return t.wave===1&&!tstAttempted(t)&&!schedSeen[t.id]&&!tstHasUnmapped(t)&&!t.planned;
+    });
+    waiting.sort(function(a,b){return (TYPE_RANK[a.type]||0)-(TYPE_RANK[b.type]||0)||(a.id<b.id?-1:1);});
+    waiting=tstSort(tstFilt(waiting,function(t){return t;}),function(t){return t;});
+    h+=section('wait','⏳','Waiting on subject',waiting,function(t){
+      var reason;
+      if(t.type==='flm'){
+        reason='syllabus '+tstTotalPct()+'% (FLM @ 100%)';
+      }else{
+        var m=tstMappedSubjs(t),low=null;
+        m.forEach(function(s){var p=tstSubjPct(s);if(low===null||p<low.p)low={s:s,p:p};});
+        reason=low?(tLbl(low.s)+' '+low.p+'%'):'—';
+      }
+      return '<div class="tst-row" onclick="tstOpenSheet(\''+tEsc(t.id)+'\')">'
+        +'<span class="tst-ty t-'+t.type+'">'+TYPE_LBL[t.type]+'</span>'
+        +'<div class="tst-row-mid"><div class="tst-row-n">'+tEsc(t.name)+'</div>'
+        +'<div class="tst-row-s" style="color:var(--mt);font-size:9px;">waiting: '+tEsc(reason)+'</div></div>'
+        +'<div class="tst-row-r"><span class="tst-dim">'+tEsc(t.provider)+'</span></div>'
+        +'</div>';
+    });
+    var poolRows=list.filter(function(t){return !tstAttempted(t)&&!schedSeen[t.id]&&!t.planned&&(t.wave===2||tstHasUnmapped(t));});
+    poolRows=tstSort(tstFilt(poolRows,function(t){return t;}),function(t){return t;});
+    h+=section('pool','🗂','Pool — bonus, kabhi bhi',poolRows,function(t){
+      var tag=tstHasUnmapped(t)?'no matching lectures — date pin karo':'pool · jaldi khatam ho to ➕ se uthao';
+      return '<div class="tst-row" onclick="tstOpenSheet(\''+tEsc(t.id)+'\')">'
+        +'<span class="tst-ty t-'+t.type+'">'+TYPE_LBL[t.type]+'</span>'
+        +'<div class="tst-row-mid"><div class="tst-row-n">'+tEsc(t.name)+'</div>'
+        +'<div class="tst-row-s" style="color:var(--mt);font-size:9px;">'+tEsc(tag)+'</div></div>'
+        +'<div class="tst-row-r"><span class="tst-dim">'+tEsc(t.provider)+'</span></div>'
+        +'</div>';
+    });
+    var doneL=list.filter(tstAttempted).sort(function(a,b){
+      var ad=tArr(a.attempts),bd=tArr(b.attempts);
+      return (ad[ad.length-1].d||'')<(bd[bd.length-1].d||'')?1:-1;
+    });
+    doneL=tstSort(tstFilt(doneL,function(t){return t;}),function(t){return t;});
+    h+=section('done','🏁','Done',doneL,function(t){
+      var n=tArr(t.mistakes).length;
+      var a=tArr(t.attempts);
+      return '<div class="tst-row" onclick="tstOpenSheet(\''+tEsc(t.id)+'\')">'
+        +'<span class="tst-ty t-'+t.type+'">'+TYPE_LBL[t.type]+'</span>'
+        +'<div class="tst-row-mid"><div class="tst-row-n">'+tEsc(t.name)+'</div>'
+        +'<div class="tst-row-s" style="color:var(--mt);font-size:9px;">'+(a.length>1?a.length+' attempts':tFmt(a[a.length-1].d||today))+(t.analyzed?'':' · ⚠ analysis pending')+(n?' · '+n+' mistakes':'')+'</div></div>'
+        +'<div class="tst-row-r"><span style="color:var(--s1);font-family:var(--mo);">'+tstBestScore(t)+'</span></div>'
+        +'</div>';
+    });
+
+    var mAll=[];doneL.forEach(function(t){tArr(t.mistakes).forEach(function(m){mAll.push(m);});});
+    if(mAll.length){
+      var byR={concept:0,silly:0,slow:0},byS={};
+      mAll.forEach(function(m){if(byR[m.r]!==undefined)byR[m.r]++;var s=m.s||'?';byS[s]=(byS[s]||0)+1;});
+      var topS=Object.keys(byS).sort(function(a,b){return byS[b]-byS[a];}).slice(0,3);
+      h+='<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--bd);">'
+        +'<div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mt);margin-bottom:6px;">Mistake patterns · '+mAll.length+' logged</div>'
+        +'<div style="display:flex;gap:6px;flex-wrap:wrap;">'
+        +'<span class="tst-mi" style="color:var(--s3);">🧠 concept '+byR.concept+'</span>'
+        +'<span class="tst-mi" style="color:var(--am,#e8b339);">🤦 silly '+byR.silly+'</span>'
+        +'<span class="tst-mi" style="color:var(--s1);">🐢 slow '+byR.slow+'</span>'
+        +topS.map(function(s){return '<span class="tst-mi" style="color:'+(SUBJ.indexOf(s)>=0?tCol(s):'var(--mt2)')+';">'+tEsc(SUBJ.indexOf(s)>=0?tLbl(s):s)+' ×'+byS[s]+'</span>';}).join('')
+        +'</div></div>';
+    }
+    card.innerHTML=h;
+    tstDmLine();
+  }catch(e){console.warn('[tests]',e);}
+}
+window.tstRender=tstRender;
+
+window.tstOneMore=function(){
+  var list=tstList(),today=tToday();
+  var cand=list.filter(function(t){
+    if(tstAttempted(t)||t.planned||t.wave!==2)return false;
+    if(tstHasUnmapped(t))return false;
+    var m=tstMappedSubjs(t);
+    return m.length&&m.every(tstSubjComplete);
+  });
+  cand.sort(function(a,b){return (TYPE_RANK[a.type]||0)-(TYPE_RANK[b.type]||0)||(a.id<b.id?-1:1);});
+  if(!cand.length){try{showT('🗂 Pool','Abhi koi ready pool test nahi.');}catch(e){}return;}
+  try{if(typeof pushUndo==='function')pushUndo();}catch(e){}
+  cand[0].planned=today;
+  try{showT('➕ Added','🧪 '+cand[0].name+' — aaj ke schedule me.');}catch(e){}
+  tstSave();
+};
+
+window.tstStartTimer=function(id){
+  var t=tstAll()[id];if(!t)return;
+  var mins=t.min||60;
+  try{if(typeof haptic==='function')haptic([40,30,40]);}catch(e){}
+  var started=false;
+  try{if(typeof panicStartMicro==='function')started=panicStartMicro(mins,'🧪 '+(t.name||'Test'));}catch(e){}
+  if(started){
+    try{if(typeof enterFocusOverlay==='function')enterFocusOverlay();}catch(e){}
+    try{showT('🧪 Test mode — '+mins+' min','Phone door. Rough sheet ready. Real exam jaisa.');}catch(e){}
+  }else{
+    try{showT('⏱ Timer busy','Ek focus session pehle se chal raha hai.');}catch(e){}
+  }
+};
+
+// ══ DETAIL / EDIT SHEET ══════════════════════════════════════════════════════
+var _tstSheetId=null,_tstEditMode=false;
+window.tstOpenSheet=function(id){_tstSheetId=id;_tstEditMode=false;tstSheetRender();};
+window.tstCloseSheet=function(){_tstSheetId=null;var ov=document.getElementById('tstSheetOv');if(ov)ov.remove();};
+window.tstToggleEdit=function(){_tstEditMode=!_tstEditMode;tstSheetRender();};
+function tstSheetRender(){
+  var t=tstAll()[_tstSheetId];if(!t)return;tstNorm(t);
+  var old=document.getElementById('tstSheetOv');if(old)old.remove();
+  var ov=document.createElement('div');
+  ov.id='tstSheetOv';
+  ov.onclick=function(e){if(e.target===ov)window.tstCloseSheet();};
+  var attempted=tArr(t.attempts).length>0;
+  var h='<div class="tst-sheet">'
+    +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:4px;">'
+    +'<div><div style="font-size:14px;font-weight:800;color:var(--tx);">'+tEsc(t.name)+'</div>'
+    +'<div style="font-size:10px;color:var(--mt);margin-top:2px;">'+tEsc(t.provider)+' · '+(TYPE_LBL[t.type]||t.type)+' · '+t.q+'Q · '+t.min+'min · '+t.marks+'M · analysis '+tstAmin(t)+'min</div></div>'
+    +'<div style="display:flex;gap:6px;flex-shrink:0;">'
+    +'<button onclick="tstToggleEdit()" style="background:var(--sf2);border:1px solid var(--bd2);color:var(--mt2);border-radius:7px;padding:3px 9px;font-size:10px;cursor:pointer;font-family:var(--fn);">'+(_tstEditMode?'✕':'✎ Edit')+'</button>'
+    +'<button onclick="tstCloseSheet()" style="background:none;border:none;color:var(--mt);font-size:16px;cursor:pointer;padding:0 2px;">✕</button>'
+    +'</div></div>';
+  h+='<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;">';
+  tArr(t.subjects).forEach(function(nm){
+    var m=tstMapOne(nm);
+    var col=m.length?tCol(m[0]):'var(--mt)';
+    h+='<span class="tst-sj" style="color:'+col+';border-color:'+col+'40;">'+tEsc(nm)+(m.length?'':' ⚠')+'</span>';
+  });
+  if(t.type==='flm')h+='<span class="tst-sj" style="color:var(--mt);border-color:var(--bd2);">Full syllabus</span>';
+  h+='<span class="tst-sj" style="color:'+(t.wave===1?'var(--s2)':'var(--mt2)')+';border-color:var(--bd2);">'+(t.wave===1?'Wave 1 · core':'Wave 2 · pool')+'</span>';
+  h+='</div>';
+
+  if(_tstEditMode){
+    function fld(lbl,id,val){return '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;"><span style="width:84px;font-size:10px;color:var(--mt);flex-shrink:0;">'+lbl+'</span><input id="'+id+'" value="'+tEsc(String(val==null?'':val))+'" class="tst-in" style="flex:1;min-width:0;"></div>';}
+    h+='<div class="tst-sh-k">Edit test</div>'
+      +fld('Name','tstE_name',t.name)
+      +fld('Subjects (,)','tstE_subj',tArr(t.subjects).join(', '))
+      +'<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;"><span style="width:84px;font-size:10px;color:var(--mt);flex-shrink:0;">Type</span>'
+      +'<select id="tstE_type" class="tst-in" style="flex:1;"><option value="topic"'+(t.type==='topic'?' selected':'')+'>Topic</option><option value="subject_grand"'+(t.type==='subject_grand'?' selected':'')+'>Subject grand</option><option value="multi_grand"'+(t.type==='multi_grand'?' selected':'')+'>Multi grand</option><option value="flm"'+(t.type==='flm'?' selected':'')+'>FLM</option></select></div>'
+      +fld('Test min','tstE_min',t.min)
+      +fld('Analysis min','tstE_amin',tstAmin(t))
+      +fld('Questions','tstE_q',t.q)
+      +fld('Marks','tstE_marks',t.marks)
+      +fld('Activation','tstE_act',t.activation)
+      +'<div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;"><span style="width:84px;font-size:10px;color:var(--mt);flex-shrink:0;">Wave</span>'
+      +'<select id="tstE_wave" class="tst-in" style="flex:1;"><option value="1"'+(t.wave===1?' selected':'')+'>1 — core (auto)</option><option value="2"'+(t.wave===2?' selected':'')+'>2 — pool (manual)</option></select></div>'
+      +'<div style="display:flex;gap:8px;justify-content:flex-end;"><button class="tst-b" onclick="tstSaveEdit()">💾 Save</button></div>';
+  }else if(!attempted){
+    var m=tstMappedSubjs(t);
+    if(m.length){
+      h+='<div class="tst-sh-k">Gate: subject 100% lectures</div>';
+      m.forEach(function(s){
+        var p=tstSubjPct(s),ok=p>=100;
+        h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">'
+          +'<div style="width:64px;font-size:10px;color:'+tCol(s)+';">'+tEsc(tLbl(s))+'</div>'
+          +'<div style="flex:1;height:5px;background:var(--sf2);border-radius:3px;overflow:hidden;"><div style="height:100%;width:'+p+'%;background:'+(ok?'var(--s2)':'var(--s1)')+';"></div></div>'
+          +'<div style="width:46px;text-align:right;font-family:var(--mo);font-size:10px;color:'+(ok?'var(--s2)':'var(--mt2)')+';">'+p+'%</div>'
+          +'</div>';
+      });
+    }else if(t.type==='flm'){
+      h+='<div class="tst-sh-k">FLM gate: total syllabus '+tstTotalPct()+'% (need 100%)</div>';
+    }else{
+      h+='<div class="tst-sh-k" style="color:var(--am,#e8b339);">⚠ Subjects mere lectures se match nahi karte — date pin karo ya Edit me subjects sahi karo</div>';
+    }
+    h+='<div class="tst-sh-k" style="margin-top:10px;">Plan</div>'
+      +'<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">'
+      +'<input type="date" id="tstPlanDate" value="'+tEsc(t.planned||'')+'" class="tst-in" style="font-family:var(--mo);">'
+      +'<button class="tst-b" onclick="tstSetPlan()">📌 Pin date</button>'
+      +(t.planned?'<button class="tst-b ghost" onclick="tstClearPlan()">Auto</button>':'')
+      +'</div>'
+      +'<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">'
+      +'<button class="tst-b" style="background:var(--s1);color:#fff;border-color:var(--s1);" onclick="tstStartTimer(\''+tEsc(t.id)+'\')">▶ Start '+t.min+'m timer</button>'
+      +'<button class="tst-b" style="background:var(--s2b,rgba(62,207,142,.12));color:var(--s2);border-color:var(--s2o,var(--s2));" onclick="tstMarkTaken()">✓ Diya — score daalo</button>'
+      +'</div>';
+  }else{
+    var atts=tArr(t.attempts);
+    h+='<div class="tst-sh-k">Attempts</div>';
+    atts.forEach(function(a,i){
+      h+='<div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--bd);font-size:11px;">'
+        +'<span style="font-family:var(--mo);font-size:9px;color:var(--mt);width:18px;">#'+(i+1)+'</span>'
+        +'<span style="color:var(--mt2);width:64px;">'+tFmt(a.d||'')+'</span>'
+        +'<span style="font-family:var(--mo);color:var(--s1);flex:1;">'+(a.score==null?'—':a.score)+(a.max?'/'+a.max:'')+(a.pctile!=null&&a.pctile!==''?' · '+a.pctile+'%ile':'')+'</span>'
+        +'<button onclick="tstDelAttempt('+i+')" style="background:none;border:none;color:var(--mt);cursor:pointer;font-size:11px;">✕</button>'
+        +'</div>';
+    });
+    var last=atts[atts.length-1]||{};
+    h+='<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:8px 0 12px;">'
+      +'<input type="number" id="tstScore" placeholder="score" value="'+(last.score==null?'':tEsc(String(last.score)))+'" class="tst-in" style="width:62px;">'
+      +'<span style="color:var(--mt);">/</span>'
+      +'<input type="number" id="tstMax" placeholder="max" value="'+(last.max==null?'':tEsc(String(last.max)))+'" class="tst-in" style="width:62px;">'
+      +'<input type="number" id="tstPctile" placeholder="%ile" value="'+(last.pctile==null?'':tEsc(String(last.pctile)))+'" class="tst-in" style="width:58px;">'
+      +'<button class="tst-b" onclick="tstSaveScore()">Save</button>'
+      +'<button class="tst-b ghost" onclick="tstRetake()">🔁 Retake</button>'
+      +'</div>';
+    h+='<div class="tst-sh-k">Mistake log '+(t.analyzed?'<span style="color:var(--s2);text-transform:none;letter-spacing:0;">· analysis ✓</span>':'<span style="color:var(--am,#e8b339);text-transform:none;letter-spacing:0;">· pending — bina iske test 30% value ka</span>')+'</div>';
+    var ms=tArr(t.mistakes);
+    if(ms.length){
+      h+='<div style="margin-bottom:8px;">';
+      ms.forEach(function(mk,i){
+        var col=mk.r==='concept'?'var(--s3)':(mk.r==='silly'?'var(--am,#e8b339)':'var(--s1)');
+        h+='<div style="display:flex;align-items:center;gap:7px;padding:5px 0;border-bottom:1px solid var(--bd);">'
+          +'<span style="font-size:9px;font-family:var(--mo);color:'+col+';width:52px;flex-shrink:0;">'+tEsc(mk.r||'?')+'</span>'
+          +'<span style="font-size:10px;color:'+(SUBJ.indexOf(mk.s)>=0?tCol(mk.s):'var(--mt2)')+';width:44px;flex-shrink:0;">'+tEsc(SUBJ.indexOf(mk.s)>=0?tLbl(mk.s):(mk.s||''))+'</span>'
+          +'<span style="font-size:11px;color:var(--tx);flex:1;min-width:0;">'+tEsc(mk.t||'')+'</span>'
+          +'<button onclick="tstDelMistake('+i+')" style="background:none;border:none;color:var(--mt);cursor:pointer;font-size:11px;">✕</button>'
+          +'</div>';
+      });
+      h+='</div>';
+    }
+    var subjOpts='<option value="">subject…</option>';
+    SUBJ.forEach(function(s){subjOpts+='<option value="'+tEsc(s)+'">'+tEsc(tLbl(s))+'</option>';});
+    subjOpts+='<option value="Engg Math">Engg Math</option><option value="Discrete">Discrete</option><option value="Other">Other</option>';
+    h+='<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">'
+      +'<input type="text" id="tstMT" placeholder="question topic (e.g. B+ tree order)" class="tst-in" style="flex:1;min-width:130px;">'
+      +'<select id="tstMS" class="tst-in" style="width:auto;">'+subjOpts+'</select>'
+      +'<select id="tstMR" class="tst-in" style="width:auto;"><option value="concept">🧠 concept</option><option value="silly">🤦 silly</option><option value="slow">🐢 slow</option></select>'
+      +'<button class="tst-b" onclick="tstAddMistake()">＋ Add</button>'
+      +'</div>'
+      +(t.analyzed?'':'<div style="margin-top:8px;"><button class="tst-b" style="width:100%;" onclick="tstMarkAnalyzed()">✓ Analysis done — schedule se hatao</button></div>')
+      +'<div class="tst-sh-k" style="margin-top:12px;">Notes</div>'
+      +'<textarea id="tstNotes" class="tst-in" style="width:100%;min-height:54px;resize:vertical;" placeholder="agli baar ke liye kya yaad rakhna…">'+tEsc(t.notes||'')+'</textarea>'
+      +'<div style="text-align:right;margin-top:6px;"><button class="tst-b" onclick="tstSaveNotes()">Save notes</button></div>';
+  }
+  h+='<div style="margin-top:14px;padding-top:10px;border-top:1px solid var(--bd);text-align:right;">'
+    +'<button class="tst-b ghost" style="color:var(--s3);border-color:var(--s3o,var(--s3));" onclick="tstDelete()">🗑 Remove test</button>'
+    +'</div></div>';
+  ov.innerHTML=h;
+  document.body.appendChild(ov);
+}
+window.tstSaveEdit=function(){
+  var t=tstAll()[_tstSheetId];if(!t)return;
+  function gv(id){var el=document.getElementById(id);return el?el.value:'';}
+  try{if(typeof pushUndo==='function')pushUndo();}catch(e){}
+  t.name=gv('tstE_name').slice(0,140)||t.name;
+  t.subjects=gv('tstE_subj').split(',').map(function(s){return s.trim();}).filter(Boolean);
+  t.type=TYPE_RANK[gv('tstE_type')]!==undefined?gv('tstE_type'):t.type;
+  t.min=Math.max(5,+gv('tstE_min')||t.min);
+  t.amin=Math.max(0,+gv('tstE_amin')||0);
+  t.q=+gv('tstE_q')||0;t.marks=+gv('tstE_marks')||0;
+  t.activation=gv('tstE_act').trim();
+  t.wave=gv('tstE_wave')==='2'?2:1;
+  _tstEditMode=false;
+  tstSave();tstSheetRender();
+};
+window.tstSetPlan=function(){
+  var t=tstAll()[_tstSheetId];if(!t)return;
+  var v=document.getElementById('tstPlanDate');
+  if(v&&v.value){try{if(typeof pushUndo==='function')pushUndo();}catch(e){}t.planned=v.value;tstSave();tstSheetRender();}
+};
+window.tstClearPlan=function(){
+  var t=tstAll()[_tstSheetId];if(!t)return;
+  t.planned=null;tstSave();tstSheetRender();
+};
+window.tstMarkTaken=function(){
+  var t=tstAll()[_tstSheetId];if(!t)return;
+  try{if(typeof pushUndo==='function')pushUndo();}catch(e){}
+  tstNorm(t);
+  t.attempts.push({d:tToday(),score:null,max:null,pctile:null});
+  t.retake=0;t.analyzed=0;t.planned=null;
+  try{if(typeof haptic==='function')haptic([60,40,100]);}catch(e){}
+  tstSave();tstSheetRender();
+};
+window.tstDelAttempt=function(i){
+  var t=tstAll()[_tstSheetId];if(!t)return;
+  tstNorm(t);t.attempts.splice(i,1);
+  if(!t.attempts.length){t.analyzed=0;t.retake=0;}
+  tstSave();tstSheetRender();
+};
+window.tstSaveScore=function(){
+  var t=tstAll()[_tstSheetId];if(!t)return;
+  tstNorm(t);
+  var a=t.attempts[t.attempts.length-1];if(!a)return;
+  var s=document.getElementById('tstScore'),m=document.getElementById('tstMax'),p=document.getElementById('tstPctile');
+  a.score=(s&&s.value!=='')?+s.value:null;
+  a.max=(m&&m.value!=='')?+m.value:null;
+  a.pctile=(p&&p.value!=='')?+p.value:null;
+  tstSave();tstSheetRender();
+  try{showT('💾 Score saved',tstBestScore(t));}catch(e){}
+};
+window.tstRetake=function(){
+  var t=tstAll()[_tstSheetId];if(!t)return;
+  try{if(typeof pushUndo==='function')pushUndo();}catch(e){}
+  t.retake=1;
+  try{showT('🔁 Retake queued','Pehle saare first-attempts, fir ye. Specific date chahiye to Plan me pin karo.');}catch(e){}
+  tstSave();tstSheetRender();
+};
+window.tstAddMistake=function(){
+  var t=tstAll()[_tstSheetId];if(!t)return;
+  var tp=document.getElementById('tstMT'),sj=document.getElementById('tstMS'),rs=document.getElementById('tstMR');
+  var topic=tp?tp.value.trim():'';
+  if(!topic){try{showT('✏️ Topic likho','Ek line: question kis cheez pe tha.');}catch(e){}return;}
+  tstNorm(t);
+  t.mistakes.push({t:topic.slice(0,120),s:sj?sj.value:'',r:rs?rs.value:'concept'});
+  t.analyzed=1;
+  tstSave();tstSheetRender();
+};
+window.tstDelMistake=function(i){
+  var t=tstAll()[_tstSheetId];if(!t)return;
+  tstNorm(t);t.mistakes.splice(i,1);
+  tstSave();tstSheetRender();
+};
+window.tstMarkAnalyzed=function(){
+  var t=tstAll()[_tstSheetId];if(!t)return;
+  t.analyzed=1;tstSave();tstSheetRender();
+};
+window.tstSaveNotes=function(){
+  var t=tstAll()[_tstSheetId];if(!t)return;
+  var n=document.getElementById('tstNotes');
+  t.notes=n?n.value.slice(0,2000):'';
+  tstSave();
+  try{showT('💾 Notes saved','');}catch(e){}
+};
+window.tstDelete=function(){
+  var t=tstAll()[_tstSheetId];if(!t)return;
+  try{if(typeof pushUndo==='function')pushUndo();}catch(e){}
+  delete tstAll()[_tstSheetId];
+  window.tstCloseSheet();
+  tstSave();
+};
+
+// ══ SETTINGS SHEET ═══════════════════════════════════════════════════════════
+window.tstOpenSettings=function(){
+  var old=document.getElementById('tstSetOv');if(old)old.remove();
+  var cfg=tstCfg();
+  var lite=false;try{lite=localStorage.getItem('v5_revlite')==='1';}catch(e){}
+  var ov=document.createElement('div');
+  ov.id='tstSetOv';
+  ov.onclick=function(e){if(e.target===ov)ov.remove();};
+  function row(lbl,id,val,hint){return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><span style="flex:1;font-size:11px;color:var(--tx);">'+lbl+'<div style="font-size:9px;color:var(--mt);">'+hint+'</div></span><input type="number" id="'+id+'" value="'+val+'" class="tst-in" style="width:64px;text-align:center;font-family:var(--mo);"></div>';}
+  ov.innerHTML='<div class="tst-sheet">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
+    +'<div style="font-size:13px;font-weight:800;color:var(--tx);">⚙ Test settings</div>'
+    +'<button onclick="document.getElementById(\'tstSetOv\').remove()" style="background:none;border:none;color:var(--mt);font-size:16px;cursor:pointer;">✕</button></div>'
+    +row('Daily test budget (min)','tstS_budget',cfg.budget,'itne min tak tests roz — FLM din alag')
+    +row('Free/practice topic (+din)','tstS_offFree',cfg.offFree,'subject 100% + itne din')
+    +row('Paid topic (+din)','tstS_offPaid',cfg.offPaid,'P1, P2 + Sweep-1 ke baad')
+    +row('Subject grand (+din)','tstS_offGrand',cfg.offGrand,'subject ka final seal')
+    +row('Multi/combo (+din)','tstS_offMulti',cfg.offMulti,'saare subjects done + itne din')
+    +row('FLM gap (din)','tstS_flmGap',cfg.flmGap,'Jan me auto 2×/week')
+    +'<div style="display:flex;align-items:center;gap:8px;margin:12px 0;padding-top:10px;border-top:1px solid var(--bd);">'
+    +'<span style="flex:1;font-size:11px;color:var(--tx);">🪶 Revision Lite<div style="font-size:9px;color:var(--mt);">unit passes cap 5 — overwhelm kam, core yaad pakka</div></span>'
+    +'<button id="tstS_lite" onclick="this.dataset.on=this.dataset.on===\'1\'?\'0\':\'1\';this.textContent=this.dataset.on===\'1\'?\'● ON\':\'OFF\';this.style.color=this.dataset.on===\'1\'?\'var(--s2)\':\'var(--mt2)\';" data-on="'+(lite?'1':'0')+'" style="background:var(--sf2);border:1px solid var(--bd2);color:'+(lite?'var(--s2)':'var(--mt2)')+';border-radius:8px;padding:4px 12px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--fn);">'+(lite?'● ON':'OFF')+'</button>'
+    +'</div>'
+    +'<div style="display:flex;justify-content:flex-end;"><button class="tst-b" onclick="tstSaveSettings()">💾 Save</button></div>'
+    +'</div>';
+  document.body.appendChild(ov);
+};
+window.tstSaveSettings=function(){
+  var T=tstAll();
+  if(!T._cfg||typeof T._cfg!=='object')T._cfg={};
+  function gv(id,def){var el=document.getElementById(id);var v=el?+el.value:NaN;return (isNaN(v)||v<0)?def:v;}
+  T._cfg.budget=gv('tstS_budget',CFG_DEF.budget);
+  T._cfg.offFree=gv('tstS_offFree',CFG_DEF.offFree);
+  T._cfg.offPaid=gv('tstS_offPaid',CFG_DEF.offPaid);
+  T._cfg.offGrand=gv('tstS_offGrand',CFG_DEF.offGrand);
+  T._cfg.offMulti=gv('tstS_offMulti',CFG_DEF.offMulti);
+  T._cfg.flmGap=Math.max(1,gv('tstS_flmGap',CFG_DEF.flmGap));
+  var lb=document.getElementById('tstS_lite');
+  try{localStorage.setItem('v5_revlite',lb&&lb.dataset.on==='1'?'1':'0');}catch(e){}
+  var ov=document.getElementById('tstSetOv');if(ov)ov.remove();
+  tstSave();
+  try{showT('⚙ Saved','Schedule recalc ho gaya.');}catch(e){}
+};
+
+// ══ IMPORT SHEET ═════════════════════════════════════════════════════════════
+window.tstOpenImport=function(){
+  var old=document.getElementById('tstImpOv');if(old)old.remove();
+  var ov=document.createElement('div');
+  ov.id='tstImpOv';
+  ov.onclick=function(e){if(e.target===ov)tstCloseImport();};
+  var T=tstAll();
+  var hasGO=Object.keys(T).some(function(k){return k.indexOf('GO-')===0;});
+  var hasME27=Object.keys(T).some(function(k){return k.indexOf('ME27')===0;});
+  var hasME26=Object.keys(T).some(function(k){return k.indexOf('ME26')===0;});
+  ov.innerHTML='<div class="tst-sheet">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
+    +'<div style="font-size:13px;font-weight:800;color:var(--tx);">Import test schedule</div>'
+    +'<button onclick="tstCloseImport()" style="background:none;border:none;color:var(--mt);font-size:16px;cursor:pointer;">✕</button></div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">'
+    +'<button class="tst-load" onclick="tstLoadBuiltin(\'go\');tstCloseImport()">'+(hasGO?'↻':'⤓')+' GO Classes (117)</button>'
+    +'<button class="tst-load" onclick="tstLoadBuiltin(\'me27\');tstCloseImport()">'+(hasME27?'↻':'⤓')+' MADE EASY 2027 (48)</button>'
+    +'<button class="tst-load" onclick="tstLoadBuiltin(\'me26\');tstCloseImport()">'+(hasME26?'↻':'⤓')+' ME 2026 pool (54)</button>'
+    +'</div>'
+    +'<div style="font-size:10px;color:var(--mt);margin-bottom:6px;">Naya provider? Prompt copy karo → PDF/screenshot ke saath Claude ko do → JSON yahan paste:</div>'
+    +'<button class="tst-b" style="width:100%;margin-bottom:10px;" onclick="tstCopyPrompt()">📋 Copy extraction prompt</button>'
+    +'<textarea id="tstImpTxt" class="tst-in" style="width:100%;min-height:90px;resize:vertical;font-family:var(--mo);font-size:10px;" placeholder=\'{"provider":"…","tests":[…]}\'></textarea>'
+    +'<div id="tstImpErr" style="font-size:10px;color:var(--s3);min-height:14px;margin-top:4px;"></div>'
+    +'<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px;align-items:center;">'
+    +'<label class="tst-b ghost" style="cursor:pointer;">📄 File<input type="file" accept=".json,application/json" style="display:none;" onchange="tstImportFile(this)"></label>'
+    +'<button class="tst-b" onclick="tstImportJSON(document.getElementById(\'tstImpTxt\').value)">Import</button>'
+    +'</div>'
+    +'<div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--bd);">'
+    +'<button class="tst-b ghost" style="width:100%;" onclick="tstAddCustom()">＋ Add a single custom test</button>'
+    +'</div></div>';
+  document.body.appendChild(ov);
+};
+window.tstCloseImport=function(){var ov=document.getElementById('tstImpOv');if(ov)ov.remove();};
+window.tstImportFile=function(inp){
+  try{
+    var f=inp.files&&inp.files[0];if(!f)return;
+    var r=new FileReader();
+    r.onload=function(){window.tstImportJSON(String(r.result));};
+    r.readAsText(f);
+  }catch(e){
+    var el=document.getElementById('tstImpErr');if(el)el.textContent='Could not read file.';
+  }
+};
+window.tstAddCustom=function(){
+  try{if(typeof pushUndo==='function')pushUndo();}catch(e){}
+  var id='CUSTOM-'+Date.now().toString(36);
+  var T=tstAll();
+  T[id]={id:id,provider:'Custom',name:'New test',type:'topic',subjects:[],q:0,min:60,marks:0,activation:'',series:'',wave:1,planned:null,retake:0,analyzed:0,attempts:[],notes:'',mistakes:[]};
+  tstCloseImport();
+  tstSave();
+  window.tstOpenSheet(id);
+  _tstEditMode=true;tstSheetRender();
+};
+
+// ── Daily Minimum: prepend today's test line (atomic) ────────────────────────
+function tstDmLine(){
+  try{
+    var el=document.getElementById('dailyMinContent');
+    if(!el)return;
+    var oldLine=document.getElementById('tstDmLine');if(oldLine)oldLine.remove();
+    var today=tToday();
+    var blocks=tstWalkBlocks(2).filter(function(b){return b.date===today;});
+    if(!blocks.length)return;
+    var tot=0;blocks.forEach(function(b){tot+=b.item.chunk;});
+    var first=blocks[0];
+    var div=document.createElement('div');
+    div.id='tstDmLine';
+    div.setAttribute('onclick',"tstOpenSheet('"+tEsc(first.item.testId)+"')");
+    div.style.cssText='display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:9px;margin-bottom:8px;background:var(--sf2);border:1px dashed var(--am,#e8b339);cursor:pointer;';
+    div.innerHTML='<span style="font-size:14px;">🧪</span>'
+      +'<div style="flex:1;min-width:0;"><div style="font-size:11px;font-weight:700;color:var(--tx);">Aaj ka test block — atomic (poora ya kuch nahi)</div>'
+      +'<div style="font-size:9px;color:var(--mt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+blocks.map(function(b){return tEsc(b.item.name)+' ('+tMins(b.item.chunk)+')';}).join(' + ')+'</div></div>'
+      +'<span style="font-family:var(--mo);font-size:10px;color:var(--am,#e8b339);flex-shrink:0;">'+tMins(tot)+'</span>';
+    el.insertBefore(div,el.firstChild);
+  }catch(e){}
+}
+
+// ── Debug/test surface ───────────────────────────────────────────────────────
+window._tst={fil:_tstFil,filt:tstFilt,sortL:tstSort,provGroup:tstProvGroup,migrate:tstMigrate,mapSubjs:tstMappedSubjs,mapOne:tstMapOne,subjPct:tstSubjPct,subjComplete:tstSubjComplete,
+  totalPct:tstTotalPct,goBuild:goBuild,meBuild:meBuild,importTests:tstImportTests,list:tstList,
+  all:tstAll,cfg:tstCfg,amin:tstAmin,hasUnmapped:tstHasUnmapped,
+  fixedMins:function(){return window.tstRemainingFixedMins();},
+  prompt:tstPrompt,walk:tstWalkBlocks,attempted:tstAttempted};
+
+// ── Wire into render cycle ───────────────────────────────────────────────────
+try{
+  var _rgT=renderGate;
+  renderGate=function(){_rgT.apply(this,arguments);try{tstRender();}catch(e){}};
+  window.renderGate=renderGate;
+}catch(e){}
+try{
+  if(typeof renderDailyMinimum==='function'){
+    var _rdmT=renderDailyMinimum;
+    renderDailyMinimum=function(){_rdmT.apply(this,arguments);try{tstDmLine();}catch(e){}};
+    window.renderDailyMinimum=renderDailyMinimum;
+  }
+}catch(e){}
+document.addEventListener('DOMContentLoaded',function(){try{tstRender();}catch(e){}},{once:true});
+})();
+</script>
+<style>
+/* ── PYQ Tracker v29 ── */
+#ptOverlay{position:fixed;inset:0;background:var(--bg,#0f1117);z-index:9500;display:flex;flex-direction:column;}
+.pt-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;border-bottom:1px solid var(--bd);flex-shrink:0;padding-top:calc(14px + env(safe-area-inset-top));}
+.pt-body{flex:1;overflow-y:auto;padding:12px 14px calc(20px + env(safe-area-inset-bottom));-webkit-overflow-scrolling:touch;}
+.pt-bar{height:6px;background:var(--sf2);border-radius:4px;overflow:hidden;margin-bottom:6px;}
+.pt-bar>div{height:100%;border-radius:4px;transition:width .25s;}
+.pt-row{display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid var(--bd);cursor:pointer;}
+.pt-b{background:var(--sf2);border:1px solid var(--bd2);color:var(--tx);border-radius:8px;padding:6px 11px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--fn);}
+.pt-b.ghost{background:transparent;color:var(--mt2);}
+.pt-in{background:var(--sf2);border:1px solid var(--bd2);border-radius:8px;padding:6px 8px;color:var(--tx);font-family:var(--fn);font-size:11px;outline:none;}
+.pt-modebar{display:flex;gap:5px;flex-wrap:wrap;padding:8px 0 4px;position:sticky;top:0;background:var(--bg,#0f1117);z-index:5;}
+.pt-mode{background:var(--sf2);border:1px solid var(--bd2);color:var(--mt2);border-radius:8px;padding:5px 9px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--fn);}
+.pt-topic{border:1px solid var(--bd);border-radius:11px;padding:4px 9px;margin-bottom:7px;background:var(--sf,rgba(255,255,255,.02));}
+.pt-topic.full{border-color:rgba(62,207,142,.3);}
+.pt-topic-h{display:flex;align-items:center;gap:7px;padding:7px 1px;cursor:pointer;user-select:none;}
+.pt-chips{display:flex;flex-wrap:wrap;gap:4px;padding:2px 0 9px;}
+.pt-chip{font-family:var(--mo);font-size:9px;padding:4px 7px;border-radius:6px;background:var(--sf2);border:1px solid var(--bd2);color:var(--mt2);cursor:pointer;user-select:none;position:relative;line-height:1.2;}
+.pt-chips.named .pt-chip{font-family:var(--fn);font-size:9.5px;max-width:100%;}
+.pt-chip.st-done{background:rgba(62,207,142,.14);border-color:rgba(62,207,142,.45);color:var(--s2);}
+.pt-chip.st-weak{background:rgba(232,179,57,.13);border-color:rgba(232,179,57,.5);color:#e8b339;}
+.pt-chip.st-later{background:rgba(180,190,254,.12);border-color:rgba(180,190,254,.5);color:#b4befe;}
+.pt-chip.st-skip{background:rgba(255,255,255,.03);border-color:var(--bd);color:var(--mt);text-decoration:line-through;}
+.pt-rv{font-size:7px;margin-left:3px;opacity:.85;font-family:var(--mo);}
+</style>
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// ── PYQ TRACKER · v29 ────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// Fullscreen question-level PYQ tracker. Subject → Topic → question chips.
+// Statuses: 1 ✅ done · 2 ⚠ weak · 3 🔒 later (needs another subject) ·
+// 4 🚫 no-revise (pakka aata hai) · r = revise count.
+// Data lives OUTSIDE ST in its own synced key 'v5_pyqtrk' (like curriculum):
+//   {ts, q:{"Subj|ti|qi":{s,r}}, names:{"Subj|ti":["GATE 2014 Q23 — heap",…]},
+//    extra:{"Subj":[{name,count,ref}]}}
+// Question lists come from ALL_TASKS pyq topic counts (numbered slots) until a
+// real list is imported via the extraction prompt — then chips get names.
+// When every question in a topic is ✅/🚫, the topic auto-ticks in ST.pyqTopics
+// so the schedule, Pace and progress all see it (and unticks if reopened).
+(function(){
+'use strict';
+
+var PT_KEY='v5_pyqtrk';
+var PT_ST={1:'done',2:'weak',3:'later',4:'skip'};
+function pEsc(s){try{return esc(s);}catch(e){return String(s).replace(/[<>&"]/g,'');}}
+function pLbl(s){try{return LABELS[s]||s;}catch(e){return s;}}
+function pCol(s){try{return (typeof COLORS!=='undefined'&&COLORS[s])||'#4d9fec';}catch(e){return '#4d9fec';}}
+
+// ── State ────────────────────────────────────────────────────────────────────
+var _pt=null,_ptLastWrite='';
+function ptState(){
+  if(_pt)return _pt;
+  try{
+    var raw=localStorage.getItem(PT_KEY);
+    if(raw){var p=JSON.parse(raw);if(p&&typeof p==='object'){_pt=p;}}
+  }catch(e){}
+  if(!_pt)_pt={ts:0,q:{},names:{},extra:{}};
+  if(!_pt.q)_pt.q={};
+  if(!_pt.names)_pt.names={};
+  if(!_pt.extra)_pt.extra={};
+  return _pt;
+}
+function ptSave(){
+  var S=ptState();
+  S.ts=Date.now();
+  var raw=JSON.stringify(S);
+  try{localStorage.setItem(PT_KEY,raw);}catch(e){}
+  _ptLastWrite=raw;
+  try{
+    if(window._fb&&window._fb.ready)window._fb.set(window._fb.ref(window._fb.db,fbPath(PT_KEY)),S);
+  }catch(e){}
+  ptRender();
+}
+// Remote listener — attach lazily once Firebase is up (no core edits needed)
+var _ptFbTries=0;
+function ptFbAttach(){
+  try{
+    if(!window._fb||!window._fb.ready){if(++_ptFbTries<60)setTimeout(ptFbAttach,2000);return;}
+    window._fb.onValue(window._fb.ref(window._fb.db,fbPath(PT_KEY)),function(snap){
+      try{
+        var val=snap.val();
+        if(!val||typeof val!=='object')return;
+        var raw=JSON.stringify(val);
+        if(raw===_ptLastWrite)return; // own echo
+        var local=ptState();
+        if((val.ts||0)>(local.ts||0)){
+          _pt=val;
+          if(!_pt.q)_pt.q={};if(!_pt.names)_pt.names={};if(!_pt.extra)_pt.extra={};
+          try{localStorage.setItem(PT_KEY,JSON.stringify(_pt));}catch(e){}
+          ptRender();
+        }
+      }catch(e){}
+    });
+  }catch(e){if(++_ptFbTries<60)setTimeout(ptFbAttach,2000);}
+}
+setTimeout(ptFbAttach,3000);
+
+// ── Topic & question model ───────────────────────────────────────────────────
+function ptPyqTask(subj){
+  for(var i=0;i<ALL_TASKS.length;i++){
+    var t=ALL_TASKS[i];
+    if(t.type==='pyq'&&t.subject===subj)return t;
+  }
+  return null;
+}
+function ptTopics(subj){
+  var out=[];
+  var task=ptPyqTask(subj);
+  if(task&&task.topics)task.topics.forEach(function(tp,i){out.push({name:tp.name,count:tp.count||0,ref:tp.ref||'',ti:i,extra:false});});
+  var ex=ptState().extra[subj];
+  if(Array.isArray(ex))ex.forEach(function(tp,i){out.push({name:tp.name,count:tp.count||0,ref:tp.ref||'',ti:1000+i,extra:true});});
+  return out;
+}
+function ptNames(subj,ti){
+  var n=ptState().names[subj+'|'+ti];
+  return Array.isArray(n)?n:null;
+}
+function ptQCount(subj,tp){
+  var n=ptNames(subj,tp.ti);
+  return Math.max(tp.count||0,n?n.length:0);
+}
+function ptGet(subj,ti,qi){
+  return ptState().q[subj+'|'+ti+'|'+qi]||null;
+}
+function ptSet(subj,ti,qi,rec){
+  var k=subj+'|'+ti+'|'+qi;
+  if(rec)ptState().q[k]=rec;else delete ptState().q[k];
+}
+
+// ── Stats ────────────────────────────────────────────────────────────────────
+function ptTopicStats(subj,tp){
+  var tot=ptQCount(subj,tp),d=0,w=0,l=0,sk=0;
+  for(var qi=0;qi<tot;qi++){
+    var r=ptGet(subj,tp.ti,qi);
+    if(!r)continue;
+    if(r.s===1)d++;else if(r.s===2)w++;else if(r.s===3)l++;else if(r.s===4)sk++;
+  }
+  return{tot:tot,done:d,weak:w,later:l,skip:sk,resolved:d+sk};
+}
+function ptSubjStats(subj){
+  var tot=0,done=0,weak=0,later=0,skip=0;
+  ptTopics(subj).forEach(function(tp){
+    var st=ptTopicStats(subj,tp);
+    tot+=st.tot;done+=st.done;weak+=st.weak;later+=st.later;skip+=st.skip;
+  });
+  return{tot:tot,done:done,weak:weak,later:later,skip:skip,resolved:done+skip,
+    pct:tot>0?Math.round((done+skip)/tot*100):0};
+}
+function ptSubjLecComplete(subj){
+  try{
+    var done=new Set(Object.keys(ST.done).map(Number));
+    for(var i=0;i<ALL_TASKS.length;i++){
+      var t=ALL_TASKS[i];
+      if(t.subject===subj&&t.type==='lecture'&&!done.has(t.id))return false;
+    }
+    return true;
+  }catch(e){return false;}
+}
+
+// ── Bridge: full topic resolved → tick in ST.pyqTopics (schedule sees it) ────
+function ptSyncTopicTick(subj,ti){
+  try{
+    if(ti>=1000)return; // extra (imported-only) topics don't exist in schedule
+    var task=ptPyqTask(subj);
+    if(!task)return;
+    var tp=(task.topics||[])[ti];
+    if(!tp)return;
+    var st=ptTopicStats(subj,{ti:ti,count:tp.count});
+    var full=st.tot>0&&st.resolved>=st.tot;
+    if(!ST.pyqTopics[task.id])ST.pyqTopics[task.id]=[];
+    var arr=ST.pyqTopics[task.id];
+    var has=arr.indexOf(ti)>=0;
+    if(full&&!has){arr.push(ti);arr.sort(function(a,b){return a-b;});}
+    else if(!full&&has){ST.pyqTopics[task.id]=arr.filter(function(x){return x!==ti;});}
+    else return; // no change
+    try{saveGateState();}catch(e){}
+    try{if(typeof renderGate==='function')renderGate();}catch(e){}
+  }catch(e){}
+}
+
+// ── Marking ──────────────────────────────────────────────────────────────────
+var _ptMode=1; // 1 done · 2 weak · 3 later · 4 skip · 0 clear · 9 revise+1
+window.ptSetMode=function(m){_ptMode=m;ptRender();};
+window.ptTap=function(subj,ti,qi){
+  var r=ptGet(subj,ti,qi);
+  if(_ptMode===9){
+    if(!r)r={s:1,r:0};
+    r.r=(r.r||0)+1;
+    if(r.s===2)r.s=1; // revising a weak one upgrades it
+    ptSet(subj,ti,qi,r);
+  }else if(_ptMode===0){
+    ptSet(subj,ti,qi,null);
+  }else{
+    if(r&&r.s===_ptMode)ptSet(subj,ti,qi,null); // same mode tap = toggle off
+    else ptSet(subj,ti,qi,{s:_ptMode,r:(r&&r.r)||0});
+  }
+  ptSyncTopicTick(subj,ti);
+  ptSave();
+};
+window.ptBulk=function(subj,ti){
+  var tps=ptTopics(subj).filter(function(t){return t.ti===ti;});
+  if(!tps.length)return;
+  var tp=tps[0];
+  var tot=ptQCount(subj,tp);
+  var st=ptTopicStats(subj,tp);
+  var fill=st.resolved<tot; // if not all resolved → mark all done; else clear all
+  for(var qi=0;qi<tot;qi++){
+    var r=ptGet(subj,tp.ti,qi);
+    if(fill){if(!r||(r.s!==1&&r.s!==4))ptSet(subj,tp.ti,qi,{s:1,r:(r&&r.r)||0});}
+    else ptSet(subj,tp.ti,qi,null);
+  }
+  ptSyncTopicTick(subj,ti);
+  ptSave();
+};
+
+// ── Import (question lists per subject) ──────────────────────────────────────
+function ptPrompt(){
+  var subjects='C Programming, Data Structures, Algorithms, TOC, Compiler Design, CO, OS, CN, DBMS, DLD, Aptitude';
+  return 'I am giving you a GATE PYQ book/PDF section and a subject name. Extract EVERY question into this exact JSON, nothing else:\n\n'
+  +'{"subject":"<SUBJECT>","topics":[{"name":"<topic name>","questions":["GATE 2014 Q23 — B+ tree order","GATE 2019 Q4 — hashing probe", "…"]}]}\n\n'
+  +'Rules:\n'
+  +'- subject must be EXACTLY one of: '+subjects+'\n'
+  +'- topic names should match the book\'s section names (my app fuzzy-matches them to my topic list; unmatched topics are added as new).\n'
+  +'- each question = one short string: exam + year + question number + a 3-6 word descriptor. Keep order as printed.\n'
+  +'- include ALL questions of every topic in the given section. No commentary, no markdown fences — JSON only.';
+}
+window.ptCopyPrompt=function(){
+  var txt=ptPrompt();
+  try{
+    navigator.clipboard.writeText(txt).then(function(){
+      try{showT('📋 Copied','Prompt + PYQ PDF + subject name Claude ko do, JSON wapas paste karo.');}catch(e){}
+    });
+  }catch(e){try{window.prompt('Copy this prompt:',txt);}catch(e2){}}
+};
+function ptNorm(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');}
+window.ptImportJSON=function(raw){
+  try{
+    var obj=JSON.parse(raw);
+    var subj=String(obj.subject||'');
+    if(SUBJ.indexOf(subj)<0)throw new Error('subject must be one of: '+SUBJ.join(', '));
+    if(!Array.isArray(obj.topics)||!obj.topics.length)throw new Error('topics[] missing');
+    var S=ptState();
+    var existing=ptTopics(subj);
+    var matched=0,added=0,qTotal=0;
+    obj.topics.forEach(function(it){
+      var nm=String(it.name||'').trim();
+      var qs=Array.isArray(it.questions)?it.questions.map(String):[];
+      if(!nm||!qs.length)return;
+      qTotal+=qs.length;
+      var hit=null;
+      for(var i=0;i<existing.length;i++){
+        var a=ptNorm(existing[i].name),b=ptNorm(nm);
+        if(a===b||a.indexOf(b)>=0||b.indexOf(a)>=0){hit=existing[i];break;}
+      }
+      if(hit){S.names[subj+'|'+hit.ti]=qs;matched++;}
+      else{
+        if(!Array.isArray(S.extra[subj]))S.extra[subj]=[];
+        var ti=1000+S.extra[subj].length;
+        S.extra[subj].push({name:nm,count:qs.length,ref:'imported'});
+        S.names[subj+'|'+ti]=qs;
+        added++;
+      }
+    });
+    ptSave();
+    try{showT('🗂 Imported',pLbl(subj)+': '+qTotal+' questions · '+matched+' topics matched'+(added?' · '+added+' new':''));}catch(e){}
+    var er=document.getElementById('ptImpErr');if(er)er.textContent='';
+    var ta=document.getElementById('ptImpTxt');if(ta)ta.value='';
+    _ptImpOpen=false;ptRender();
+  }catch(e){
+    var el=document.getElementById('ptImpErr');
+    if(el)el.textContent='Import failed: '+(e.message||e);
+  }
+};
+window.ptImportFile=function(inp){
+  try{
+    var f=inp.files&&inp.files[0];if(!f)return;
+    var r=new FileReader();
+    r.onload=function(){window.ptImportJSON(String(r.result));};
+    r.readAsText(f);
+  }catch(e){
+    var el=document.getElementById('ptImpErr');if(el)el.textContent='Could not read file.';
+  }
+};
+
+// Debug/test surface
+window._pt={state:ptState,topics:ptTopics,names:ptNames,qcount:ptQCount,get:ptGet,set:ptSet,
+  topicStats:ptTopicStats,subjStats:ptSubjStats,syncTick:ptSyncTopicTick,prompt:ptPrompt,
+  norm:ptNorm,save:ptSave,reset:function(){_pt={ts:0,q:{},names:{},extra:{}};}};
+
+// ══ FULLSCREEN UI ════════════════════════════════════════════════════════════
+var _ptOpen=false,_ptSubj=null,_ptExp={},_ptImpOpen=false;
+window.openPyqTracker=function(){_ptOpen=true;_ptSubj=null;_ptImpOpen=false;ptRender();};
+window.ptClose=function(){
+  _ptOpen=false;
+  var el=document.getElementById('ptOverlay');if(el)el.remove();
+  try{document.body.style.overflow='';}catch(e){}
+};
+window.ptBack=function(){_ptSubj=null;ptRender();};
+window.ptOpenSubj=function(s){_ptSubj=s;_ptExp={};ptRender();var sc=document.getElementById('ptBody');if(sc)sc.scrollTop=0;};
+window.ptToggleTopic=function(ti){_ptExp[ti]=!_ptExp[ti];ptRender();};
+window.ptToggleImp=function(){_ptImpOpen=!_ptImpOpen;ptRender();};
+
+function ptModeBar(){
+  function b(m,icon,lbl,col){
+    var act=_ptMode===m;
+    return '<button onclick="ptSetMode('+m+')" class="pt-mode'+(act?' act':'')+'" style="'+(act?'border-color:'+col+';color:'+col+';background:'+col+'18;':'')+'">'+icon+' '+lbl+'</button>';
+  }
+  return '<div class="pt-modebar">'
+    +b(1,'✅','Done','var(--s2)')
+    +b(2,'⚠️','Weak','#e8b339')
+    +b(3,'🔒','Baad me','#b4befe')
+    +b(4,'🚫','No-revise','var(--mt2)')
+    +b(9,'↻','+1 revise','var(--s1)')
+    +b(0,'⌫','Clear','var(--s3)')
+    +'</div>'
+    +'<div style="font-size:9px;color:var(--mt);padding:0 2px 8px;">Mode chuno, fir question chips pe tap karo. Same mode dobara tap = hat jata hai.</div>';
+}
+function ptChipHTML(subj,tp,qi){
+  var r=ptGet(subj,tp.ti,qi);
+  var names=ptNames(subj,tp.ti);
+  var label=names&&names[qi]?names[qi]:('Q'+(qi+1));
+  var short=names&&names[qi]?(label.length>34?label.slice(0,32)+'…':label):label;
+  var cls='pt-chip';
+  if(r){
+    if(r.s===1)cls+=' st-done';
+    else if(r.s===2)cls+=' st-weak';
+    else if(r.s===3)cls+=' st-later';
+    else if(r.s===4)cls+=' st-skip';
+  }
+  var rv=(r&&r.r)?'<span class="pt-rv">×'+r.r+'</span>':'';
+  return '<span class="'+cls+'" onclick="ptTap(\''+pEsc(subj)+'\','+tp.ti+','+qi+')" title="'+pEsc(label)+'">'+pEsc(short)+rv+'</span>';
+}
+function ptSubjView(subj){
+  var col=pCol(subj);
+  var stats=ptSubjStats(subj);
+  var lecDone=ptSubjLecComplete(subj);
+  var h='<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">'
+    +'<button onclick="ptBack()" class="pt-b ghost">← Subjects</button>'
+    +'<div style="flex:1;min-width:0;"><div style="font-size:15px;font-weight:800;color:'+col+';">'+pEsc(subj)+'</div>'
+    +'<div style="font-size:10px;color:var(--mt);">'+stats.resolved+'/'+stats.tot+' resolved · ✅'+stats.done+' ⚠'+stats.weak+' 🔒'+stats.later+' 🚫'+stats.skip+'</div></div>'
+    +'<div style="font-family:var(--mo);font-size:16px;font-weight:800;color:'+col+';">'+stats.pct+'%</div>'
+    +'</div>';
+  h+='<div class="pt-bar"><div style="width:'+stats.pct+'%;background:'+col+';"></div></div>';
+  if(lecDone&&stats.later>0){
+    h+='<div style="margin:8px 0;padding:8px 10px;border-radius:9px;background:rgba(180,190,254,.1);border:1px dashed #b4befe;font-size:10px;color:#b4befe;">🔓 Ye subject 100% ho gaya — iske '+stats.later+' "baad me" wale questions ab khol sakte ho. Mode ✅ rakh ke unhe nipta do.</div>';
+  }
+  h+=ptModeBar();
+  ptTopics(subj).forEach(function(tp){
+    var st=ptTopicStats(subj,tp);
+    var open=!!_ptExp[tp.ti];
+    var full=st.tot>0&&st.resolved>=st.tot;
+    var hasNames=!!ptNames(subj,tp.ti);
+    h+='<div class="pt-topic'+(full?' full':'')+'">'
+      +'<div class="pt-topic-h" onclick="ptToggleTopic('+tp.ti+')">'
+      +'<span style="flex:1;min-width:0;font-size:12px;font-weight:700;color:var(--tx);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+(full?'✓ ':'')+pEsc(tp.name)+(hasNames?'':' <span style="color:var(--mt);font-weight:400;">(slots)</span>')+'</span>'
+      +(tp.ref?'<span style="font-family:var(--mo);font-size:8px;color:var(--mt);flex-shrink:0;">'+pEsc(tp.ref)+'</span>':'')
+      +'<span style="font-family:var(--mo);font-size:10px;color:'+(full?'var(--s2)':'var(--mt2)')+';flex-shrink:0;">'+st.resolved+'/'+st.tot+'</span>'
+      +'<span style="color:var(--mt);font-size:9px;flex-shrink:0;">'+(open?'▲':'▼')+'</span>'
+      +'</div>';
+    if(open){
+      h+='<div style="display:flex;align-items:center;gap:6px;padding:0 2px 6px;">'
+        +'<div class="pt-bar" style="flex:1;margin:0;"><div style="width:'+(st.tot?Math.round(st.resolved/st.tot*100):0)+'%;background:'+col+';"></div></div>'
+        +(st.weak?'<span style="font-size:9px;color:#e8b339;">⚠'+st.weak+'</span>':'')
+        +(st.later?'<span style="font-size:9px;color:#b4befe;">🔒'+st.later+'</span>':'')
+        +'<button class="pt-b ghost" style="font-size:9px;padding:2px 8px;" onclick="ptBulk(\''+pEsc(subj)+'\','+tp.ti+')">'+(full?'⌫ Clear all':'✓ All done')+'</button>'
+        +'</div>';
+      h+='<div class="pt-chips'+(hasNames?' named':'')+'">';
+      var n=ptQCount(subj,tp);
+      for(var qi=0;qi<n;qi++)h+=ptChipHTML(subj,tp,qi);
+      h+='</div>';
+    }
+    h+='</div>';
+  });
+  return h;
+}
+function ptHomeView(){
+  var tot=0,res=0,weak=0,later=0;
+  var rows='';
+  SUBJ.forEach(function(s){
+    var st=ptSubjStats(s);
+    tot+=st.tot;res+=st.resolved;weak+=st.weak;later+=st.later;
+    var col=pCol(s);
+    rows+='<div class="pt-row" onclick="ptOpenSubj(\''+pEsc(s)+'\')">'
+      +'<span style="width:44px;font-size:11px;font-weight:700;color:'+col+';flex-shrink:0;">'+pEsc(pLbl(s))+'</span>'
+      +'<div style="flex:1;min-width:0;">'
+      +'<div class="pt-bar" style="margin:0 0 3px;"><div style="width:'+st.pct+'%;background:'+col+';"></div></div>'
+      +'<div style="font-size:9px;color:var(--mt);">'+st.resolved+'/'+st.tot
+      +(st.weak?' · <span style="color:#e8b339;">⚠'+st.weak+'</span>':'')
+      +(st.later?' · <span style="color:#b4befe;">🔒'+st.later+'</span>':'')
+      +(ptSubjLecComplete(s)&&st.later?' <span style="color:#b4befe;">unlock!</span>':'')
+      +'</div></div>'
+      +'<span style="font-family:var(--mo);font-size:12px;font-weight:800;color:'+col+';flex-shrink:0;">'+st.pct+'%</span>'
+      +'<span style="color:var(--mt);flex-shrink:0;">›</span>'
+      +'</div>';
+  });
+  var pct=tot>0?Math.round(res/tot*100):0;
+  var h='<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px;">'
+    +'<span style="font-family:var(--mo);font-size:26px;font-weight:800;color:var(--s1);">'+pct+'%</span>'
+    +'<span style="font-size:11px;color:var(--mt);">'+res+'/'+tot+' questions resolved'
+    +(weak?' · <span style="color:#e8b339;">⚠'+weak+' weak</span>':'')
+    +(later?' · <span style="color:#b4befe;">🔒'+later+'</span>':'')+'</span>'
+    +'</div>'
+    +'<div class="pt-bar"><div style="width:'+pct+'%;background:var(--s1);"></div></div>'
+    +'<div style="display:flex;gap:8px;margin:10px 0;flex-wrap:wrap;">'
+    +'<button class="pt-b" onclick="ptCopyPrompt()">📋 PYQ extraction prompt</button>'
+    +'<button class="pt-b ghost" onclick="ptToggleImp()">'+(_ptImpOpen?'✕ Close import':'⤓ Import questions')+'</button>'
+    +'</div>';
+  if(_ptImpOpen){
+    h+='<div style="margin-bottom:12px;padding:10px;border-radius:10px;background:var(--sf2);border:1px solid var(--bd2);">'
+      +'<div style="font-size:10px;color:var(--mt);margin-bottom:6px;">Prompt + PYQ book PDF + subject name Claude ko do → JSON yahan paste karo. Chips ko asli question names mil jayenge.</div>'
+      +'<textarea id="ptImpTxt" class="pt-in" style="width:100%;min-height:80px;resize:vertical;font-family:var(--mo);font-size:10px;" placeholder=\'{"subject":"OS","topics":[…]}\'></textarea>'
+      +'<div id="ptImpErr" style="font-size:10px;color:var(--s3);min-height:13px;margin-top:3px;"></div>'
+      +'<div style="display:flex;gap:8px;justify-content:flex-end;align-items:center;">'
+      +'<label class="pt-b ghost" style="cursor:pointer;">📄 File<input type="file" accept=".json,application/json" style="display:none;" onchange="ptImportFile(this)"></label>'
+      +'<button class="pt-b" onclick="ptImportJSON(document.getElementById(\'ptImpTxt\').value)">Import</button>'
+      +'</div></div>';
+  }
+  h+=rows;
+  h+='<div style="font-size:9px;color:var(--mt);margin-top:12px;line-height:1.5;">Topic ke saare questions ✅/🚫 hone par wo topic schedule me apne aap tick ho jata hai. 🔒 = dusre subject ka wait — jab wo subject 100% ho, yahan "unlock!" dikhega. Sab kuch sync hota hai.</div>';
+  return h;
+}
+function ptRender(){
+  if(!_ptOpen)return;
+  var ov=document.getElementById('ptOverlay');
+  if(!ov){
+    ov=document.createElement('div');
+    ov.id='ptOverlay';
+    document.body.appendChild(ov);
+    try{document.body.style.overflow='hidden';}catch(e){}
+  }
+  var inner='<div class="pt-head">'
+    +'<div style="font-size:14px;font-weight:800;color:var(--tx);">🗂 PYQ Tracker</div>'
+    +'<button onclick="ptClose()" style="background:none;border:none;color:var(--mt);font-size:20px;cursor:pointer;padding:2px 6px;">✕</button>'
+    +'</div>'
+    +'<div id="ptBody" class="pt-body">'+(_ptSubj?ptSubjView(_ptSubj):ptHomeView())+'</div>';
+  ov.innerHTML=inner;
+}
+window.ptRender=ptRender;
 })();
 </script>
 </body>
