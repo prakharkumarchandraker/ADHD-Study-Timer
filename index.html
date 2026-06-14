@@ -1312,6 +1312,9 @@ window.onerror=function(msg,src,line,col,err){
     <!-- TRANSITION WARNING -->
     <div class="trans-warn hidden" id="transWarn"></div>
 
+    <!-- DAYFIT — start day from now (v33) -->
+    <div id="dayfitBtnHost" style="max-width:560px;margin:0 auto;"></div>
+
     <!-- PANIC START — zero-decision circuit breaker for task paralysis -->
     <div id="panicWrap"></div>
 
@@ -2633,7 +2636,19 @@ function getTodayDayKey(){
   var d=fromStr(getToday());
   return TT_DAYS[(d.getDay()+6)%7]; // Mon=0..Sun=6
 }
-function getTodaySlots(){return _timetable[getTodayDayKey()]||[];}
+function getTodaySlots(){
+  // v33: if a "start day from now" override exists for today, the whole app
+  // (schedule, hero, routine, time breakdown, daily-min) reads the recalibrated
+  // slots transparently. Raw weekly _timetable is never mutated.
+  try{
+    if(typeof window.dayfitGetOverride==='function'){
+      var ov=window.dayfitGetOverride();
+      if(ov)return ov;
+    }
+  }catch(e){}
+  return _timetable[getTodayDayKey()]||[];
+}
+function getTodayBaseSlots(){return _timetable[getTodayDayKey()]||[];}
 
 // Rebuild ALL_SLOTS, SESSIONS, LIVE_SESSIONS, DAILY_MINS from today's timetable
 function rebuildFromTimetable(){
@@ -13264,6 +13279,247 @@ try{
     }
   };
 }catch(e){console.warn('[v32 m3 speedcalc]',e);}
+})();
+</script>
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// v33 — DAYFIT: "Start my day from now" recalibration
+// One tap recalibrates TODAY's schedule from your wake/open time (Easy refit):
+//   • 🌅 Start day from now → morning routine pulled to now, study refits into
+//     the gaps before each fixed routine anchor (Lunch/Gym/Dinner stay put),
+//     bedtime is a hard ceiling (study compresses, never pushes past it).
+//   • ⏩ Skip to study → morning routine dropped, study fills from now.
+// Stored as a today-only override (v5_dayfit_<date>) — weekly template never
+// mutated, reversible via ↺ Restore. getTodaySlots() reads the override so the
+// whole app (schedule, hero, routine, time breakdown, daily-min) recalibrates.
+// ═══════════════════════════════════════════════════════════════════════════
+(function(){
+try{
+  // ── Pure engine (mirrors tested dayfit_engine.js) ──────────────────────
+  function slotStart(s){return s.sh*60+s.sm;}
+  function slotEnd(s){return s.eh*60+s.em;}
+  function isFlexible(t){return t==='study'||t==='class'||t==='revision';}
+  function isRoutine(t){return t==='other';}
+
+  function dayfitRecalc(slots, nowMins, mode){
+    if(!Array.isArray(slots)||!slots.length)return {slots:[], breakfastNote:false};
+    mode=mode||'morning';
+    var work=slots.map(function(s,i){return {s:s,i:i,start:slotStart(s),end:slotEnd(s)};});
+    work.sort(function(a,b){return a.start-b.start||a.i-b.i;});
+
+    var firstRoutineIdx=-1;
+    for(var k=0;k<work.length;k++){if(isRoutine(work[k].s.type)){firstRoutineIdx=k;break;}}
+    var firstRoutineStartOrig=firstRoutineIdx>=0?work[firstRoutineIdx].start:0;
+    var morningBlockEnd=Infinity;
+    for(var fb=0;fb<work.length;fb++){if(isFlexible(work[fb].s.type)){morningBlockEnd=work[fb].start;break;}}
+    var dayEnd=work.reduce(function(m,w){return Math.max(m,w.end);},0);
+
+    var out=[], breakfastNote=false, morningEndAfterPull=null;
+
+    work.forEach(function(w,k){
+      if(!isRoutine(w.s.type))return;
+      var dur=w.end-w.start;
+      if(k===firstRoutineIdx){
+        if(w.start>=nowMins){out.push({s:w.s,ns:w.start,ne:w.end});morningEndAfterPull=w.end;}
+        else if(mode==='morning'){
+          var ns=nowMins, ne=nowMins+dur;
+          if(nowMins>=9*60)breakfastNote=true;
+          out.push({s:w.s,ns:ns,ne:ne});morningEndAfterPull=ne;
+        }
+        return;
+      }
+      if(w.end<=nowMins){
+        if(mode==='morning'&&morningEndAfterPull!==null&&w.start>=firstRoutineStartOrig&&w.start<morningBlockEnd){
+          var cs=morningEndAfterPull, ce=morningEndAfterPull+dur;
+          out.push({s:w.s,ns:cs,ne:ce});morningEndAfterPull=ce;
+        }
+        return;
+      }
+      if(w.start<nowMins&&w.end>nowMins)out.push({s:w.s,ns:nowMins,ne:w.end});
+      else out.push({s:w.s,ns:w.start,ne:w.end});
+    });
+
+    var flex=[];
+    work.forEach(function(w){
+      if(!isFlexible(w.s.type))return;
+      var dur=w.end-w.start, remDur;
+      if(w.start>=nowMins)remDur=dur;
+      else if(w.end>nowMins)remDur=w.end-nowMins;
+      else remDur=0;
+      if(remDur>0.5)flex.push({w:w,dur:remDur});
+    });
+
+    var anchors=out.filter(function(o){return isRoutine(o.s.type);})
+                   .map(function(o){return {start:o.ns,end:o.ne};})
+                   .sort(function(a,b){return a.start-b.start;});
+    var cursor=nowMins;
+    if(morningEndAfterPull!==null&&morningEndAfterPull>cursor)cursor=morningEndAfterPull;
+
+    function nextFreeFrom(t){var moved=true;while(moved){moved=false;for(var a=0;a<anchors.length;a++){if(t>=anchors[a].start&&t<anchors[a].end){t=anchors[a].end;moved=true;}}}return t;}
+    function gapEnd(t){var best=dayEnd;for(var a=0;a<anchors.length;a++){if(anchors[a].start>=t&&anchors[a].start<best)best=anchors[a].start;}return best;}
+
+    flex.forEach(function(f){
+      var remaining=f.dur;
+      while(remaining>0.5){
+        cursor=nextFreeFrom(cursor);
+        if(cursor>=dayEnd)break;
+        var ge=gapEnd(cursor), avail=ge-cursor;
+        if(avail<=0){cursor=ge;continue;}
+        var take=Math.min(remaining,avail);
+        out.push({s:f.w.s,ns:cursor,ne:cursor+take});
+        cursor+=take;remaining-=take;
+      }
+    });
+
+    out.sort(function(a,b){return a.ns-b.ns;});
+    var finalSlots=out.map(function(o){
+      var s=o.s, copy={};
+      for(var key in s)copy[key]=s[key];
+      copy.sh=Math.floor(o.ns/60);copy.sm=Math.round(o.ns%60);
+      copy.eh=Math.floor(o.ne/60);copy.em=Math.round(o.ne%60);
+      return copy;
+    });
+    return {slots:finalSlots, breakfastNote:breakfastNote};
+  }
+
+  // ── Override storage (today-only) ──────────────────────────────────────
+  function K(){return 'v5_dayfit_'+getToday();}
+  window.dayfitGetOverride=function(){
+    try{
+      var raw=localStorage.getItem(K());
+      if(!raw)return null;
+      var o=JSON.parse(raw);
+      if(o&&o.day===getToday()&&Array.isArray(o.slots)&&o.slots.length)return o.slots;
+      if(o&&o.day!==getToday()){localStorage.removeItem(K());}
+    }catch(e){}
+    return null;
+  };
+  function hasOverride(){return !!window.dayfitGetOverride();}
+
+  function applyOverride(slots,meta){
+    try{
+      localStorage.setItem(K(),JSON.stringify({day:getToday(),slots:slots,mode:meta.mode,at:Date.now(),breakfastNote:!!meta.breakfastNote}));
+      // sync to firebase (same per-key pattern as routine done)
+      try{
+        var fb=window._fb;
+        if(fb&&fb.ready&&typeof fbPath==='function'){
+          fb.set(fb.ref(fb.db,fbPath(K())),{day:getToday(),slots:slots,mode:meta.mode,at:Date.now(),breakfastNote:!!meta.breakfastNote}).catch(function(){});
+        }
+      }catch(e){}
+      refreshAll();
+    }catch(e){console.warn('[dayfit apply]',e);}
+  }
+  window.dayfitRestore=function(){
+    try{
+      localStorage.removeItem(K());
+      try{var fb=window._fb;if(fb&&fb.ready&&typeof fbPath==='function')fb.set(fb.ref(fb.db,fbPath(K())),null).catch(function(){});}catch(e){}
+      refreshAll();
+      try{showT('\u21BA Restored','Back to your normal '+dayName()+' plan.');}catch(e){}
+      renderBtn();
+    }catch(e){console.warn('[dayfit restore]',e);}
+  };
+
+  function refreshAll(){
+    try{if(typeof rebuildFromTimetable==='function')rebuildFromTimetable();}catch(e){}
+    try{if(typeof buildSchedule==='function')buildSchedule();}catch(e){}
+    try{if(typeof renderRoutineFromTimetable==='function')renderRoutineFromTimetable();}catch(e){}
+    try{if(typeof renderTimetable==='function')renderTimetable();}catch(e){}
+    try{if(typeof up==='function')up();}catch(e){}
+    try{if(typeof dmInvalidateSnap==='function')dmInvalidateSnap();}catch(e){}
+    try{if(typeof renderDailyMinimum==='function')renderDailyMinimum();}catch(e){}
+    try{if(typeof window.renderSpeedCalc==='function')window.renderSpeedCalc();}catch(e){}
+    renderBanner();renderBtn();
+  }
+
+  function dayName(){try{return TT_LABELS[TT_DAYS.indexOf(getTodayDayKey())];}catch(e){return 'today';}}
+  function nowMinsLive(){var n=new Date();return n.getHours()*60+n.getMinutes();}
+
+  // ── Recalc actions ─────────────────────────────────────────────────────
+  function doRecalc(mode){
+    try{
+      var base=(typeof getTodayBaseSlots==='function')?getTodayBaseSlots():(_timetable[getTodayDayKey()]||[]);
+      if(!base.length){try{showT('Nothing to refit','No slots set for '+dayName()+' yet.');}catch(e){}return;}
+      var nm=nowMinsLive();
+      var r=dayfitRecalc(base, nm, mode);
+      if(!r.slots.length){try{showT('Day\u2019s basically over','Too late to refit \u2014 only bedtime left. Rest up, fresh start tomorrow.');}catch(e){}return;}
+      applyOverride(r.slots,{mode:mode,breakfastNote:r.breakfastNote});
+      closeSheet();
+      try{if(typeof haptic==='function')haptic([20,40,30]);}catch(e){}
+      var studyMin=r.slots.filter(function(s){return isFlexible(s.type);}).reduce(function(a,s){return a+((s.eh*60+s.em)-(s.sh*60+s.sm));},0);
+      var h=Math.floor(studyMin/60),m=studyMin%60;
+      var msg=(mode==='skip'?'Morning skipped. ':'Fresh start from now. ')+(h>0?h+'h ':'')+m+'m study fitted in before bedtime.';
+      if(r.breakfastNote)msg+=' \u2615 Past 9am \u2014 skip breakfast, go to lunch.';
+      try{showT(mode==='skip'?'\u23E9 Straight to study':'\uD83C\uDF05 Day refitted',msg);}catch(e){}
+    }catch(e){console.warn('[dayfit recalc]',e);try{showT('Hmm','Couldn\u2019t refit \u2014 '+String(e&&e.message||e).slice(0,80));}catch(_){}}
+  }
+
+  // ── Recalc sheet (bottom) ──────────────────────────────────────────────
+  function openSheet(){
+    var nm=nowMinsLive();
+    var hh=Math.floor(nm/60), mm=nm%60;
+    var timeStr=pad(hh)+':'+pad(mm);
+    var ov=document.getElementById('dayfitSheet');
+    if(!ov){ov=document.createElement('div');ov.id='dayfitSheet';document.body.appendChild(ov);}
+    ov.style.cssText='position:fixed;inset:0;z-index:9200;background:rgba(0,0,0,.5);backdrop-filter:blur(3px);display:flex;align-items:flex-end;justify-content:center;';
+    ov.onclick=function(e){if(e.target===ov)closeSheet();};
+    var late=nm>=9*60;
+    ov.innerHTML=
+      '<div style="width:100%;max-width:520px;background:var(--sf,#16181b);border:1px solid var(--bd);border-bottom:none;border-radius:18px 18px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px));font-family:var(--fn);box-shadow:0 -8px 40px rgba(0,0,0,.5);">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">'
+      +'<div style="font-size:16px;font-weight:800;color:var(--tx);">\u2600\uFE0F Good '+greet(hh)+'</div>'
+      +'<button onclick="dayfitCloseSheet()" style="background:none;border:none;color:var(--mt);font-size:20px;cursor:pointer;padding:2px 6px;">\u2715</button>'
+      +'</div>'
+      +'<div style="font-size:12px;color:var(--mt);line-height:1.5;margin-bottom:14px;">It\u2019s <strong style="color:var(--s1);">'+timeStr+'</strong>. No guilt \u2014 let\u2019s rebuild '+dayName()+' from right now. Lunch, Gym &amp; Dinner stay put; bedtime stays fixed; study fits into whatever\u2019s left.</div>'
+      +(late?'<div style="font-size:11px;color:var(--am);background:rgba(232,179,57,.1);border:1px solid rgba(232,179,57,.25);border-radius:8px;padding:7px 10px;margin-bottom:14px;">\u2615 Past 9am \u2014 breakfast skips, head straight to lunch when it comes.</div>':'')
+      +'<button onclick="dayfitRun(\'morning\')" style="width:100%;background:var(--s2b,rgba(62,207,142,.12));border:1px solid var(--s2o,rgba(62,207,142,.4));color:var(--s2,#3ecf8e);border-radius:12px;padding:13px;font-family:var(--fn);font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;text-align:left;">'
+      +'\uD83C\uDF05 Start day from now<div style="font-size:11px;font-weight:500;color:var(--mt2);margin-top:2px;">Morning routine pulls to '+timeStr+', then study fills the gaps</div></button>'
+      +'<button onclick="dayfitRun(\'skip\')" style="width:100%;background:var(--s1b,rgba(77,159,236,.10));border:1px solid var(--s1o,rgba(77,159,236,.35));color:var(--s1,#4d9fec);border-radius:12px;padding:13px;font-family:var(--fn);font-size:14px;font-weight:700;cursor:pointer;text-align:left;">'
+      +'\u23E9 Skip to study<div style="font-size:11px;font-weight:500;color:var(--mt2);margin-top:2px;">Drop the morning routine, start studying straight away</div></button>'
+      +(hasOverride()?'<button onclick="dayfitRestore()" style="width:100%;background:var(--sf2);border:1px solid var(--bd2);color:var(--mt2);border-radius:10px;padding:10px;font-family:var(--fn);font-size:12px;font-weight:600;cursor:pointer;margin-top:10px;">\u21BA Restore normal '+dayName()+' plan</button>':'')
+      +'</div>';
+  }
+  function closeSheet(){var ov=document.getElementById('dayfitSheet');if(ov)ov.remove();}
+  function greet(hh){return hh<12?'morning':hh<17?'afternoon':'evening';}
+
+  window.dayfitOpenSheet=openSheet;
+  window.dayfitCloseSheet=closeSheet;
+  window.dayfitRun=doRecalc;
+
+  // ── Top button on Today tab + active banner ────────────────────────────
+  function renderBtn(){
+    var host=document.getElementById('dayfitBtnHost');
+    if(!host)return; // static host lives in #tab-today markup
+    var on=hasOverride();
+    host.innerHTML='<button onclick="dayfitOpenSheet()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:'+(on?'var(--s2b,rgba(62,207,142,.10))':'var(--sf2)')+';border:1px solid '+(on?'var(--s2o,rgba(62,207,142,.4))':'var(--bd2)')+';color:'+(on?'var(--s2,#3ecf8e)':'var(--mt2)')+';border-radius:12px;padding:11px;font-family:var(--fn);font-size:13px;font-weight:700;cursor:pointer;margin:6px 0 10px;">'
+      +(on?'\u2705 Day refitted from now \u00b7 tap to adjust':'\uD83C\uDF05 Behind schedule? Start day from now')+'</button>';
+  }
+  function renderBanner(){/* button label already reflects override state */}
+
+  // ── First-open-of-day soft prompt ──────────────────────────────────────
+  function maybeMorningPrompt(){
+    try{
+      if(hasOverride())return; // already refitted today
+      var seenKey='v5_dayfit_seen_'+getToday();
+      if(localStorage.getItem(seenKey))return;
+      var nm=nowMinsLive();
+      // Only prompt if it's meaningfully past the day's first slot start.
+      var base=(typeof getTodayBaseSlots==='function')?getTodayBaseSlots():[];
+      if(!base.length)return;
+      var firstStart=Math.min.apply(null,base.map(function(s){return s.sh*60+s.sm;}));
+      if(nm < firstStart + 45)return; // woke roughly on time → no nag
+      localStorage.setItem(seenKey,'1');
+      setTimeout(openSheet,800);
+    }catch(e){}
+  }
+
+  // ── Boot ───────────────────────────────────────────────────────────────
+  function boot(){renderBtn();maybeMorningPrompt();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);
+  else boot();
+
+  // keep button in sync if user navigates / refits elsewhere
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){renderBtn();}});
+}catch(e){console.warn('[v33 dayfit]',e);}
 })();
 </script>
 </body>
