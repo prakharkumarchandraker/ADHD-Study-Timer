@@ -1,7 +1,7 @@
 // ── Study OS · Service Worker ──────────────────────────────────────────────
 // DEPLOY CHECKLIST: bump CACHE string on every deploy to force cache refresh on all devices.
 // v27 — 2026-06-11: Test Series — ACE schedules, readiness-gated planner, score + mistake log
-const CACHE = 'studyos-v33'; // v33: Dayfit — "Start day from now" / "Skip to study" recalibration (today-only override, Easy refit, reversible)
+const CACHE = 'studyos-v34'; // v34: convert a running routine → study/recorded/revision from the home in-session card (checklist preserved), reversible
 
 // Static assets that are safe to cache forever (fonts, CDN libraries)
 // index.html is intentionally NOT cached here — it uses network-first below

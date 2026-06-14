@@ -1350,6 +1350,8 @@ window.onerror=function(msg,src,line,col,err){
     </div>
     <div class="hero-bar-wrap"><div class="hero-bar" id="heroBar" style="width:0%"></div></div>
     <div class="hero-bar-meta"><span class="hbm" id="heroBarL">—</span><span class="hbm" id="heroBarR">—</span></div>
+    <!-- DAYFIT: convert running routine → study (v33.1) -->
+    <div id="dayfitHeroConvert" style="display:none;margin-top:10px;"></div>
     <!-- GATE task in hero -->
     <div class="hero-gate-task" id="heroGateTask" style="display:none;">
       <div class="hgt-badge" id="hgtBadge"></div>
@@ -5574,7 +5576,24 @@ function tick(){
     renderSegs(elaSecs,totSecs,color);
     if(rems.break&&rem<=300&&rem>295&&lb!==ai){lb=ai;playAlertWarn();showT('🧘 Wrapping up',sl.label+' ends in 5 min');}
     if(elaSecs<=3&&lstart!==ai){lstart=ai;playAlertStart();showT('🟢 Session started',sl.label+' — focus time!');showFocusCountdown();}
+    // DAYFIT v33.1 — convert running routine → study, or revert a converted slot
+    try{
+      var dfc=document.getElementById('dayfitHeroConvert');
+      if(dfc){
+        var convOrig=(typeof window.dayfitSlotConverted==='function')?window.dayfitSlotConverted(sl.id):null;
+        if(convOrig!==null){
+          // currently a converted slot → offer revert back to routine
+          dfc.style.display='block';
+          dfc.innerHTML='<button onclick="dayfitRevertSlot(\''+String(sl.id).replace(/\x27/g,"\\\x27")+'\')" style="width:100%;background:var(--sf2);border:1px solid var(--bd2);color:var(--mt2);border-radius:10px;padding:9px;font-family:var(--fn);font-size:12px;font-weight:700;cursor:pointer;">↩ Back to routine</button>';
+        } else if(sl.type==='other'){
+          // a real routine running → offer study conversion
+          dfc.style.display='block';
+          dfc.innerHTML='<button onclick="dayfitOpenPicker(\''+String(sl.id).replace(/\x27/g,"\\\x27")+'\',\''+String(sl.label||'').replace(/\x27/g,"\\\x27").replace(/"/g,'')+'\')" style="width:100%;background:var(--s1b,rgba(77,159,236,.10));border:1px solid var(--s1o,rgba(77,159,236,.35));color:var(--s1,#4d9fec);border-radius:10px;padding:9px;font-family:var(--fn);font-size:12px;font-weight:700;cursor:pointer;">📚 Study this time instead</button>';
+        } else { dfc.style.display='none'; dfc.innerHTML=''; }
+      }
+    }catch(e){}
   }else if(ni>=0){
+    try{var _dfc1=document.getElementById('dayfitHeroConvert');if(_dfc1){_dfc1.style.display='none';_dfc1.innerHTML='';}}catch(e){}
     if(freeFocusSession){
       var sl2=ALL_SLOTS[ni];var diff=(toM(sl2.start[0],sl2.start[1])-mins)*60-s;
       if(rems.notif&&diff<=300&&diff>295&&ln!==ni){ln=ni;playAlertWarn();showT('🔔 Starting soon',sl2.label+' in 5 minutes');}
@@ -5595,6 +5614,7 @@ function tick(){
       if(diff<=0&&diff>-5&&lend!==ni){lend=ni;playAlertEnd();showT('⏹ Session ended','Well done! Take a break.');}
     }
   }else{
+    try{var _dfc2=document.getElementById('dayfitHeroConvert');if(_dfc2){_dfc2.style.display='none';_dfc2.innerHTML='';}}catch(e){}
     if(!freeFocusSession){
       badge.className='hero-badge hb-done';badge.textContent='🌙 All done for today';
       if(nm)nm.textContent='You made it. Rest well.';if(hs)hs.textContent='';
@@ -13383,37 +13403,49 @@ try{
   }
 
   // ── Override storage (today-only) ──────────────────────────────────────
+  // Stored shape: {day, slots, recalc:bool, mode, breakfastNote, at}
+  //   recalc=true  → produced by "start day from now"
+  //   recalc=false → produced purely by per-slot routine→study conversions
+  // Converted slots carry _origType so conversion is reversible; getTodaySlots
+  // returns slots as-is (extra _origType field is harmless downstream).
   function K(){return 'v5_dayfit_'+getToday();}
-  window.dayfitGetOverride=function(){
+  function readObj(){
     try{
       var raw=localStorage.getItem(K());
       if(!raw)return null;
       var o=JSON.parse(raw);
-      if(o&&o.day===getToday()&&Array.isArray(o.slots)&&o.slots.length)return o.slots;
-      if(o&&o.day!==getToday()){localStorage.removeItem(K());}
+      if(o&&o.day===getToday()&&Array.isArray(o.slots))return o;
+      if(o&&o.day!==getToday())localStorage.removeItem(K());
     }catch(e){}
     return null;
+  }
+  function writeObj(o){
+    try{localStorage.setItem(K(),JSON.stringify(o));}catch(e){}
+    try{
+      var fb=window._fb;
+      if(fb&&fb.ready&&typeof fbPath==='function')fb.set(fb.ref(fb.db,fbPath(K())),o).catch(function(){});
+    }catch(e){}
+  }
+  function clearObj(){
+    try{localStorage.removeItem(K());}catch(e){}
+    try{var fb=window._fb;if(fb&&fb.ready&&typeof fbPath==='function')fb.set(fb.ref(fb.db,fbPath(K())),null).catch(function(){});}catch(e){}
+  }
+  window.dayfitGetOverride=function(){
+    var o=readObj();
+    return (o&&o.slots&&o.slots.length)?o.slots:null;
   };
   function hasOverride(){return !!window.dayfitGetOverride();}
+  function deepClone(arr){return JSON.parse(JSON.stringify(arr));}
 
   function applyOverride(slots,meta){
     try{
-      localStorage.setItem(K(),JSON.stringify({day:getToday(),slots:slots,mode:meta.mode,at:Date.now(),breakfastNote:!!meta.breakfastNote}));
-      // sync to firebase (same per-key pattern as routine done)
-      try{
-        var fb=window._fb;
-        if(fb&&fb.ready&&typeof fbPath==='function'){
-          fb.set(fb.ref(fb.db,fbPath(K())),{day:getToday(),slots:slots,mode:meta.mode,at:Date.now(),breakfastNote:!!meta.breakfastNote}).catch(function(){});
-        }
-      }catch(e){}
+      writeObj({day:getToday(),slots:slots,recalc:true,mode:meta.mode,at:Date.now(),breakfastNote:!!meta.breakfastNote});
       refreshAll();
     }catch(e){console.warn('[dayfit apply]',e);}
   }
   window.dayfitRestore=function(){
     try{
-      localStorage.removeItem(K());
-      try{var fb=window._fb;if(fb&&fb.ready&&typeof fbPath==='function')fb.set(fb.ref(fb.db,fbPath(K())),null).catch(function(){});}catch(e){}
-      refreshAll();
+      clearObj();refreshAll();
       try{showT('\u21BA Restored','Back to your normal '+dayName()+' plan.');}catch(e){}
       renderBtn();
     }catch(e){console.warn('[dayfit restore]',e);}
@@ -13433,6 +13465,94 @@ try{
 
   function dayName(){try{return TT_LABELS[TT_DAYS.indexOf(getTodayDayKey())];}catch(e){return 'today';}}
   function nowMinsLive(){var n=new Date();return n.getHours()*60+n.getMinutes();}
+
+  // ── Per-slot routine → study/recorded/revision conversion ──────────────
+  // Keeps the slot's time + checklist items; only flips its type so buildSched
+  // treats it as a real session (countdown, focus, GATE task) while the routine
+  // checklist still renders in the daily routine card.
+  window.dayfitConvertSlot=function(slotId,newType){
+    try{
+      if(['study','class','revision'].indexOf(newType)<0)return;
+      var o=readObj();
+      var slots, recalc=false, mode, bn=false;
+      if(o){slots=deepClone(o.slots);recalc=!!o.recalc;mode=o.mode;bn=!!o.breakfastNote;}
+      else slots=deepClone(getTodayBaseSlots());
+      var found=false;
+      for(var i=0;i<slots.length;i++){
+        if(String(slots[i].id)===String(slotId)){
+          if(slots[i]._origType===undefined)slots[i]._origType=slots[i].type;
+          slots[i].type=newType;
+          found=true;break;
+        }
+      }
+      if(!found)return;
+      writeObj({day:getToday(),slots:slots,recalc:recalc,mode:mode,at:Date.now(),breakfastNote:bn});
+      refreshAll();
+      closePicker();
+      try{if(typeof haptic==='function')haptic([20,30,20]);}catch(e){}
+      var tl=newType==='class'?'Recorded':newType==='revision'?'Revision':'Gate Lectures';
+      try{showT('\uD83D\uDCDA Now studying','This slot is '+tl+' for the rest of its time. Checklist still lives in your routine list. Tap \u21A9 on the card to undo.');}catch(e){}
+    }catch(e){console.warn('[dayfit convert]',e);}
+  };
+
+  window.dayfitRevertSlot=function(slotId){
+    try{
+      var o=readObj();if(!o)return;
+      var slots=deepClone(o.slots);
+      var anyConvLeft=false, did=false;
+      for(var i=0;i<slots.length;i++){
+        if(String(slots[i].id)===String(slotId)&&slots[i]._origType!==undefined){
+          slots[i].type=slots[i]._origType;
+          delete slots[i]._origType;
+          did=true;
+        }
+      }
+      for(var j=0;j<slots.length;j++){if(slots[j]._origType!==undefined)anyConvLeft=true;}
+      // If this override was purely conversions (not a full recalc) and none
+      // remain, clear it entirely so getTodaySlots falls back to base.
+      if(!o.recalc && !anyConvLeft){clearObj();}
+      else{writeObj({day:getToday(),slots:slots,recalc:!!o.recalc,mode:o.mode,at:Date.now(),breakfastNote:!!o.breakfastNote});}
+      refreshAll();
+      try{if(typeof haptic==='function')haptic([30]);}catch(e){}
+      if(did){try{showT('\u21A9 Back to routine','Slot restored to its routine.');}catch(e){}}
+    }catch(e){console.warn('[dayfit revert]',e);}
+  };
+
+  // Is a given slot id currently a conversion? returns origType or null
+  window.dayfitSlotConverted=function(slotId){
+    var o=readObj();if(!o)return null;
+    for(var i=0;i<o.slots.length;i++){
+      if(String(o.slots[i].id)===String(slotId)&&o.slots[i]._origType!==undefined)return o.slots[i]._origType;
+    }
+    return null;
+  };
+
+  // ── Type picker (small centered sheet) ─────────────────────────────────
+  function openPicker(slotId,slotName){
+    var ov=document.getElementById('dayfitPicker');
+    if(!ov){ov=document.createElement('div');ov.id='dayfitPicker';document.body.appendChild(ov);}
+    ov.style.cssText='position:fixed;inset:0;z-index:9300;background:rgba(0,0,0,.55);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:20px;';
+    ov.onclick=function(e){if(e.target===ov)closePicker();};
+    function opt(type,emoji,title,desc,color){
+      return '<button onclick="dayfitConvertSlot(\''+String(slotId).replace(/'/g,"\\'")+'\',\''+type+'\')" style="width:100%;display:flex;align-items:center;gap:10px;background:var(--sf2);border:1px solid var(--bd2);border-radius:11px;padding:12px;font-family:var(--fn);cursor:pointer;text-align:left;margin-bottom:8px;">'
+        +'<span style="font-size:20px;">'+emoji+'</span>'
+        +'<span style="flex:1;"><span style="display:block;font-size:13px;font-weight:700;color:'+color+';">'+title+'</span>'
+        +'<span style="display:block;font-size:11px;color:var(--mt2);margin-top:1px;">'+desc+'</span></span></button>';
+    }
+    ov.innerHTML=
+      '<div style="width:100%;max-width:380px;background:var(--sf,#16181b);border:1px solid var(--bd);border-radius:16px;padding:18px;font-family:var(--fn);box-shadow:0 10px 50px rgba(0,0,0,.5);">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">'
+      +'<div style="font-size:15px;font-weight:800;color:var(--tx);">\uD83D\uDCDA Study this slot instead</div>'
+      +'<button onclick="dayfitClosePicker()" style="background:none;border:none;color:var(--mt);font-size:20px;cursor:pointer;padding:2px 6px;">\u2715</button></div>'
+      +'<div style="font-size:11px;color:var(--mt);margin-bottom:14px;">"'+esc(slotName||'This slot')+'" becomes a study session for its remaining time. Your routine checklist stays in the daily routine list.</div>'
+      +opt('study','\uD83D\uDCDA','Gate Lectures','Live lecture study \u2014 pulls your next GATE task','var(--s1,#4d9fec)')
+      +opt('class','\uD83D\uDCE1','Recorded','Recorded lecture watching','var(--s2,#3ecf8e)')
+      +opt('revision','\uD83D\uDD04','Revision','Spaced-repetition revision block','#a78bfa')
+      +'</div>';
+  }
+  function closePicker(){var ov=document.getElementById('dayfitPicker');if(ov)ov.remove();}
+  window.dayfitOpenPicker=openPicker;
+  window.dayfitClosePicker=closePicker;
 
   // ── Recalc actions ─────────────────────────────────────────────────────
   function doRecalc(mode){
