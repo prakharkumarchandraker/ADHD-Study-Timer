@@ -13050,22 +13050,28 @@ try{
     if(typeof window.renderSpeedCalc==='function')window.renderSpeedCalc();
   };
 
-  // Remaining test minutes split into sitting-time vs analysis-time.
-  // Mirrors tstRemainingFixedMins inclusion rules.
+  // Remaining test minutes, split into total vs analysis-portion.
+  // IMPORTANT: total reuses the proven window.tstRemainingFixedMins() (the same
+  // number the old "594H TESTS (FIXED)" line showed) so behaviour can't drift.
+  // The analysis-portion mirrors that function's inclusion rules to compute how
+  // many of those minutes are analysis (so the "Analysis time" toggle can drop
+  // them). sitting = total - analysis.
   function testSplit(){
-    var r={test:0,ana:0};
+    var total=0, ana=0;
+    try{ total=(typeof window.tstRemainingFixedMins==='function')?(window.tstRemainingFixedMins()||0):0; }catch(e){ total=0; }
     try{
-      if(typeof tstList!=='function')return r;
-      tstList().forEach(function(t){
-        var att=(typeof tArr==='function')?tArr(t.attempts):(Array.isArray(t.attempts)?t.attempts:[]);
-        if(att.length&&!t.retake){if(!t.analyzed&&t.wave===1)r.ana+=tstAmin(t);return;}
-        if(t.wave!==1&&!t.planned)return;
-        if(typeof tstHasUnmapped==='function'&&tstHasUnmapped(t)&&!t.planned)return;
-        r.test+=(t.min||0);
-        r.ana+=tstAmin(t);
-      });
-    }catch(e){}
-    return r;
+      if(typeof tstList==='function'){
+        tstList().forEach(function(t){
+          var att=(typeof tArr==='function')?tArr(t.attempts):(Array.isArray(t.attempts)?t.attempts:[]);
+          if(att.length&&!t.retake){ if(!t.analyzed&&t.wave===1)ana+=tstAmin(t); return; }
+          if(t.wave!==1&&!t.planned)return;
+          if(typeof tstHasUnmapped==='function'&&tstHasUnmapped(t)&&!t.planned)return;
+          ana+=tstAmin(t);
+        });
+      }
+    }catch(e){ ana=0; }
+    if(ana>total)ana=total; // safety
+    return {test:Math.max(0,total-ana), ana:ana, total:total};
   }
 
   function fmtH(min){return Math.round(min/60*10)/10;}
