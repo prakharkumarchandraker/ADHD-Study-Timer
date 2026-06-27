@@ -796,8 +796,8 @@ body.focus-mode .hero-cd{font-size:96px!important;letter-spacing:-4px;}
 /* Task pill */
 .fo-task-pill{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:20px;padding:6px 16px;font-size:11px;color:rgba(255,255,255,.45);font-family:var(--mo);max-width:80vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:16px;}
 /* Big timer */
-.fo-timer{font-size:clamp(56px,14vw,110px);font-weight:700;font-family:'JetBrains Mono','Courier New',Courier,monospace;letter-spacing:-2px;color:#fff;line-height:1;margin-bottom:6px;text-align:center;font-variant-numeric:tabular-nums;}
-.fo-timer-lbl{font-size:10px;color:rgba(255,255,255,.28);letter-spacing:.12em;text-transform:uppercase;margin-bottom:24px;}
+.fo-timer{font-size:clamp(58px,15vw,116px);font-weight:800;font-family:'Inter',sans-serif;letter-spacing:-2.5px;color:#fff;line-height:1;margin-bottom:6px;text-align:center;font-variant-numeric:tabular-nums;}
+.fo-timer-lbl{font-size:11px;font-weight:600;color:rgba(255,255,255,.5);letter-spacing:.12em;text-transform:uppercase;margin-bottom:24px;}
 /* Progress bar */
 .fo-progress-wrap{width:min(300px,75vw);height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;margin-bottom:24px;}
 .fo-progress-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--s1),var(--s2));transition:width .8s linear;}
@@ -809,8 +809,8 @@ body.focus-mode .hero-cd{font-size:96px!important;letter-spacing:-4px;}
 /* Stats */
 .fo-stats{display:flex;gap:clamp(12px,3.5vw,32px);margin-bottom:20px;align-items:stretch;}
 .fo-stat{text-align:center;min-width:48px;}
-.fo-stat-num{font-size:clamp(18px,5vw,26px);font-weight:700;font-family:'JetBrains Mono','Courier New',Courier,monospace;line-height:1;font-variant-numeric:tabular-nums;}
-.fo-stat-lbl{font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.08em;text-transform:uppercase;margin-top:4px;}
+.fo-stat-num{font-size:clamp(19px,5.2vw,27px);font-weight:800;font-family:'Inter',sans-serif;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.5px;}
+.fo-stat-lbl{font-size:10px;font-weight:600;color:rgba(255,255,255,.5);letter-spacing:.08em;text-transform:uppercase;margin-top:4px;}
 .fo-stat-divider{width:1px;background:rgba(255,255,255,.07);align-self:stretch;margin:2px 0;}
 /* Bottom water row */
 .fo-water-row{display:flex;align-items:center;gap:6px;font-family:var(--mo);font-size:10px;color:rgba(255,255,255,.25);margin-top:4px;}
@@ -5932,11 +5932,35 @@ function updateFocusOverlay(){
   var foS=document.getElementById('foScreenTime'),foA=document.getElementById('foAwayTime');
   var foP=document.getElementById('foPresentPct'),foT=document.getElementById('foTotalScreen');
   var foSLbl=document.getElementById('foScreenLbl');
-  if(foS)foS.textContent=dispScreen+'m';
-  if(foA)foA.textContent=_isOtherSlot?'—':dispAway+'m';
-  if(foP){foP.textContent=_isOtherSlot?'—':dispPct+'%';if(!_isOtherSlot)foP.style.color=colPct;else foP.style.color='var(--mt)';}
-  if(foT)foT.textContent=totalScreenToday+'m';
-  if(foSLbl)foSLbl.textContent=_isOtherSlot?'Today':((activeSlot||fs)?'This Ses.':'Today');
+  var _foMS=function(sec){sec=Math.max(0,Math.round(sec));var _m=Math.floor(sec/60),_s=sec%60;return _m+':'+(_s<10?'0':'')+_s;};
+  var _liveSes=(activeSlot&&!_isOtherSlot)||fs;
+  if(_liveSes){
+    var _scrSec,_elaSec;
+    if(activeSlot){
+      var _sid=activeSlot.id;
+      _scrSec=(typeof slotFocusSecs!=='undefined'&&slotFocusSecs[_sid])?slotFocusSecs[_sid]:0;
+      var _nd=new Date(),_nowSec=_nd.getHours()*3600+_nd.getMinutes()*60+_nd.getSeconds();
+      var _stSec=activeSlot.start[0]*3600+activeSlot.start[1]*60;
+      var _durSec=slotMins(activeSlot)*60;
+      var _e=_nowSec-_stSec;if(_e<0)_e+=86400;
+      _elaSec=Math.max(0,Math.min(_durSec,_e));
+    } else { _scrSec=fs.secs; _elaSec=fs.secs; }
+    if(_scrSec>_elaSec)_scrSec=_elaSec;
+    var _awSec=Math.max(0,_elaSec-_scrSec);
+    var _pct=_elaSec>0?Math.min(100,Math.round(_scrSec/_elaSec*100)):(fs?100:0);
+    var _cp=_pct>=80?'#34d399':_pct>=50?'#f9a825':'#f87171';
+    if(foS)foS.textContent=_foMS(_scrSec);
+    if(foA)foA.textContent=_foMS(_awSec);
+    if(foP){foP.textContent=_pct+'%';foP.style.color=_cp;}
+    if(foT)foT.textContent=totalScreenToday+'m';
+    if(foSLbl)foSLbl.textContent='This Ses.';
+  } else {
+    if(foS)foS.textContent=dispScreen+'m';
+    if(foA)foA.textContent=_isOtherSlot?'—':dispAway+'m';
+    if(foP){foP.textContent=_isOtherSlot?'—':dispPct+'%';if(!_isOtherSlot)foP.style.color=colPct;else foP.style.color='var(--mt)';}
+    if(foT)foT.textContent=totalScreenToday+'m';
+    if(foSLbl)foSLbl.textContent='Today';
+  }
 
   // Re-render sub-items checklist only when active slot changes (avoids flicker every second)
   var _curSlotId = activeSlot?activeSlot.id:(fs?'ff':null);
@@ -13478,7 +13502,7 @@ try{
   // checklist still renders in the daily routine card.
   window.dayfitConvertSlot=function(slotId,newType){
     try{
-      if(['study','class','revision'].indexOf(newType)<0)return;
+      if(['study','class','revision','other'].indexOf(newType)<0)return;
       var o=readObj();
       var slots, recalc=false, mode, bn=false;
       if(o){slots=deepClone(o.slots);recalc=!!o.recalc;mode=o.mode;bn=!!o.breakfastNote;}
@@ -13496,8 +13520,8 @@ try{
       refreshAll();
       closePicker();
       try{if(typeof haptic==='function')haptic([20,30,20]);}catch(e){}
-      var tl=newType==='class'?'Recorded':newType==='revision'?'Revision':'Gate Lectures';
-      try{showT('\uD83D\uDCDA Now studying','This slot is '+tl+' for the rest of its time. Checklist still lives in your routine list. Tap \u21A9 on the card to undo.');}catch(e){}
+      var tl=newType==='class'?'Recorded':newType==='revision'?'Revision':newType==='other'?'Routine':'GATE lectures';
+      try{showT('\uD83D\uDD00 Switched to '+tl,'This slot is '+tl+' for its remaining time \\u2014 logged in Followed. Undo with \\u21A9 on the card.');}catch(e){}
     }catch(e){console.warn('[dayfit convert]',e);}
   };
 
@@ -13646,6 +13670,270 @@ try{
   // keep button in sync if user navigates / refits elsewhere
   document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){renderBtn();}});
 }catch(e){console.warn('[v33 dayfit]',e);}
+})();
+</script>
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// v36 — FOCUS CONTROLS (in-overlay pause + session-type switch w/ split ledger)
+//        + TIMETABLE FOLLOWED HISTORY (frozen daily snapshot, synced, in Stats)
+// Self-contained. Reuses window.stPauseToggle / window._stPause (screen-time
+// pause) and window.dayfitConvertSlot (today-only type flip, _origType-reversible,
+// Firebase-synced). Never touches buildSched(). New per-date keys:
+//   v5_seg_<date>      = { slotId: [ {type, atMin, scr}, ... ] }  (split boundaries)
+//   v5_followed_<date> = frozen snapshot {date, slots[], totals, swaps, didNothing}
+// ═══════════════════════════════════════════════════════════════════════════
+(function(){
+try{
+  function pad2(n){return (n<10?'0':'')+n;}
+  function todayK(){try{return getToday();}catch(e){var n=new Date();return n.getFullYear()+'-'+pad2(n.getMonth()+1)+'-'+pad2(n.getDate());}}
+  function wkKey(dstr){try{return TT_DAYS[(fromStr(dstr).getDay()+6)%7];}catch(e){return null;}}
+  function lsGet(k,def){try{var v=localStorage.getItem(k);return v?JSON.parse(v):def;}catch(e){return def;}}
+  function fbSet(k,v){try{var fb=window._fb;if(fb&&fb.ready&&typeof fbPath==='function')fb.set(fb.ref(fb.db,fbPath(k)),v).catch(function(){});}catch(e){}}
+  function nowMin(){var n=new Date();return n.getHours()*60+n.getMinutes();}
+  function prevDate(d,n){var x=fromStr(d);x.setDate(x.getDate()-n);return x.getFullYear()+'-'+pad2(x.getMonth()+1)+'-'+pad2(x.getDate());}
+
+  function activeSlotNow(){
+    try{ if(typeof ALL_SLOTS==='undefined')return null;
+      for(var i=0;i<ALL_SLOTS.length;i++){ if(typeof slotActive==='function'&&slotActive(ALL_SLOTS[i]))return ALL_SLOTS[i]; }
+    }catch(e){} return null;
+  }
+
+  // ════════════════ SPLIT SEGMENT LEDGER ════════════════
+  function segK(d){return 'v5_seg_'+(d||todayK());}
+  function readSeg(d){return lsGet(segK(d),{})||{};}
+  function writeSeg(o){var k=segK();try{localStorage.setItem(k,JSON.stringify(o));}catch(e){}fbSet(k,o);}
+  function logSwitch(slot,newType){
+    try{
+      var seg=readSeg(); var sid=String(slot.id);
+      var startMin=slot.start[0]*60+slot.start[1];
+      var scrNow=(typeof slotFocusSecs!=='undefined'&&slotFocusSecs[sid])?slotFocusSecs[sid]:0;
+      if(!Array.isArray(seg[sid])||!seg[sid].length){ seg[sid]=[{type:slot.type,atMin:startMin,scr:0}]; }
+      var last=seg[sid][seg[sid].length-1];
+      if(last && last.type===newType){ writeSeg(seg); return; } // no-op
+      seg[sid].push({type:newType,atMin:nowMin(),scr:scrNow});
+      writeSeg(seg);
+    }catch(e){console.warn('[seg]',e);}
+  }
+
+  // ════════════════ FOLLOWED SNAPSHOT (frozen daily) ════════════════
+  function flwK(d){return 'v5_followed_'+d;}
+  function sftFor(d){ return (d===todayK()&&typeof slotFocusSecs!=='undefined') ? (slotFocusSecs||{}) : (lsGet('v5_sft_'+d,{})||{}); }
+  function slotsFor(d){
+    if(d===todayK()){ try{ return getTodaySlots()||[]; }catch(e){ return (typeof getTodayBaseSlots==='function')?getTodayBaseSlots():[]; } }
+    var ov=lsGet('v5_dayfit_'+d,null);
+    if(ov&&Array.isArray(ov.slots))return ov.slots;
+    var wd=wkKey(d); return (wd&&_timetable[wd])?_timetable[wd]:[];
+  }
+  function flwSnapshot(d){
+    var isToday=(d===todayK());
+    var slots=slotsFor(d)||[]; var sft=sftFor(d); var seg=readSeg(d);
+    var nm=isToday?nowMin():null;
+    var outSlots=[],totals={study:0,'class':0,revision:0,other:0},anyScreen=false,swaps=0;
+    slots.forEach(function(s){
+      var sid=String(s.id); var startMin=s.sh*60+s.sm, endMin=s.eh*60+s.em;
+      var totScr=sft[sid]||0; if(totScr>0)anyScreen=true;
+      var finalType=s.type; var origType=(s._origType!==undefined)?s._origType:null;
+      if(origType!==null&&origType!==finalType)swaps++;
+      var segs=[]; var led=Array.isArray(seg[sid])?seg[sid].slice().sort(function(a,b){return a.atMin-b.atMin;}):null;
+      if(led&&led.length>1){
+        for(var i=0;i<led.length;i++){
+          var a=led[i];
+          var nScr=(i+1<led.length)?led[i+1].scr:totScr;
+          var nMinV=(i+1<led.length)?led[i+1].atMin:(isToday?Math.min(endMin,nm):endMin);
+          var sScr=Math.max(0,nScr-a.scr), sEla=Math.max(0,nMinV-a.atMin);
+          var sScrM=Math.round(sScr/60), sAwayM=Math.max(0,sEla-sScrM);
+          segs.push({type:a.type,screenMins:sScrM,awayMins:(a.type==='other'?0:sAwayM)});
+          totals[a.type]=(totals[a.type]||0)+sScrM;
+        }
+      } else {
+        var ela=isToday?Math.max(0,Math.min(endMin,nm)-startMin):Math.max(0,endMin-startMin);
+        if(isToday&&nm<startMin)ela=0;
+        var scrM=Math.round(totScr/60), awayM=Math.max(0,ela-scrM);
+        segs.push({type:finalType,screenMins:scrM,awayMins:(finalType==='other'?0:awayM)});
+        totals[finalType]=(totals[finalType]||0)+scrM;
+      }
+      outSlots.push({id:sid,name:s.name,finalType:finalType,origType:origType,
+        time:pad2(s.sh)+':'+pad2(s.sm)+'\u2013'+pad2(s.eh>=24?s.eh-24:s.eh)+':'+pad2(s.em),
+        segments:segs,screenMins:Math.round(totScr/60)});
+    });
+    return {date:d,slots:outSlots,totals:totals,swaps:swaps,didNothing:!anyScreen,updatedAt:Date.now()};
+  }
+  function flwWrite(d){ try{var snap=flwSnapshot(d); localStorage.setItem(flwK(d),JSON.stringify(snap)); fbSet(flwK(d),snap); return snap;}catch(e){return null;} }
+  window.flwWriteToday=function(){return flwWrite(todayK());};
+
+  function flwFinalize(){
+    try{ var t=todayK();
+      for(var i=1;i<=14;i++){ var d=prevDate(t,i); if(!localStorage.getItem(flwK(d))) flwWrite(d); }
+    }catch(e){}
+  }
+  function flwAllDates(){
+    var out=[];
+    try{ for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k&&k.indexOf('v5_followed_')===0)out.push(k.slice(12));} }catch(e){}
+    var t=todayK(); if(out.indexOf(t)<0)out.push(t);
+    out.sort(); out.reverse(); return out.slice(0,40);
+  }
+
+  // ════════════════ STATS CARD ════════════════
+  var TYPE_META={study:{e:'\uD83D\uDCDA',l:'GATE',c:'#4d9fec'},'class':{e:'\uD83D\uDCE1',l:'Recorded',c:'#3ecf8e'},revision:{e:'\uD83D\uDD04',l:'Revision',c:'#a78bfa'},other:{e:'\uD83D\uDDD3\uFE0F',l:'Routine',c:'#e8b339'}};
+  function hm(mins){mins=Math.round(mins);if(mins<=0)return '0m';if(mins<60)return mins+'m';var h=Math.floor(mins/60),m=mins%60;return h+'h'+(m?' '+m+'m':'');}
+  function fmtDateLbl(d){try{var t=todayK();if(d===t)return 'Today';if(d===prevDate(t,1))return 'Yesterday';return fromStr(d).toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});}catch(e){return d;}}
+
+  var _flwOpen={};
+  function ensureCard(){
+    var host=document.getElementById('tab-stats'); if(!host)return null;
+    var card=document.getElementById('flwCard');
+    if(!card){
+      card=document.createElement('div'); card.className='card'; card.id='flwCard';
+      card.innerHTML='<div class="ct">\uD83D\uDDD3\uFE0F Timetable Followed</div>'
+        +'<div style="font-size:11px;color:var(--mt);margin:-2px 0 10px;">What you actually did each day \u2014 type swaps, screen &amp; away time. Frozen per day.</div>'
+        +'<div id="flwList" style="display:flex;flex-direction:column;gap:7px;"></div>';
+      host.appendChild(card);
+    }
+    return card;
+  }
+  function renderFollowed(){
+    try{
+      var card=ensureCard(); if(!card)return;
+      var list=document.getElementById('flwList'); if(!list)return;
+      var dates=flwAllDates(); var html='';
+      dates.forEach(function(d){
+        var isToday=(d===todayK());
+        var snap=isToday?flwSnapshot(d):(lsGet(flwK(d),null)||flwSnapshot(d));
+        var sumParts=[];
+        ['study','class','revision','other'].forEach(function(tp){ if(snap.totals[tp]>0)sumParts.push('<span style="color:'+TYPE_META[tp].c+';">'+TYPE_META[tp].e+' '+hm(snap.totals[tp])+'</span>'); });
+        var summary=snap.didNothing?'<span style="color:var(--mt);">Did nothing</span>':(sumParts.length?sumParts.join('<span style="color:var(--mt);margin:0 5px;">\u00b7</span>'):'<span style="color:var(--mt);">\u2014</span>');
+        var swapTag=snap.swaps>0?'<span style="font-size:9px;font-weight:700;color:#e8b339;background:rgba(232,179,57,.13);border:1px solid rgba(232,179,57,.3);border-radius:5px;padding:1px 6px;margin-left:6px;">'+snap.swaps+' swap'+(snap.swaps>1?'s':'')+'</span>':'';
+        var liveTag=isToday?'<span style="font-size:9px;font-weight:700;color:#3ecf8e;margin-left:6px;">\u25cf live</span>':'';
+        var open=!!_flwOpen[d];
+        html+='<div style="border:1px solid var(--bd2);border-radius:10px;overflow:hidden;">';
+        html+='<div onclick="window.flwToggle(\''+d+'\')" style="display:flex;align-items:center;justify-content:space-between;padding:9px 11px;cursor:pointer;background:var(--sf2);">'
+          +'<div><div style="font-size:12px;font-weight:700;color:var(--tx);">'+fmtDateLbl(d)+liveTag+swapTag+'</div>'
+          +'<div style="font-size:11px;margin-top:2px;">'+summary+'</div></div>'
+          +'<div style="color:var(--mt);font-size:13px;">'+(open?'\u2715':'\u203A')+'</div></div>';
+        if(open){
+          html+='<div style="padding:8px 11px;border-top:1px solid var(--bd2);display:flex;flex-direction:column;gap:8px;">';
+          if(snap.didNothing){ html+='<div style="font-size:11px;color:var(--mt);">No sessions logged this day.</div>'; }
+          snap.slots.forEach(function(sl){
+            if(snap.didNothing && sl.screenMins<=0) return;
+            var tm=TYPE_META[sl.finalType]||TYPE_META.study;
+            var swapped=(sl.origType!==null&&sl.origType!==sl.finalType);
+            var origm=swapped?(TYPE_META[sl.origType]||{l:sl.origType}):null;
+            var head='<span style="font-size:11px;font-weight:700;color:'+tm.c+';">'+tm.e+' '+tm.l+'</span>'
+              +(swapped?'<span style="font-size:9px;color:var(--mt);"> \u2190 was '+origm.l+'</span>':'');
+            var detail='';
+            if(sl.segments.length>1){
+              sl.segments.forEach(function(sg){var m=TYPE_META[sg.type]||{e:'',l:sg.type};detail+='<div style="font-size:10px;color:var(--mt2);padding-left:6px;border-left:2px solid var(--bd2);margin-top:3px;">'+(m.e||'')+' '+(m.l||sg.type)+' \u2014 <span style="color:#3ecf8e;">'+hm(sg.screenMins)+' screen</span>'+(sg.type!=='other'?' \u00b7 <span style="color:#f87171;">'+hm(sg.awayMins)+' away</span>':'')+'</div>';});
+            } else if(sl.segments.length===1){
+              var sg=sl.segments[0]; detail='<div style="font-size:10px;color:var(--mt2);margin-top:2px;"><span style="color:#3ecf8e;">'+hm(sg.screenMins)+' screen</span>'+(sl.finalType!=='other'?' \u00b7 <span style="color:#f87171;">'+hm(sg.awayMins)+' away</span>':'')+'</div>';
+            }
+            html+='<div><div style="display:flex;justify-content:space-between;align-items:baseline;"><span style="font-size:11px;color:var(--tx);">'+esc(sl.name)+'</span><span style="font-size:9px;color:var(--mt);font-family:var(--mo);">'+sl.time+'</span></div>'+head+detail+'</div>';
+          });
+          html+='</div>';
+        }
+        html+='</div>';
+      });
+      list.innerHTML=html||'<div style="font-size:11px;color:var(--mt);">No history yet.</div>';
+    }catch(e){console.warn('[flw render]',e);}
+  }
+  window.flwToggle=function(d){_flwOpen[d]=!_flwOpen[d];renderFollowed();};
+
+  // ════════════════ FOCUS OVERLAY CONTROLS ════════════════
+  function typeLabel(t){return (TYPE_META[t]||{}).l||'GATE';}
+
+  function buildControls(){
+    var ov=document.getElementById('focusOverlay'); if(!ov)return;
+    if(!document.getElementById('foCtrlRow')){
+      var anchor=ov.querySelector('.fo-progress-wrap');
+      var row=document.createElement('div'); row.id='foCtrlRow';
+      row.style.cssText='display:flex;gap:9px;align-items:center;justify-content:center;margin-bottom:18px;flex-wrap:wrap;z-index:2;position:relative;';
+      var btnCss='display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:11px;padding:8px 14px;color:rgba(255,255,255,.85);font-family:var(--fn);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;';
+      row.innerHTML='<button id="foPauseBtn" style="'+btnCss+'">\u23f8 Pause</button>'
+        +'<button id="foSwitchBtn" style="'+btnCss+'">\uD83D\uDD00 Switch</button>';
+      if(anchor&&anchor.parentNode)anchor.parentNode.insertBefore(row,anchor); else ov.appendChild(row);
+      document.getElementById('foPauseBtn').onclick=function(){ try{ if(typeof window.stPauseToggle==='function')window.stPauseToggle(); }catch(e){} refreshControls(); };
+      document.getElementById('foSwitchBtn').onclick=function(){ openTypeSheet(); };
+    }
+    if(!document.getElementById('foPausedTag')){
+      var lbl=ov.querySelector('.fo-timer-lbl');
+      if(lbl&&lbl.parentNode){
+        var tag=document.createElement('div'); tag.id='foPausedTag';
+        tag.style.cssText='display:none;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#e8b339;background:rgba(232,179,57,.14);border:1px solid rgba(232,179,57,.4);border-radius:8px;padding:3px 11px;margin:-12px auto 16px;width:max-content;position:relative;z-index:2;';
+        tag.textContent='\u23f8 Paused \u00b7 screen time held';
+        lbl.parentNode.insertBefore(tag,lbl.nextSibling);
+      }
+    }
+  }
+  function refreshControls(){
+    try{
+      if(!window._foActive)return;
+      buildControls();
+      var paused=!!window._stPause;
+      var pb=document.getElementById('foPauseBtn');
+      if(pb){ pb.innerHTML=paused?'\u25b6 Resume':'\u23f8 Pause';
+        pb.style.background=paused?'rgba(62,207,142,.18)':'rgba(255,255,255,.08)';
+        pb.style.borderColor=paused?'rgba(62,207,142,.55)':'rgba(255,255,255,.14)';
+        pb.style.color=paused?'#3ecf8e':'rgba(255,255,255,.85)';
+      }
+      var tag=document.getElementById('foPausedTag'); if(tag)tag.style.display=paused?'block':'none';
+      var sb=document.getElementById('foSwitchBtn');
+      var as=activeSlotNow();
+      if(sb){
+        if(as){ sb.style.opacity='1'; sb.style.pointerEvents='auto'; sb.disabled=false; sb.innerHTML='\uD83D\uDD00 '+typeLabel(as.type)+' \u2192'; }
+        else { sb.style.opacity='.4'; sb.style.pointerEvents='none'; sb.disabled=true; sb.innerHTML='\uD83D\uDD00 Switch'; }
+      }
+    }catch(e){}
+  }
+
+  function openTypeSheet(){
+    var as=activeSlotNow(); if(!as)return;
+    var ex=document.getElementById('foTypeSheet'); if(ex)ex.remove();
+    var ov=document.createElement('div'); ov.id='foTypeSheet';
+    ov.style.cssText='position:fixed;inset:0;z-index:100200;background:rgba(0,0,0,.62);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:22px;';
+    ov.onclick=function(e){if(e.target===ov)ov.remove();};
+    function opt(tp){var m=TYPE_META[tp];var cur=(as.type===tp);
+      return '<button data-tp="'+tp+'" style="width:100%;display:flex;align-items:center;gap:11px;background:'+(cur?'rgba(255,255,255,.13)':'rgba(255,255,255,.05)')+';border:1px solid '+(cur?'rgba(255,255,255,.3)':'rgba(255,255,255,.12)')+';border-radius:12px;padding:13px;font-family:var(--fn);cursor:pointer;text-align:left;margin-bottom:9px;-webkit-tap-highlight-color:transparent;">'
+        +'<span style="font-size:22px;">'+m.e+'</span>'
+        +'<span style="flex:1;"><span style="display:block;font-size:14px;font-weight:800;color:'+m.c+';">'+m.l+(cur?' \u00b7 current':'')+'</span></span>'
+        +(cur?'<span style="color:'+m.c+';font-size:16px;">\u2713</span>':'')+'</button>';
+    }
+    ov.innerHTML='<div style="width:100%;max-width:360px;background:#16181b;border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:18px;font-family:var(--fn);box-shadow:0 12px 50px rgba(0,0,0,.6);">'
+      +'<div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:3px;">\uD83D\uDD00 Switch this session</div>'
+      +'<div style="font-size:11px;color:rgba(255,255,255,.5);line-height:1.45;margin-bottom:14px;">"'+esc(as.label||'This slot')+'" \u2014 changes type for the rest of its time today. Timetable stays untouched; time before the switch keeps its old type.</div>'
+      +opt('study')+opt('class')+opt('revision')+opt('other')
+      +'</div>';
+    document.body.appendChild(ov);
+    ov.querySelectorAll('button[data-tp]').forEach(function(b){
+      b.onclick=function(){ var tp=b.getAttribute('data-tp'); ov.remove(); doSwitch(as,tp); };
+    });
+  }
+  function doSwitch(slot,newType){
+    try{
+      if(!slot||slot.type===newType)return;
+      logSwitch(slot,newType);                                                  // record split boundary BEFORE flip
+      if(typeof window.dayfitConvertSlot==='function')window.dayfitConvertSlot(slot.id,newType); // flip + persist + sync + refresh
+      flwWrite(todayK());                                                       // refresh followed snapshot
+      setTimeout(function(){ refreshControls(); try{if(typeof updateFocusOverlay==='function')updateFocusOverlay();}catch(e){} renderFollowed(); },70);
+      try{if(typeof haptic==='function')haptic([20,30,20]);}catch(e){}
+    }catch(e){console.warn('[doSwitch]',e);}
+  }
+
+  // ════════════════ WIRING ════════════════
+  setInterval(function(){ if(window._foActive)refreshControls(); },1000);
+  setInterval(function(){ try{ flwWrite(todayK()); if(document.getElementById('flwCard'))renderFollowed(); }catch(e){} },60000);
+
+  (function attachFb(){
+    try{ var fb=window._fb;
+      if(fb&&fb.ready&&typeof fbPath==='function'){
+        fb.onValue(fb.ref(fb.db,fbPath('v5_followed_'+todayK())),function(snap){var v=snap.val();if(v&&typeof v==='object'){try{localStorage.setItem('v5_followed_'+todayK(),JSON.stringify(v));}catch(e){}if(document.getElementById('flwCard'))renderFollowed();}});
+        fb.onValue(fb.ref(fb.db,fbPath('v5_seg_'+todayK())),function(snap){var v=snap.val();if(v&&typeof v==='object'){try{localStorage.setItem('v5_seg_'+todayK(),JSON.stringify(v));}catch(e){}}});
+      } else { setTimeout(attachFb,1500); }
+    }catch(e){ setTimeout(attachFb,2500); }
+  })();
+
+  function boot(){ try{ flwFinalize(); flwWrite(todayK()); ensureCard(); renderFollowed(); buildControls(); }catch(e){console.warn('[v36 boot]',e);} }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot); else boot();
+
+}catch(e){console.warn('[v36 focus/followed]',e);}
 })();
 </script>
 </body>
