@@ -1,7 +1,7 @@
 // ── Study OS · Service Worker ──────────────────────────────────────────────
 // DEPLOY CHECKLIST: bump CACHE string on every deploy to force cache refresh on all devices.
 // v27 — 2026-06-11: Test Series — ACE schedules, readiness-gated planner, score + mistake log
-const CACHE = 'studyos-v36'; // v36: focus in-overlay pause+session-type switch (split ledger), live MM:SS timers, Inter 800 timer, Timetable Followed history
+const CACHE = 'studyos-v39'; // v39: focus overlay scroll-safe (no topbar overlap), session timetable items now tickable in focus for all slot types
 
 // Static assets that are safe to cache forever (fonts, CDN libraries)
 // index.html is intentionally NOT cached here — it uses network-first below
