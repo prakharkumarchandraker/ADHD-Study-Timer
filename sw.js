@@ -1,7 +1,7 @@
 // ── Study OS · Service Worker ──────────────────────────────────────────────
 // DEPLOY CHECKLIST: bump CACHE string on every deploy to force cache refresh on all devices.
 // v27 — 2026-06-11: Test Series — ACE schedules, readiness-gated planner, score + mistake log
-const CACHE = 'studyos-v42'; // v42: fix items list collapsing in landscape (flex-shrink:0 on overlay children so content scrolls instead)
+const CACHE = 'studyos-v43'; // v43: FIX random daily-min count (type-switch no longer wipes snapshot) + speed-tier selector (1x-2x incl 1.75x) in hero + focus sheet
 
 // Static assets that are safe to cache forever (fonts, CDN libraries)
 // index.html is intentionally NOT cached here — it uses network-first below

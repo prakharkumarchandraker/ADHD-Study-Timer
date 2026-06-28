@@ -207,6 +207,11 @@ body.offline #mainWrap{padding-top:34px;}
 .mt-row.mt-on .mt-name{text-decoration:line-through;color:var(--mt);}
 .mt-min{font-family:var(--mo);font-size:10px;color:var(--mt);flex-shrink:0;}
 .mt-cur-tag{font-family:var(--fn);font-size:8px;font-weight:800;letter-spacing:.06em;color:var(--s1);background:rgba(77,159,236,.16);border-radius:4px;padding:1px 5px;margin-left:2px;}
+.mt-tiers{display:flex;gap:5px;margin-bottom:10px;}
+.mt-tier{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 2px;border:1px solid var(--bd2);border-radius:9px;background:transparent;cursor:pointer;transition:all .12s;-webkit-tap-highlight-color:transparent;}
+.mt-tier.on{background:var(--sf2);}
+.mt-tier-s{font-family:var(--mo);font-size:10px;font-weight:700;color:var(--mt);line-height:1;}
+.mt-tier-c{font-family:var(--fn);font-size:16px;font-weight:800;color:var(--tx);line-height:1;}
 .hgt-badge{font-family:var(--mo);font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;flex-shrink:0;margin-top:1px;}
 .hgt-info{flex:1;min-width:0;}
 .hgt-unit{font-size:10px;color:var(--mt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:2px;}
@@ -1391,7 +1396,8 @@ window.onerror=function(msg,src,line,col,err){
     </div>
     <!-- Today's minimum target (tickable, synced) -->
     <div class="mt-wrap" id="heroMinTarget" style="display:none;">
-      <div class="mt-head"><div class="mt-title">🎯 Today's minimum</div><div class="mt-prog" id="heroMinProg">0/0</div></div>
+      <div class="mt-head"><div class="mt-title">🎯 Today's target</div><div class="mt-prog" id="heroMinProg">0/0</div></div>
+      <div class="mt-tiers" id="heroMinTiers"></div>
       <div id="heroMinList"></div>
     </div>
     <!-- Class slot tasks in hero -->
@@ -8799,6 +8805,29 @@ function dmStartFirebaseListener(){
   });
 }
 
+// ── Shared speed-tier data for hero + focus selectors (1x..2x) ──
+// 1x = frozen daily snapshot; higher tiers = lectures that fit budget*speed minutes.
+// "If I watch at speed S, I cover ~this many lectures in today's study time."
+function dmTierData(){
+  var done=new Set(Object.keys(ST.done).map(Number));
+  var snap=dmLoadSnap(); if(!snap){snap=dmBuildSnapFromSched();if(snap){try{dmSaveSnap(snap);}catch(e){}}}
+  function hyd(s){var t=null;for(var i=0;i<ALL_TASKS.length;i++){if(ALL_TASKS[i].id===s.id){t=ALL_TASKS[i];break;}}return t?{task:t,chunk:s.chunk,isPartial:s.isPartial}:null;}
+  var minTasks=(snap||[]).map(hyd).filter(Boolean);
+  var dayKey=getTodayDayKey(); var slots=(_timetable[dayKey]||[]); var base=0;
+  slots.forEach(function(s){if(s.type==='study')base+=(s.eh*60+s.em)-(s.sh*60+s.sm);});
+  var TIERS=[
+    {speed:1,    label:'Min',   color:'#9aa1ab'},
+    {speed:1.25, label:'Good',  color:'#4d9fec'},
+    {speed:1.5,  label:'Great', color:'#3ecf8e'},
+    {speed:1.75, label:'Push',  color:'#a78bfa'},
+    {speed:2,    label:'Max',   color:'#e8b339'}
+  ];
+  var lists=[minTasks];
+  for(var i=1;i<TIERS.length;i++){ lists.push(dmBuildTierList(base*TIERS[i].speed, done)||[]); }
+  return {tiers:TIERS, lists:lists, done:done, budget:base};
+}
+window.dmTierData=dmTierData;
+
 function renderDailyMinimum(){
   var el=document.getElementById('dailyMinContent');
   var badge=document.getElementById('dailyMinBadge');
@@ -8847,6 +8876,7 @@ function renderDailyMinimum(){
     {speed:1,    label:'Minimum',    labelColor:'var(--mt2)',   bgColor:'var(--sf2)',              borderColor:'var(--bd)'},
     {speed:1.25, label:'Good',       labelColor:'var(--s1)',    bgColor:'rgba(77,159,236,.04)',    borderColor:'rgba(77,159,236,.2)'},
     {speed:1.5,  label:'Great',      labelColor:'var(--s2)',    bgColor:'rgba(62,207,142,.04)',     borderColor:'rgba(62,207,142,.2)'},
+    {speed:1.75, label:'Push',       labelColor:'#a78bfa',      bgColor:'rgba(167,139,250,.04)',    borderColor:'rgba(167,139,250,.2)'},
     {speed:2,    label:'Outstanding',labelColor:'var(--am)',    bgColor:'rgba(232,179,57,.04)',     borderColor:'rgba(232,179,57,.2)'}
   ];
 
@@ -13543,7 +13573,9 @@ try{
     try{if(typeof renderRoutineFromTimetable==='function')renderRoutineFromTimetable();}catch(e){}
     try{if(typeof renderTimetable==='function')renderTimetable();}catch(e){}
     try{if(typeof up==='function')up();}catch(e){}
-    try{if(typeof dmInvalidateSnap==='function')dmInvalidateSnap();}catch(e){}
+    /* v43 FIX: a type-switch is a today-only display change — do NOT invalidate the
+       frozen daily-minimum snapshot here (that caused the count to randomly jump 5/7/10
+       because buildSched() is time-dependent and rebuilt differently through the day). */
     try{if(typeof renderDailyMinimum==='function')renderDailyMinimum();}catch(e){}
     try{if(typeof window.renderSpeedCalc==='function')window.renderSpeedCalc();}catch(e){}
     renderBanner();renderBtn();
@@ -14025,6 +14057,9 @@ try{
     var txt=(t.type==='pyq')?'PYQ':(lbl+' #'+t.num);
     return {col:col,txt:txt};
   }
+  function tierData(){ try{ return (typeof window.dmTierData==='function')?window.dmTierData():null; }catch(e){ return null; } }
+  function activeTierIdx(td){ var ai=(typeof window._dminActiveTier==='number')?window._dminActiveTier:0; if(td&&(ai<0||ai>=td.tiers.length))ai=0; return ai; }
+  window.mtSetTier=function(idx){ window._dminActiveTier=idx; try{mtRender(true);}catch(e){} try{renderMinSheet();}catch(e){} try{refreshTasksBtn();}catch(e){} try{if(typeof renderDailyMinimum==='function')renderDailyMinimum();}catch(e){} try{if(typeof haptic==='function')haptic([10]);}catch(e){} };
 
   window.mtToggle=function(id){
     id=Number(id);
@@ -14045,13 +14080,26 @@ try{
   function mtRender(force){
     try{
       var wrap=document.getElementById('heroMinTarget'); if(!wrap)return;
-      var list=mtList();
-      if(!list.length){ wrap.style.display='none'; _mtSig='empty'; return; }
+      var td=tierData();
+      if(!td||!td.lists.some(function(l){return l&&l.length;})){ wrap.style.display='none'; _mtSig='empty'; return; }
+      var ai=activeTierIdx(td);
+      var list=td.lists[ai]||[];
       var doneCnt=list.filter(function(x){return isDone(x.task.id);}).length;
       var curId=null; for(var i=0;i<list.length;i++){ if(!isDone(list[i].task.id)){curId=list[i].task.id;break;} }
-      var sig=list.map(function(x){return x.task.id+(isDone(x.task.id)?'1':'0');}).join(',')+'|'+curId;
+      var sig=ai+'#'+list.map(function(x){return x.task.id+(isDone(x.task.id)?'1':'0');}).join(',')+'|'+td.lists.map(function(l){return (l||[]).length;}).join('-');
       if(!force && sig===_mtSig)return;
       _mtSig=sig;
+      var tEl=document.getElementById('heroMinTiers');
+      if(tEl){
+        var sh='';
+        td.tiers.forEach(function(tr,idx){
+          var l=td.lists[idx]||[]; var on=(idx===ai);
+          sh+='<button class="mt-tier'+(on?' on':'')+'" onclick="window.mtSetTier('+idx+')" style="'+(on?'border-color:'+tr.color+';':'')+'">'
+            +'<span class="mt-tier-s"'+(on?' style="color:'+tr.color+'"':'')+'>'+(tr.speed===1?'1x':tr.speed+'x')+'</span>'
+            +'<span class="mt-tier-c">'+l.length+'</span></button>';
+        });
+        tEl.innerHTML=sh;
+      }
       var html='';
       list.forEach(function(x){
         var t=x.task,d=isDone(t.id),cur=(t.id===curId),c=chipFor(t);
@@ -14065,7 +14113,7 @@ try{
       });
       var listEl=document.getElementById('heroMinList'); if(listEl)listEl.innerHTML=html;
       var prog=document.getElementById('heroMinProg');
-      if(prog){ prog.textContent=doneCnt+'/'+list.length; prog.className='mt-prog'+(doneCnt>=list.length?' done':''); }
+      if(prog){ prog.textContent=doneCnt+'/'+list.length; prog.className='mt-prog'+(doneCnt>=list.length&&list.length>0?' done':''); }
       wrap.style.display='block';
     }catch(e){console.warn('[mtRender]',e);}
   }
@@ -14096,21 +14144,32 @@ try{
         btn.style.cssText='display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:11px;padding:8px 14px;color:rgba(255,255,255,.85);font-family:var(--fn);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;';
         btn.onclick=openMinSheet; row.appendChild(btn);
       }
-      var list=mtList();
+      var td=tierData(); var list=td?(td.lists[activeTierIdx(td)]||[]):[];
       if(!list.length){ btn.style.display='none'; return; }
       btn.style.display='flex';
+      var _spd=td?td.tiers[activeTierIdx(td)].speed:1; var _spdL=(_spd===1?'1x':_spd+'x');
       var left=list.filter(function(x){return !isDone(x.task.id);}).length;
-      if(left===0){ btn.innerHTML='\uD83C\uDFAF All done'; btn.style.color='#3ecf8e'; btn.style.borderColor='rgba(62,207,142,.5)'; }
-      else { btn.innerHTML='\uD83C\uDFAF '+left+' left'; btn.style.color='rgba(255,255,255,.85)'; btn.style.borderColor='rgba(255,255,255,.14)'; }
+      if(left===0){ btn.innerHTML='\uD83C\uDFAF '+_spdL+' done'; btn.style.color='#3ecf8e'; btn.style.borderColor='rgba(62,207,142,.5)'; }
+      else { btn.innerHTML='\uD83C\uDFAF '+left+' left ('+_spdL+')'; btn.style.color='rgba(255,255,255,.85)'; btn.style.borderColor='rgba(255,255,255,.14)'; }
     }catch(e){}
   }
   function renderMinSheet(){
     var body=document.getElementById('foMinSheetBody'); if(!body)return;
-    var list=mtList();
+    var td=tierData(); if(!td){ body.innerHTML='<div style="font-size:12px;color:rgba(255,255,255,.5);text-align:center;padding:14px;">No lectures scheduled today.</div>'; return; }
+    var ai=activeTierIdx(td);
+    var list=td.lists[ai]||[];
     var curId=null; for(var i=0;i<list.length;i++){ if(!isDone(list[i].task.id)){curId=list[i].task.id;break;} }
     var doneCnt=list.filter(function(x){return isDone(x.task.id);}).length;
     var hdr=document.getElementById('foMinSheetCount'); if(hdr)hdr.textContent=doneCnt+'/'+list.length+' done';
-    var html='';
+    var strip='<div style="display:flex;gap:6px;margin-bottom:12px;">';
+    td.tiers.forEach(function(tr,idx){
+      var l=td.lists[idx]||[]; var on=(idx===ai);
+      strip+='<button onclick="window.mtSetTier('+idx+')" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 2px;border-radius:11px;cursor:pointer;-webkit-tap-highlight-color:transparent;background:'+(on?'rgba(255,255,255,.1)':'rgba(255,255,255,.04)')+';border:1px solid '+(on?tr.color:'rgba(255,255,255,.1)')+';">'
+        +'<span style="font-family:var(--mo);font-size:10px;font-weight:700;color:'+(on?tr.color:'rgba(255,255,255,.5)')+';">'+(tr.speed===1?'1x':tr.speed+'x')+'</span>'
+        +'<span style="font-family:var(--fn);font-size:17px;font-weight:800;line-height:1;color:'+(on?'#fff':'rgba(255,255,255,.8)')+';">'+l.length+'</span></button>';
+    });
+    strip+='</div><div style="font-size:10px;color:rgba(255,255,255,.4);margin-bottom:12px;text-align:center;">lectures to cover at this playback speed \u2014 pick one, then tick as you go</div>';
+    var html=strip;
     list.forEach(function(x){
       var t=x.task,d=isDone(t.id),cur=(t.id===curId),c=chipFor(t);
       html+='<div onclick="window.mtToggle('+t.id+')" style="display:flex;align-items:center;gap:10px;padding:10px 11px;border-radius:11px;margin-bottom:7px;cursor:pointer;background:'+(cur&&!d?'rgba(77,159,236,.13)':'rgba(255,255,255,.05)')+';border:1px solid '+(cur&&!d?'rgba(77,159,236,.4)':'rgba(255,255,255,.1)')+';">'
@@ -14120,7 +14179,8 @@ try{
         +'<div style="font-family:var(--mo);font-size:10px;color:rgba(255,255,255,.4);flex-shrink:0;">'+mins(x.chunk)+'</div>'
         +'</div>';
     });
-    body.innerHTML=html||'<div style="font-size:12px;color:rgba(255,255,255,.5);text-align:center;padding:14px;">No lectures scheduled today.</div>';
+    if(!list.length)html+='<div style="font-size:12px;color:rgba(255,255,255,.5);text-align:center;padding:14px;">All done at this speed \u2014 nice.</div>';
+    body.innerHTML=html;
   }
   function openMinSheet(){
     var ex=document.getElementById('foMinSheet'); if(ex){ex.remove();return;}
