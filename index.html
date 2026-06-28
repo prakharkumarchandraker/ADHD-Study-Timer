@@ -10205,13 +10205,19 @@ function renderFoSubItems(){
   var subList=document.getElementById('foSubList');if(!subList)return;
   var activeSlot=null;
   ALL_SLOTS.forEach(function(s){if(slotActive(s))activeSlot=s;});
-  if(!activeSlot||!activeSlot.items||activeSlot.items.length===0){
+  var _items=(activeSlot&&activeSlot.items)?activeSlot.items:null;
+  // Items are content on the base timetable slot. A DayFit type-switch clones the
+  // slot and that clone can go stale, so fall back to the live base slot by id.
+  if((!_items||!_items.length)&&activeSlot&&typeof getTodayBaseSlots==='function'){
+    try{var _b=getTodayBaseSlots();for(var _bi=0;_bi<_b.length;_bi++){if(String(_b[_bi].id)===String(activeSlot.id)&&_b[_bi].items&&_b[_bi].items.length){_items=_b[_bi].items;break;}}}catch(e){}
+  }
+  if(!activeSlot||!_items||_items.length===0){
     subList.style.display='none';return;
   }
   subList.style.display='flex';
-  var _sd=0; activeSlot.items.forEach(function(_,ii){if(isRoutineDone(activeSlot.id,ii))_sd++;});
-  subList.innerHTML='<div class="fo-sub-head">\uD83D\uDCCB Session items \u00b7 '+_sd+'/'+activeSlot.items.length+'</div>';
-  activeSlot.items.forEach(function(item,ii){
+  var _sd=0; _items.forEach(function(_,ii){if(isRoutineDone(activeSlot.id,ii))_sd++;});
+  subList.innerHTML='<div class="fo-sub-head">\uD83D\uDCCB Session items \u00b7 '+_sd+'/'+_items.length+'</div>';
+  _items.forEach(function(item,ii){
     var done=isRoutineDone(activeSlot.id,ii);
     var div=document.createElement('div');div.className='fo-sub-item';
     div.innerHTML='<div class="fo-sub-chk'+(done?' done':'')+'">'+( done?'\u2713':'')+'</div>'
@@ -10603,7 +10609,7 @@ document.addEventListener('visibilitychange',function(){if(document.visibilitySt
 #focusOverlay.fo-dimmed .fo-session-range,#focusOverlay.fo-dimmed .fo-task-pill,
 #focusOverlay.fo-dimmed .fo-pomo,#focusOverlay.fo-dimmed .fo-stats,
 #focusOverlay.fo-dimmed .fo-water-row,#focusOverlay.fo-dimmed #foPark,
-#focusOverlay.fo-dimmed #foSubList,#focusOverlay.fo-dimmed .fo-ambient{opacity:.12;}
+#focusOverlay.fo-dimmed .fo-ambient{opacity:.12;}
 #focusOverlay.fo-dimmed .fo-session-name{opacity:.3;}
 #focusOverlay.fo-dimmed .fo-progress-wrap{opacity:.4;}
 #focusOverlay.fo-dimmed .fo-timer{opacity:.92;}
