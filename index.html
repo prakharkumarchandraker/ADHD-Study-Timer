@@ -813,9 +813,13 @@ body.focus-mode .hero-cd{font-size:96px!important;letter-spacing:-4px;}
 /* Session info */
 .fo-session-badge{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:8px;font-family:var(--mo);}
 .fo-session-name{font-size:clamp(15px,4vw,22px);font-weight:700;color:rgba(255,255,255,.85);margin-bottom:3px;text-align:center;max-width:90vw;padding:0 16px;}
-.fo-session-range{font-size:11px;color:rgba(255,255,255,.28);font-family:var(--mo);margin-bottom:20px;}
+.fo-session-range{display:inline-flex;align-items:center;gap:5px;font-family:var(--mo);font-size:12px;font-weight:700;color:#7fc4ff;background:rgba(77,159,236,.12);border:1px solid rgba(77,159,236,.28);border-radius:9px;padding:4px 12px;margin-bottom:18px;letter-spacing:.02em;}
+.fo-r-in{color:rgba(255,255,255,.4);font-weight:600;}
 /* Task pill */
-.fo-task-pill{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:20px;padding:6px 16px;font-size:11px;color:rgba(255,255,255,.45);font-family:var(--mo);max-width:80vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:16px;}
+.fo-task-pill{display:flex;align-items:center;gap:9px;justify-content:center;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:9px 15px;max-width:min(560px,88vw);margin:0 auto 26px;}
+.fo-pill-chip{font-family:var(--mo);font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;flex-shrink:0;letter-spacing:.02em;}
+.fo-pill-name{font-family:var(--fn);font-size:15px;font-weight:600;color:rgba(255,255,255,.9);line-height:1.3;text-align:left;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.fo-pill-up{font-family:var(--fn);font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);flex-shrink:0;}
 /* Big timer */
 .fo-timer{font-size:clamp(58px,15vw,116px);font-weight:800;font-family:'Inter',sans-serif;letter-spacing:-2.5px;color:#fff;line-height:1;margin-bottom:6px;text-align:center;font-variant-numeric:tabular-nums;}
 .fo-timer-lbl{font-size:11px;font-weight:600;color:rgba(255,255,255,.5);letter-spacing:.12em;text-transform:uppercase;margin-bottom:24px;}
@@ -1062,12 +1066,13 @@ body.focus-mode .hero-cd{font-size:96px!important;letter-spacing:-4px;}
 .ep-btn:hover{background:var(--sf3);}
 
 /* Focus overlay sub-items */
-.fo-sub-list{width:min(340px,85vw);max-height:200px;overflow-y:auto;margin-bottom:20px;display:flex;flex-direction:column;gap:6px;}
-.fo-sub-item{display:flex;align-items:center;gap:10px;padding:9px 13px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);cursor:pointer;transition:all .15s;}
+.fo-sub-list{width:min(420px,90vw);max-height:38vh;overflow-y:auto;-webkit-overflow-scrolling:touch;margin-bottom:22px;display:flex;flex-direction:column;gap:7px;}
+.fo-sub-head{font-family:var(--fn);font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);text-align:left;margin-bottom:2px;padding-left:2px;}
+.fo-sub-item{display:flex;align-items:center;gap:11px;padding:11px 14px;border-radius:11px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);cursor:pointer;transition:all .15s;}
 .fo-sub-item:active{background:rgba(255,255,255,.08);}
 .fo-sub-chk{width:20px;height:20px;border-radius:6px;border:1.5px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;transition:all .2s;}
 .fo-sub-chk.done{background:rgba(62,207,142,.2);border-color:rgba(62,207,142,.5);color:#3ecf8e;}
-.fo-sub-txt{font-size:12px;color:rgba(255,255,255,.7);flex:1;line-height:1.4;}
+.fo-sub-txt{font-size:13.5px;color:rgba(255,255,255,.78);flex:1;line-height:1.35;font-family:var(--fn);}
 .fo-sub-txt.done{text-decoration:line-through;color:rgba(255,255,255,.3);}
 
 /* ── PWA INSTALL BANNER ── */
@@ -5855,7 +5860,7 @@ function updateFocusOverlay(){
     if(sessionRange){
       var elMin = Math.floor(elapsedSecs/60);
       var elH = Math.floor(elMin/60), elM = elMin%60;
-      sessionRange.textContent = activeSlot.time+' · '+(elH>0?elH+'h ':'')+elM+'m in';
+      sessionRange.innerHTML = '\uD83D\uDD52 '+activeSlot.time+' <span class="fo-r-in">\u00b7 '+(elH>0?elH+'h ':'')+elM+'m in</span>';
     }
     if(progressFill) progressFill.style.width = Math.min(100,Math.round(elapsedSecs/durSecs*100))+'%';
     var sched4 = buildSched(); var nextT4 = getNextTask(sched4);
@@ -5870,8 +5875,10 @@ function updateFocusOverlay(){
         taskPill.style.display='block';
         if(nextT4){
           var lbl4=LABELS[nextT4.item.subject]||nextT4.item.subject;
-          taskPill.textContent='📚 '+lbl4+' · '+nextT4.item.name;
-        } else taskPill.textContent='✅ All tasks done!';
+          var col4=(typeof COLORS!=='undefined'&&COLORS[nextT4.item.subject])||'#4d9fec';
+          var chip4=nextT4.item.type==='pyq'?'PYQ':(lbl4+' #'+nextT4.item.num);
+          taskPill.innerHTML='<span class="fo-pill-chip" style="color:'+col4+';background:'+col4+'22;">'+esc(chip4)+'</span><span class="fo-pill-name">'+esc(nextT4.item.name)+'</span>';
+        } else taskPill.innerHTML='<span class="fo-pill-name" style="text-align:center;">\u2705 All lectures done!</span>';
       }
     }
     if(pomoDots){
@@ -5904,8 +5911,10 @@ function updateFocusOverlay(){
           var schedB=buildSched(), nextTB=getNextTask(schedB);
           if(nextTB){
             var lblB=LABELS[nextTB.item.subject]||nextTB.item.subject;
-            taskPill.style.display='block';
-            taskPill.textContent='\u23ed Up next: '+lblB+' \u00b7 '+nextTB.item.name;
+            var colB=(typeof COLORS!=='undefined'&&COLORS[nextTB.item.subject])||'#4d9fec';
+            var chipB=nextTB.item.type==='pyq'?'PYQ':(lblB+' #'+nextTB.item.num);
+            taskPill.style.display='flex';
+            taskPill.innerHTML='<span class="fo-pill-up">\u23ed Up next</span><span class="fo-pill-chip" style="color:'+colB+';background:'+colB+'22;">'+esc(chipB)+'</span><span class="fo-pill-name">'+esc(nextTB.item.name)+'</span>';
           } else taskPill.style.display='none';
         }catch(e){taskPill.style.display='none';}
       }
@@ -10200,7 +10209,8 @@ function renderFoSubItems(){
     subList.style.display='none';return;
   }
   subList.style.display='flex';
-  subList.innerHTML='';
+  var _sd=0; activeSlot.items.forEach(function(_,ii){if(isRoutineDone(activeSlot.id,ii))_sd++;});
+  subList.innerHTML='<div class="fo-sub-head">\uD83D\uDCCB Session items \u00b7 '+_sd+'/'+activeSlot.items.length+'</div>';
   activeSlot.items.forEach(function(item,ii){
     var done=isRoutineDone(activeSlot.id,ii);
     var div=document.createElement('div');div.className='fo-sub-item';
