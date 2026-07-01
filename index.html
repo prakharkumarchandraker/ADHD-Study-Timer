@@ -1158,6 +1158,10 @@ body.focus-mode .hero-cd{font-size:96px!important;letter-spacing:-4px;}
 <body>
 <!-- ── PIN LOCK ── -->
 <script>
+// Hoisted early so any Firebase 'fbReady' callback that fires during init can safely
+// call fbPath()/USER_ID before the FIREBASE SYNC block below executes (fixes
+// "Cannot access 'USER_ID' before initialization").
+var USER_ID='prakhar_main';
 // PIN is stored as SHA-256 hash — not as plaintext.
 // To change PIN: open DevTools console and run:
 //   crypto.subtle.digest('SHA-256', new TextEncoder().encode('YOUR_NEW_PIN'))
@@ -3151,7 +3155,7 @@ function buildSched(){
 function getStudyDays(){
   var days={};
   Object.keys(ST.done).forEach(function(tid){
-    var ts=ST.done[tid],date=ts.split('T')[0];
+    var ts=ST.done[tid],date=(typeof ts==='string'?ts.split('T')[0]:String(ts));
     var t=null;for(var i=0;i<ALL_TASKS.length;i++){if(ALL_TASKS[i].id===Number(tid)){t=ALL_TASKS[i];break;}}
     if(t)days[date]=(days[date]||0)+t.duration;
   });
@@ -3984,7 +3988,7 @@ function renderGate(){
   var doneTodayEl=document.getElementById('doneTodaySection');
   if(doneTodayEl&&isToday){
     var doneTodayIds=Object.keys(ST.done).filter(function(tid){
-      var ts=ST.done[tid];return ts&&ts.split('T')[0]===viewDate;
+      var ts=ST.done[tid];return ts&&typeof ts==='string'&&ts.split('T')[0]===viewDate;
     }).map(Number);
     if(doneTodayIds.length){
       var dtHtml='<div class="card" style="border-color:rgba(62,207,142,.25);margin-top:8px;">'
@@ -4642,7 +4646,7 @@ var bh=renderHeatmap; // alias used in several places
 function buildWeekChart(){
   var bars=document.getElementById('wchartBars');if(!bars)return;
   var data=[];var maxM=1;
-  for(var i=6;i>=0;i--){var d=new Date();d.setDate(d.getDate()-i);var ds=toStr(d);var mins=Object.keys(ST.done).reduce(function(s,tid){var t=null;for(var x=0;x<ALL_TASKS.length;x++){if(ALL_TASKS[x].id===Number(tid)){t=ALL_TASKS[x];break;}}if(!t)return s;var ts=ST.done[tid],date=ts.split('T')[0];return date===ds?s+t.duration:s;},0);data.push({ds:ds,mins:Math.round(mins),day:DAYS_S[d.getDay()]});if(mins>maxM)maxM=mins;}
+  for(var i=6;i>=0;i--){var d=new Date();d.setDate(d.getDate()-i);var ds=toStr(d);var mins=Object.keys(ST.done).reduce(function(s,tid){var t=null;for(var x=0;x<ALL_TASKS.length;x++){if(ALL_TASKS[x].id===Number(tid)){t=ALL_TASKS[x];break;}}if(!t)return s;var ts=ST.done[tid],date=(typeof ts==='string'?ts.split('T')[0]:String(ts));return date===ds?s+t.duration:s;},0);data.push({ds:ds,mins:Math.round(mins),day:DAYS_S[d.getDay()]});if(mins>maxM)maxM=mins;}
   bars.innerHTML=data.map(function(d){var isT=d.ds===getToday();var h=d.mins>0?Math.max(4,Math.round(d.mins/maxM*48)):2;return '<div class="wchart-bar-wrap"><div class="wchart-bar'+(isT?' today':'')+(d.mins>0?' has-data':'')+'" style="height:'+h+'px;"></div><div class="wchart-day">'+d.day.charAt(0)+'</div><div class="wchart-val">'+(d.mins>0?Math.round(d.mins/60*10)/10+'h':'')+'</div></div>';}).join('');
 }
 
@@ -4660,7 +4664,7 @@ function buildWeeklyReview(){
       var d=new Date(startDate);d.setDate(d.getDate()+i);var ds=toStr(d);
       // Lectures done
       Object.keys(ST.done).forEach(function(tid){
-        var ts=ST.done[tid],date=ts.split('T')[0];
+        var ts=ST.done[tid],date=(typeof ts==='string'?ts.split('T')[0]:String(ts));
         if(date===ds)data.lectures++;
       });
       // Screen time mins
@@ -6768,7 +6772,7 @@ window.exportMarkdown=function(mode){
 };
 
 // ── FIREBASE SYNC ─────────────────────────────────────────────────────────────
-const USER_ID='prakhar_main';
+// USER_ID is hoisted at the top of the first script (so early Firebase callbacks are safe).
 function fbPath(key){return 'study/'+USER_ID+'/'+key;}
 function fbWrite(key,value){var fb=window._fb;if(!fb||!fb.ready)return;fb.set(fb.ref(fb.db,fbPath(key)),value).then(function(){if(window._setSyncStatus)window._setSyncStatus('ok','synced');}).catch(function(e){console.error('fbWrite',e);if(window._setSyncStatus)window._setSyncStatus('err','sync err');});}
 function fbWriteGate(key,value){var fb=window._fb;if(!fb||!fb.ready)return;fb.set(fb.ref(fb.db,fbPath(key)),value).catch(function(){});}
@@ -8684,7 +8688,7 @@ function getSubjectVelocity(){
   var cutoff7=addD(today,-7);
   Object.keys(ST.done).forEach(function(tid){
     var ts=ST.done[tid];
-    var date=ts.split('T')[0];
+    var date=(typeof ts==='string'?ts.split('T')[0]:String(ts));
     if(date>=cutoff7){
       var t=null;for(var i=0;i<ALL_TASKS.length;i++){if(ALL_TASKS[i].id===Number(tid)){t=ALL_TASKS[i];break;}}
       if(t){recent[t.subject]=(recent[t.subject]||0)+1;}
@@ -11370,7 +11374,7 @@ window.coachToggleLecture=function(slotId,lecId){
     delete ST.done[lecId];
     var lg=coachLog();for(var k=lg.length-1;k>=0;k--){if(lg[k].id===lecId){lg.splice(k,1);break;}}
   } else {
-    ST.done[lecId]=1;
+    ST.done[lecId]=new Date().toISOString();
     coachLog().push({id:lecId,subject:task.subject,unit:task.unit||'General',name:task.name,num:task.num||0,date:todayStr(),ts:Date.now()});
     // schedule revision immediately (same call recorded lectures fire)
     try{if(typeof revScheduleUnit==='function')revScheduleUnit(task);}catch(e){}
@@ -11393,7 +11397,7 @@ window.coachLogWholeUnit=function(slotId){
   try{if(typeof pushUndo==='function')pushUndo();}catch(e){}
   var last=null;
   lecs.forEach(function(task){
-    ST.done[task.id]=1;
+    ST.done[task.id]=new Date().toISOString();
     coachLog().push({id:task.id,subject:task.subject,unit:task.unit||'General',name:task.name,num:task.num||0,date:todayStr(),ts:Date.now()});
     try{if(typeof revScheduleUnit==='function')revScheduleUnit(task);}catch(e){}
     last=task;
