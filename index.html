@@ -2958,7 +2958,7 @@ function daysBetween(a,b){return Math.round((fromStr(b)-fromStr(a))/86400000);}
 function hmColor(m){if(!m||m<1)return '#1a1a2e';var h=m/60;if(h<2)return '#1e3b2e';if(h<4)return '#2d5e3a';if(h<6)return '#3d8c4e';if(h<8)return '#5ab86b';return '#a6e3a1';}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 
-function defaultState(){return{done:{},pyqTopics:{},potato:[],viewDate:null,skips:[],expanded:[],flags:{},revisions:{},revDone:{},live:{},subjOrder:null,pinnedNext:null,revUnits:{},revSubjects:{},revBlockMode:'B',rotation:null,tests:null,disabledSubjects:{},subjGrowth:{},subjFinished:{}};}
+function defaultState(){return{done:{},pyqTopics:{},potato:[],viewDate:null,skips:[],expanded:[],flags:{},revisions:{},revDone:{},live:{},subjOrder:null,pinnedNext:null,revUnits:{},revSubjects:{},revBlockMode:'B',rotation:null,tests:null,disabledSubjects:{},subjGrowth:{},subjFinished:{},subjGateMap:{}};}
 function loadGateState(){try{var s=localStorage.getItem('gate2027v6');if(s){var p=JSON.parse(s);var d=defaultState();for(var k in d)if(p[k]===undefined)p[k]=d[k];return p;}}catch(e){}return defaultState();}
 var _saveGateTimer=null;
 function saveGateState(){
@@ -3098,6 +3098,16 @@ function buildSched(){
     restR.forEach(function(t){if(queues[t.subject])queues[t.subject].push(t);});
     var qi={},laid={};rot.master.forEach(function(s){qi[s]=0;laid[s]=0;});
     function unfin(s){return queues[s]&&qi[s]<queues[s].length;}
+    // Lectures/day cap per subject, from its phase's count (default 1). PYQ blocks
+    // don't count toward the cap (they're end-of-subject).
+    function phaseCountOf(subj){
+      try{
+        if(Array.isArray(rot.counts)&&Array.isArray(rot.phases)){
+          for(var p=0;p<rot.phases.length;p++){if(rot.phases[p].indexOf(subj)>=0)return Math.max(1,Math.min(3,rot.counts[p]||1));}
+        }
+      }catch(e){}
+      return 1;
+    }
     function activeSet(dateStr){
       var un=rot.master.filter(unfin);
       if(!un.length)return[];
@@ -3117,10 +3127,15 @@ function buildSched(){
       var dayMins=sRem;for(var si2=sIdx+1;si2<SESSIONS.length;si2++)dayMins+=SESSIONS[si2].dur;
       var act=activeSet(dayStr);
       if(!act.length)break;
+      var dayLecDone={};act.forEach(function(s){dayLecDone[s]=0;}); // whole lectures laid today, per subject
       var share=dayMins/act.length;
       for(var aI=0;aI<act.length;aI++){
-        var sb=act[aI],bud=share;
+        var sb=act[aI],bud=share,cap=phaseCountOf(sb);
         while(bud>0.5&&unfin(sb)&&cur===dayStr){
+          var taskR0=queues[sb][qi[sb]];
+          // Enforce lectures/day cap: once this subject has completed `cap` lectures
+          // today, stop feeding it (PYQ blocks are exempt from the cap).
+          if(taskR0.type==='lecture'&&dayLecDone[sb]>=cap&&laid[sb]<0.5)break;
           if(sRem<5){nextSes();if(cur!==dayStr)break;}
           ensureDay(cur);
           var taskR=queues[sb][qi[sb]];
@@ -3130,7 +3145,7 @@ function buildSched(){
           var isF=laid[sb]<0.5,isL=(taskRem-chunkR)<0.5;
           sched[cur].sessions[sIdx].items.push({taskId:taskR.id,type:taskR.type,subject:taskR.subject,unit:taskR.unit||'',name:taskR.type==='pyq'?taskR.subject+' — PYQ':taskR.name,num:taskR.num||0,chunk:Math.round(chunkR*10)/10,totalDur:taskR.duration,isFirst:isF,isLast:isL,isSplit:(!isF||!isL),topics:taskR.topics||[],isPinned:false});
           laid[sb]+=chunkR;sRem-=chunkR;bud-=chunkR;
-          if(isL){qi[sb]++;laid[sb]=0;notifyLast(taskR);}
+          if(isL){qi[sb]++;laid[sb]=0;if(taskR.type==='lecture')dayLecDone[sb]++;notifyLast(taskR);}
         }
         if(cur!==dayStr)break;
       }
@@ -5996,6 +6011,28 @@ function updateFocusOverlay(){
       sessionBadge.textContent = _sTypeLabel+' · '+(activeSlot.label||'SESSION').toUpperCase();
     }
     if(sessionName) sessionName.textContent = activeSlot.label||'Study Session';
+    // Rotation context: when rotation is ON and this is a study slot, show today's
+    // rotation subject(s) so you know what the auto-picker is feeding you.
+    try{
+      if(sessionName&&(activeSlot.type==='study')&&typeof getRotation==='function'){
+        var _rot=getRotation();
+        if(_rot&&_rot.master&&_rot.master.length){
+          var _today=(typeof getToday==='function')?getToday():new Date().toISOString().slice(0,10);
+          var _wd=new Date(_today+'T12:00:00').getDay();
+          var _todaySubs=[];
+          if(_rot.days&&_rot.days[_wd]&&_rot.days[_wd].length){ _todaySubs=_rot.days[_wd].slice(0,4); }
+          else {
+            var _first=_rot.master[0],_K=1;
+            for(var _p=0;_p<_rot.phases.length;_p++){if(_rot.phases[_p].indexOf(_first)>=0){_K=_rot.phases[_p].length;break;}}
+            _todaySubs=_rot.master.slice(0,Math.min(Math.max(_K,1),4));
+          }
+          if(_todaySubs.length){
+            var _lbls=_todaySubs.map(function(s){return (typeof LABELS!=='undefined'&&LABELS[s])||s;}).join(' · ');
+            sessionName.innerHTML=esc(activeSlot.label||'Study Session')+' <span style="font-size:11px;color:#a78bfa;font-weight:700;">🔀 '+esc(_lbls)+'</span>';
+          }
+        }
+      }
+    }catch(e){}
     if(sessionRange){
       var elMin = Math.floor(elapsedSecs/60);
       var elH = Math.floor(elMin/60), elM = elMin%60;
@@ -8375,7 +8412,7 @@ function cmRenderSList(){
         ((typeof growthStatusHTML==='function')?growthStatusHTML(s.name):'')+
       '</div>'+
       '<span class="cm-scnt">'+cmTL(s)+'</span>'+
-      '<button class="cm-sact cm-stog'+(_disabled?' off':'')+'" onclick="event.stopPropagation();toggleSubjDisabled(\''+String(s.name).replace(/'/g,"\\'")+'\')" title="'+(_disabled?'Disabled — tap to activate':'Active — tap to disable')+'">'+(_disabled?'○ Off':'● On')+'</button>'+
+      '<button class="cm-sact cm-stog'+(_disabled?' off':'')+'" onclick="event.stopPropagation();subjSetOffline(\''+String(s.name).replace(/'/g,"\\'")+'\','+(_disabled?'false':'true')+')" title="'+(_disabled?'Offline (blank, coaching-logged) — tap to make Recorded':'Recorded (auto-scheduled) — tap to make Offline')+'">'+(_disabled?'📴 Offline':'📺 Rec')+'</button>'+
       '<button class="cm-sact cm-sfin'+((ST&&ST.subjFinished&&ST.subjFinished[s.name])?' on':'')+'" onclick="event.stopPropagation();toggleSubjFinished(\''+String(s.name).replace(/'/g,"\\'")+'\')" title="'+((ST&&ST.subjFinished&&ST.subjFinished[s.name])?'Marked finished — tests can schedule. Tap to undo.':'Mark subject finished (unlock tests without ticking every lecture)')+'">'+((ST&&ST.subjFinished&&ST.subjFinished[s.name])?'🏁 Done':'○ Fin')+'</button>'+
       '<button class="cm-sact" onclick="event.stopPropagation();cmMoveSubj('+i+',-1)" title="Move up" style="'+(i===0?'opacity:.3;cursor:not-allowed':'')+'">↑</button>'+
       '<button class="cm-sact" onclick="event.stopPropagation();cmMoveSubj('+i+',1)" title="Move down" style="'+(i===_cm.subjects.length-1?'opacity:.3;cursor:not-allowed':'')+'">↓</button>'+
@@ -8384,6 +8421,20 @@ function cmRenderSList(){
   }).join('');
 }
 
+// GATE-subject map row for the CM edit pane. Maps this curriculum subject → a
+// canonical GATE subject so its tests + PYQ auto-attach regardless of naming.
+function cmGateMapRow(s){
+  var gs=(window.GATE_SUBJECTS||[]);
+  var cur=(typeof subjGateMapGet==='function')?subjGateMapGet(s.name):'';
+  var opts='<option value="">— not mapped —</option>';
+  gs.forEach(function(g){opts+='<option value="'+cmEv(g)+'"'+(cur===g?' selected':'')+'>'+cmEv(g)+'</option>';});
+  var nm=String(s.name).replace(/'/g,"\\'");
+  return '<div class="cm-frow" style="margin-top:9px;align-items:flex-start;flex-wrap:wrap;">'
+    +'<span class="cm-flbl" style="padding-top:6px;">GATE subject</span>'
+    +'<select onchange="subjGateMapSet(\''+nm+'\',this.value)" onclick="event.stopPropagation()" style="flex:1;min-width:160px;background:var(--sf2);border:1px solid var(--bd2);border-radius:8px;padding:7px 9px;font-family:var(--fn);font-size:12px;font-weight:600;color:var(--tx);outline:none;">'+opts+'</select>'
+    +'<div style="flex-basis:100%;font-size:9px;color:var(--mt);margin-top:4px;line-height:1.4;">Tests + PYQ isi GATE subject se auto-map honge — curriculum me naam kuch bhi ho.</div>'
+    +'</div>';
+}
 function cmRenderEdit(){
   var el=document.getElementById('cmEditPane');if(!el)return;
   if(_cm.selIdx<0||_cm.selIdx>=_cm.subjects.length){
@@ -8399,7 +8450,9 @@ function cmRenderEdit(){
     '<div class="cm-frow"><span class="cm-flbl">Label</span><input style="width:65px;" value="'+cmEv(s.label)+'" maxlength="6" oninput="_cm.subjects[_cm.selIdx].label=this.value;_cm.dirty=true;" onclick="event.stopPropagation()">'+
     '<span class="cm-flbl" style="margin-left:10px;">Color</span>'+
     '<input type="color" value="'+s.color+'" style="padding:2px;height:29px;width:42px;border:1px solid var(--bd2);border-radius:7px;cursor:pointer;" oninput="_cm.subjects[_cm.selIdx].color=this.value;_cm.dirty=true;cmRenderSList();" onclick="event.stopPropagation()">'+
-  '</div></div>';
+  '</div>'+
+  cmGateMapRow(s)+
+  '</div>';
   // Units
   var total=cmTL(s);
   html+='<div class="cm-sec">'+
@@ -11111,7 +11164,10 @@ window.rotSimFinishDates=function(rot,subjData,speed,dailyMins,today){
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 var DAY_LBL=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-function rotState(){if(!ST.rotation||typeof ST.rotation!=='object')ST.rotation={on:0,phases:[],days:{}};if(!Array.isArray(ST.rotation.phases))ST.rotation.phases=[];if(!ST.rotation.days)ST.rotation.days={};return ST.rotation;}
+function rotState(){if(!ST.rotation||typeof ST.rotation!=='object')ST.rotation={on:0,phases:[],days:{}};if(!Array.isArray(ST.rotation.phases))ST.rotation.phases=[];if(!ST.rotation.days)ST.rotation.days={};if(!Array.isArray(ST.rotation.counts))ST.rotation.counts=[];while(ST.rotation.counts.length<ST.rotation.phases.length)ST.rotation.counts.push(1);return ST.rotation;}
+// Lectures/day per subject for a phase (default 1). Cycles 1→2→3→1.
+window.rotCycleCount=function(i){var r=rotState();var c=(r.counts[i]||1)+1;if(c>3)c=1;r.counts[i]=c;try{if(typeof haptic==='function')haptic([15]);}catch(e){}rotSave();};
+window.rotPhaseCount=function(i){var r=rotState();return Math.max(1,Math.min(3,r.counts[i]||1));};
 function rotSave(){
   try{saveGateState();}catch(e){}
   try{if(typeof dmRefreshSnap==='function')dmRefreshSnap();}catch(e){}
@@ -11151,6 +11207,7 @@ function rotRender(){
     h+='<div style="display:flex;align-items:center;gap:7px;padding:8px 0;border-bottom:1px solid var(--bd);">'
       +'<div style="font-family:var(--mo);font-size:9px;color:var(--mt);min-width:42px;">PHASE '+(i+1)+'<br><span style="color:var(--s1);">∥'+ph.length+'</span></div>'
       +'<div style="flex:1;display:flex;flex-wrap:wrap;gap:4px;">'+chips+'</div>'
+      +'<button onclick="rotCycleCount('+i+')" title="Lectures per day from each subject in this phase" style="font-family:var(--mo);font-size:9px;font-weight:800;padding:3px 7px;border-radius:7px;background:var(--s4b);color:var(--s4);border:1px solid var(--s4o);cursor:pointer;white-space:nowrap;">'+rotPhaseCount(i)+'/day</button>'
       +'<div style="display:flex;gap:3px;">'
       +(i>0?'<button onclick="rotMovePhase('+i+',-1)" class="rot-mb">↑</button>':'')
       +(i<r.phases.length-1?'<button onclick="rotMovePhase('+i+',1)" class="rot-mb">↓</button>':'')
@@ -11207,10 +11264,11 @@ window.rotMovePhase=function(i,dir){
   var r=rotState();var j=i+dir;
   if(j<0||j>=r.phases.length)return;
   var t=r.phases[i];r.phases[i]=r.phases[j];r.phases[j]=t;
+  var tc=r.counts[i];r.counts[i]=r.counts[j];r.counts[j]=tc; // keep per-phase count with its phase
   rotSave();
 };
 window.rotDelPhase=function(i){
-  var r=rotState();r.phases.splice(i,1);
+  var r=rotState();r.phases.splice(i,1);r.counts.splice(i,1);
   if(!r.phases.length)r.on=0;
   rotSave();
 };
@@ -11328,9 +11386,10 @@ window.coachLoggedTodayCount=function(){
 
 // ── Data helpers ──────────────────────────────────────────────────────────────
 function subjectsWithLectures(){
+  // All curriculum subjects (SUBJ order) so blank OFFLINE subjects appear too.
+  try{ if(typeof SUBJ!=='undefined'&&SUBJ.length)return SUBJ.slice(); }catch(e){}
   var seen={},out=[];
   ALL_TASKS.forEach(function(t){if(t.type==='lecture'&&!seen[t.subject]){seen[t.subject]=1;out.push(t.subject);}});
-  // keep subject order stable to curriculum order
   return out;
 }
 function unitsOf(subj){
@@ -11374,30 +11433,51 @@ window.coachPickUnit=function(slotId,unit){
   refresh(slotId);
 };
 
+// Debounced heavy refresh so rapid multi-tapping stays smooth.
+var _coachHeavyTimer=null;
+function coachHeavyRefresh(){
+  if(_coachHeavyTimer)clearTimeout(_coachHeavyTimer);
+  _coachHeavyTimer=setTimeout(function(){
+    try{saveGateState();}catch(e){}
+    try{if(typeof buildSchedule==='function')buildSchedule();}catch(e){}
+    try{if(typeof renderGate==='function')renderGate();}catch(e){}
+  },550);
+}
+
 // Log (or un-log) a single lecture. Logging = mark done + schedule revision.
+// Lightweight: flips ST.done + updates just this row/counter in place, then debounces
+// the expensive rebuilds — so you can tap many lectures quickly without lag/scroll-jump.
 window.coachToggleLecture=function(slotId,lecId){
   var task=null;
   for(var i=0;i<ALL_TASKS.length;i++){if(ALL_TASKS[i].id===lecId){task=ALL_TASKS[i];break;}}
   if(!task)return;
-  try{if(typeof pushUndo==='function')pushUndo();}catch(e){}
+  var nowOn;
   if(ST.done[lecId]){
-    // un-log
     delete ST.done[lecId];
     var lg=coachLog();for(var k=lg.length-1;k>=0;k--){if(lg[k].id===lecId){lg.splice(k,1);break;}}
+    nowOn=false;
   } else {
     ST.done[lecId]=new Date().toISOString();
     coachLog().push({id:lecId,subject:task.subject,unit:task.unit||'General',name:task.name,num:task.num||0,date:todayStr(),ts:Date.now()});
-    // schedule revision immediately (same call recorded lectures fire)
     try{if(typeof revScheduleUnit==='function')revScheduleUnit(task);}catch(e){}
+    nowOn=true;
   }
-  try{saveGateState();}catch(e){}
-  try{if(typeof buildSchedule==='function')buildSchedule();}catch(e){}
-  try{if(typeof haptic==='function')haptic([20]);}catch(e){}
-  // Refresh the whole UI cluster so revision/tests/today all reflect instantly
-  try{if(typeof renderGate==='function')renderGate();}catch(e){}
-  try{if(typeof renderRoutineFromTimetable==='function')renderRoutineFromTimetable();}catch(e){}
-  try{if(typeof renderTimetable==='function'&&document.getElementById('tab-timetable')&&document.getElementById('tab-timetable').classList.contains('active'))renderTimetable();}catch(e){}
-  refresh(slotId);
+  try{if(typeof haptic==='function')haptic([15]);}catch(e){}
+  // In-place row update (no full re-render) — keeps scroll position & lets you tap fast
+  var row=document.getElementById('coachlec_'+slotId+'_'+lecId);
+  if(row){
+    row.setAttribute('data-on',nowOn?'1':'0');
+    row.style.background=nowOn?'var(--s4b)':'var(--sf2)';
+    row.style.borderColor=nowOn?'var(--s4o)':'var(--bd)';
+    var box=row.querySelector('.coachlec-box');
+    if(box){box.style.background=nowOn?'var(--s4)':'transparent';box.style.borderColor=nowOn?'var(--s4)':'var(--bd2)';box.textContent=nowOn?'✓':'';}
+    var nm=row.querySelector('.coachlec-nm');
+    if(nm){nm.style.color=nowOn?'var(--mt2)':'var(--tx)';nm.style.textDecoration=nowOn?'line-through':'none';}
+  }
+  // Update the "logged today" counter + subject chip count in place
+  var cnt=document.getElementById('coachCount_'+slotId);
+  if(cnt){var n=coachLoggedTodayCount();cnt.textContent=n>0?('🎓 '+n+' lecture'+(n>1?'s':'')+' logged today'):'Jo coaching me hua, yahan tick karo →';}
+  coachHeavyRefresh();
 };
 
 // Log the whole current unit at once (all un-logged lectures in it).
@@ -11426,13 +11506,14 @@ window.coachLogWholeUnit=function(slotId){
 // Compact chip row of subjects (only ones with lectures).
 function subjChips(slotId,sel){
   return subjectsWithLectures().map(function(s){
+    var off=(typeof isSubjOffline==='function')&&isSubjOffline(s);
     var lecs=ALL_TASKS.filter(function(t){return t.type==='lecture'&&t.subject===s;});
     var doneN=lecs.filter(function(l){return isDone(l.id);}).length;
     var totN=lecs.length;
     var on=(s===sel.subj);
     var complete=(doneN>=totN&&totN>0);
     return '<button onclick="coachPickSubj(\''+slotId+'\',\''+s.replace(/'/g,"\\'")+'\')" style="position:relative;background:'+(on?cCol(s)+'26':'var(--sf2)')+';border:1px solid '+(on?cCol(s):'var(--bd2)')+';color:'+(on?cCol(s):'var(--mt2)')+';border-radius:8px;padding:5px 9px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--fn);white-space:nowrap;">'
-      +cEsc(cLbl(s))+' <span style="font-family:var(--mo);font-size:9px;opacity:.8;">'+doneN+'/'+totN+'</span>'+(complete?' ✓':'')+'</button>';
+      +(off?'📴 ':'')+cEsc(cLbl(s))+' <span style="font-family:var(--mo);font-size:9px;opacity:.8;">'+(off?'+':(doneN+'/'+totN))+'</span>'+(complete?' ✓':'')+'</button>';
   }).join('');
 }
 
@@ -11454,10 +11535,10 @@ function lecList(slotId,sel){
   if(!lecs.length)return '<div style="font-size:11px;color:var(--mt);padding:8px 2px;">No lectures in this unit.</div>';
   var rows=lecs.map(function(l){
     var d=isDone(l.id);
-    return '<div onclick="coachToggleLecture(\''+slotId+'\','+l.id+')" style="display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:9px;cursor:pointer;background:'+(d?'var(--s4b)':'var(--sf2)')+';border:1px solid '+(d?'var(--s4o)':'var(--bd)')+';margin-top:5px;">'
-      +'<div style="width:20px;height:20px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;background:'+(d?'var(--s4)':'transparent')+';border:1px solid '+(d?'var(--s4)':'var(--bd2)')+';color:#fff;">'+(d?'✓':'')+'</div>'
+    return '<div id="coachlec_'+slotId+'_'+l.id+'" data-on="'+(d?'1':'0')+'" onclick="coachToggleLecture(\''+slotId+'\','+l.id+')" style="display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:9px;cursor:pointer;background:'+(d?'var(--s4b)':'var(--sf2)')+';border:1px solid '+(d?'var(--s4o)':'var(--bd)')+';margin-top:5px;">'
+      +'<div class="coachlec-box" style="width:20px;height:20px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;background:'+(d?'var(--s4)':'transparent')+';border:1px solid '+(d?'var(--s4)':'var(--bd2)')+';color:#fff;">'+(d?'✓':'')+'</div>'
       +'<div style="font-family:var(--mo);font-size:10px;color:var(--mt);flex-shrink:0;min-width:24px;">#'+(l.num||'?')+'</div>'
-      +'<div style="flex:1;font-size:12px;font-weight:600;color:'+(d?'var(--mt2)':'var(--tx)')+';'+(d?'text-decoration:line-through;':'')+'">'+cEsc(l.name)+'</div>'
+      +'<div class="coachlec-nm" style="flex:1;font-size:12px;font-weight:600;color:'+(d?'var(--mt2)':'var(--tx)')+';'+(d?'text-decoration:line-through;':'')+'">'+cEsc(l.name)+'</div>'
       +'</div>';
   }).join('');
   var pending=lecs.filter(function(l){return !isDone(l.id);}).length;
@@ -11477,18 +11558,123 @@ window.coachRenderForm=function(slotId){
     +'</div>';
 };
 
+// ── Add a BRAND-NEW lecture from coaching (offline daily workflow) ────────────
+// Appends {subject, unit, name} to the live curriculum, marks it done today, and
+// schedules revision. No Apply needed — saves + syncs immediately, then reloads so
+// the const ALL_TASKS picks up the new lecture.
+window.coachAddLecture=function(slotId){
+  var sel=_sel[slotId]; if(!sel||!sel.subj)sel=defaultSel(slotId);
+  var subj=sel.subj;
+  var unitInp=document.getElementById('coachNewUnit_'+slotId);
+  var nameInp=document.getElementById('coachNewName_'+slotId);
+  var unit=(unitInp&&unitInp.value.trim())||sel.unit||'General';
+  var name=(nameInp&&nameInp.value.trim())||'';
+  if(!name){try{showT('⚠️ Lecture ka naam daalo','');}catch(e){}return;}
+  try{
+    var raw=localStorage.getItem('v5_curriculum');
+    var tasks=raw?JSON.parse(raw):ALL_TASKS.slice();
+    if(!Array.isArray(tasks))tasks=ALL_TASKS.slice();
+    var maxId=0;tasks.forEach(function(t){if(typeof t.id==='number'&&t.id>maxId)maxId=t.id;});
+    // num = next within this subject
+    var subjLecs=tasks.filter(function(t){return t.subject===subj&&t.type==='lecture';});
+    var num=subjLecs.length+1;
+    var newId=maxId+1;
+    var newTask={id:newId,type:'lecture',subject:subj,unit:unit,name:name,duration:0,num:num,totalLecs:num};
+    // insert after subject's last lecture (before its pyq if any), else append
+    var lastIdx=-1;for(var i=0;i<tasks.length;i++){if(tasks[i].subject===subj&&tasks[i].type==='lecture')lastIdx=i;}
+    if(lastIdx>=0)tasks.splice(lastIdx+1,0,newTask);else tasks.push(newTask);
+    // refresh totalLecs for the subject
+    tasks.forEach(function(t){if(t.subject===subj&&t.type==='lecture')t.totalLecs=num;});
+    // mark done today + log + schedule revision
+    ST.done[newId]=new Date().toISOString();
+    coachLog().push({id:newId,subject:subj,unit:unit,name:name,num:num,date:todayStr(),ts:Date.now(),added:1});
+    try{if(typeof revScheduleUnit==='function')revScheduleUnit(newTask);}catch(e){}
+    // persist curriculum + state + sync
+    localStorage.setItem('v5_curriculum',JSON.stringify(tasks));
+    try{if(window._fb&&window._fb.ready&&typeof fbWrite==='function'){fbWrite('v5_curriculum',tasks);fbWrite('gate_state',ST);}}catch(e){}
+    try{saveGateState();}catch(e){}
+    try{if(typeof haptic==='function')haptic([25]);}catch(e){}
+    try{showT('✅ Added: '+name,subj+' · '+unit+' — done + revision scheduled.');}catch(e){}
+    // reload so ALL_TASKS rebuilds with the new lecture
+    setTimeout(function(){location.reload();},650);
+  }catch(e){console.warn('[coachAddLecture]',e);try{showT('⚠️ Error',e.message.slice(0,60));}catch(_){}}
+};
+
+// Today's logged lectures for a subject (for the "aaj log kiya" list).
+function coachTodayFor(subj){
+  var t=todayStr();
+  return coachLog().filter(function(e){return e.date===t&&e.subject===subj;});
+}
+
+// Existing-unit datalist + the add-new-lecture form (offline subjects).
+function addLectureForm(slotId,sel){
+  var units=unitsOf(sel.subj);
+  var dlOpts=units.map(function(u){return '<option value="'+cEsc(u)+'">';}).join('');
+  var today=coachTodayFor(sel.subj);
+  var todayHtml='';
+  if(today.length){
+    todayHtml='<div style="margin-top:10px;font-size:10px;color:var(--s4);font-weight:700;">📅 Aaj add kiya ('+today.length+'):</div>';
+    todayHtml+=today.map(function(e){
+      return '<div style="display:flex;align-items:center;gap:7px;padding:6px 9px;border-radius:8px;background:var(--s4b);border:1px solid var(--s4o);margin-top:4px;">'
+        +'<span style="font-size:12px;">✓</span>'
+        +'<div style="flex:1;min-width:0;"><div style="font-size:11px;font-weight:700;color:var(--tx);">'+cEsc(e.name)+'</div>'
+        +'<div style="font-size:9px;color:var(--mt);">'+cEsc(e.unit)+'</div></div>'
+        +'<button onclick="coachUndoLog('+e.id+',\''+slotId+'\')" style="background:none;border:1px solid var(--bd2);border-radius:6px;color:var(--mt);font-size:9px;cursor:pointer;padding:2px 7px;" title="Undo">undo</button>'
+        +'</div>';
+    }).join('');
+  }
+  return '<div style="margin-top:10px;background:var(--sf2);border:1px solid var(--s4o);border-radius:11px;padding:11px;">'
+    +'<div style="font-size:11px;font-weight:800;color:var(--s4);margin-bottom:7px;">➕ Aaj ka lecture add karo</div>'
+    +'<datalist id="coachUnits_'+slotId+'">'+dlOpts+'</datalist>'
+    +'<input id="coachNewUnit_'+slotId+'" list="coachUnits_'+slotId+'" value="'+cEsc(sel.unit||units[0]||'')+'" placeholder="Unit (e.g. Unit 1: Foundation)" style="width:100%;background:var(--sf);border:1px solid var(--bd2);border-radius:9px;padding:9px 10px;font-family:var(--fn);font-size:12px;font-weight:600;color:var(--tx);outline:none;margin-bottom:6px;box-sizing:border-box;">'
+    +'<input id="coachNewName_'+slotId+'" placeholder="Lecture ka naam (jaise About Computer & HLL)" onkeydown="if(event.key===\'Enter\')coachAddLecture(\''+slotId+'\')" style="width:100%;background:var(--sf);border:1px solid var(--bd2);border-radius:9px;padding:9px 10px;font-family:var(--fn);font-size:12px;font-weight:600;color:var(--tx);outline:none;margin-bottom:8px;box-sizing:border-box;">'
+    +'<button onclick="coachAddLecture(\''+slotId+'\')" style="width:100%;background:var(--s4);border:none;color:#fff;border-radius:9px;padding:10px;font-size:12px;font-weight:800;cursor:pointer;font-family:var(--fn);">＋ Add + Log (revision me jayega)</button>'
+    +todayHtml
+    +'</div>';
+}
+
+// Undo a coaching log (also removes the lecture if it was freshly added).
+window.coachUndoLog=function(lecId,slotId){
+  var entry=null;var lg=coachLog();
+  for(var i=lg.length-1;i>=0;i--){if(lg[i].id===lecId){entry=lg[i];lg.splice(i,1);break;}}
+  if(ST.done[lecId])delete ST.done[lecId];
+  // If it was an added lecture, remove it from the curriculum too.
+  if(entry&&entry.added){
+    try{
+      var raw=localStorage.getItem('v5_curriculum');
+      var tasks=raw?JSON.parse(raw):ALL_TASKS.slice();
+      if(Array.isArray(tasks)){
+        tasks=tasks.filter(function(t){return t.id!==lecId;});
+        localStorage.setItem('v5_curriculum',JSON.stringify(tasks));
+        try{if(window._fb&&window._fb.ready&&typeof fbWrite==='function')fbWrite('v5_curriculum',tasks);}catch(e){}
+      }
+    }catch(e){}
+    try{saveGateState();}catch(e){}
+    try{showT('↩ Removed','Lecture hata diya.');}catch(e){}
+    setTimeout(function(){location.reload();},550);
+    return;
+  }
+  try{saveGateState();}catch(e){}
+  try{if(typeof buildSchedule==='function')buildSchedule();}catch(e){}
+  try{if(typeof renderRoutineFromTimetable==='function')renderRoutineFromTimetable();}catch(e){}
+};
+
 // Compact body (used inside the Today-tab routine block).
 window.coachRenderRoutineBody=function(slotId){
   var sel=defaultSel(slotId);
-  if(!subjectsWithLectures().length){
-    return '<div style="font-size:11px;color:var(--mt);padding:8px 2px;">Curriculum me abhi koi lecture nahi.</div>';
-  }
   var n=coachLoggedTodayCount();
   var h='<div style="padding:2px 0 4px;">';
-  h+='<div style="font-size:10px;color:var(--mt);margin-bottom:7px;">'+(n>0?('🎓 '+n+' lecture'+(n>1?'s':'')+' logged today'):'Jo coaching me hua, yahan tick karo →')+'</div>';
+  h+='<div id="coachCount_'+slotId+'" style="font-size:10px;color:var(--mt);margin-bottom:7px;">'+(n>0?('🎓 '+n+' lecture'+(n>1?'s':'')+' logged today'):'Jo coaching me hua, yahan tick karo →')+'</div>';
   h+='<div style="display:flex;flex-wrap:wrap;gap:5px;">'+subjChips(slotId,sel)+'</div>';
-  h+=unitSelect(slotId,sel);
-  h+='<div style="margin-top:8px;">'+lecList(slotId,sel)+'</div>';
+  var off=(typeof isSubjOffline==='function')&&isSubjOffline(sel.subj);
+  if(off){
+    // OFFLINE subject → blank curriculum → add-new-lecture form (your names)
+    h+=addLectureForm(slotId,sel);
+  } else {
+    // RECORDED subject → tick existing lectures
+    h+=unitSelect(slotId,sel);
+    h+='<div style="margin-top:8px;">'+lecList(slotId,sel)+'</div>';
+  }
   h+='</div>';
   return h;
 };
@@ -11753,6 +11939,134 @@ window.cmAddSubj=function(){ openSubjectWizard(); };
 })();
 </script>
 
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// ── OFFLINE MODE + GATE SUBJECT MAP + COACHING ADD-LECTURE · v50 ─────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// Three linked pieces:
+//  (A) A subject can be RECORDED (normal, auto-scheduled) or OFFLINE (blank
+//      curriculum, coaching-logged, never auto-scheduled). Offline reuses the
+//      existing ST.disabledSubjects storage so the 12 scheduler filters keep
+//      working; "disabled" === "offline". Marking offline CLEARS that subject's
+//      lectures from the curriculum (with a confirm) but keeps PYQ + test mapping.
+//  (B) A GATE-subject map (ST.subjGateMap[name] = canonical GATE subject) so
+//      tests + PYQ auto-attach regardless of what the curriculum subject is
+//      named — no more alias/rename headaches.
+//  (C) Coaching-log can ADD a brand-new lecture (your own unit + name), which is
+//      appended to the live curriculum, marked done today, and sent to revision.
+(function(){
+'use strict';
+
+// Canonical GATE CS subjects for the map dropdown.
+window.GATE_SUBJECTS=[
+  'C Programming','Data Structures','Algorithms','TOC','Compiler Design',
+  'Computer Organization','Operating Systems','Computer Networks','DBMS',
+  'Digital Logic','Engineering Maths','Discrete Maths','Aptitude'
+];
+// Canonical GATE subject → the alias keys the Test Series uses (tstMapOne lowercases).
+// This lets a mapped curriculum subject inherit that GATE subject's tests/PYQ.
+window.GATE_ALIAS_OF={
+  'C Programming':['c programming','c','programming','programming(c)','programming (c)'],
+  'Data Structures':['data structures','ds','data structure'],
+  'Algorithms':['algorithms','algo','algorithm'],
+  'TOC':['toc','theory of computation'],
+  'Compiler Design':['compiler design','cd','compilers'],
+  'Computer Organization':['co','coa','computer organization','computer organisation','computer organization and architecture','computer organisation and architecture'],
+  'Operating Systems':['os','operating system','operating systems'],
+  'Computer Networks':['cn','computer networks','computer network','networks'],
+  'DBMS':['dbms','databases','database'],
+  'Digital Logic':['dld','digital logic','digital logic design'],
+  'Engineering Maths':['engineering mathematics','engineering maths','engg math','maths'],
+  'Discrete Maths':['discrete mathematics','discrete maths','discrete'],
+  'Aptitude':['aptitude','general aptitude','verbal','verbal aptitude','quant','quantitative','quantitative aptitude','analytical','spatial']
+};
+
+// ── Storage helpers ───────────────────────────────────────────────────────────
+function gmAll(){if(!ST.subjGateMap||typeof ST.subjGateMap!=='object')ST.subjGateMap={};return ST.subjGateMap;}
+window.subjGateMapGet=function(name){return gmAll()[name]||'';};
+window.subjGateMapSet=function(name,gate){
+  if(gate)gmAll()[name]=gate;else delete gmAll()[name];
+  try{saveGateState();}catch(e){}
+  try{if(window._fb&&window._fb.ready&&typeof fbWrite==='function')fbWrite('gate_state',ST);}catch(e){}
+  try{if(typeof buildSchedule==='function')buildSchedule();}catch(e){}
+  try{if(typeof tstRender==='function')tstRender();}catch(e){}
+  try{if(typeof cmRenderEdit==='function')cmRenderEdit();}catch(e){}
+};
+
+// Is subject offline? (alias of disabled)
+window.isSubjOffline=function(name){return (typeof isSubjDisabled==='function')&&isSubjDisabled(name);};
+
+// ── (A) Offline toggle — clears lectures on turning offline ───────────────────
+// Returns via a confirm modal because it's destructive.
+window.subjSetOffline=function(name,makeOffline){
+  if(makeOffline){
+    // Count lectures that will be cleared
+    var lecCount=0,doneCount=0;
+    try{
+      var done=new Set(Object.keys(ST.done).map(Number));
+      ALL_TASKS.forEach(function(t){if(t.subject===name&&t.type==='lecture'){lecCount++;if(done.has(t.id))doneCount++;}});
+    }catch(e){}
+    offlineConfirm(name,lecCount,doneCount);
+  } else {
+    // Recorded again: just flip the flag off (curriculum stays as-is / blank).
+    if(ST.disabledSubjects)delete ST.disabledSubjects[name];
+    persistOfflineChange(name,false);
+  }
+};
+
+function persistOfflineChange(name,nowOffline){
+  try{saveGateState();}catch(e){}
+  try{if(typeof buildSchedule==='function')buildSchedule();}catch(e){}
+  try{if(typeof renderGate==='function')renderGate();}catch(e){}
+  try{if(typeof cmRenderSList==='function')cmRenderSList();}catch(e){}
+  try{if(typeof cmRenderEdit==='function')cmRenderEdit();}catch(e){}
+  try{if(typeof haptic==='function')haptic([25]);}catch(e){}
+  try{showT(nowOffline?('📴 '+name+' → Offline'):('📺 '+name+' → Recorded'),nowOffline?'Recorded lectures cleared. Coaching-log se add karo. PYQ + tests intact.':'Back to auto-scheduled mode.');}catch(e){}
+}
+
+// Actually clear the subject's lectures from the live curriculum + rewrite storage.
+function doClearAndOffline(name){
+  try{
+    var raw=localStorage.getItem('v5_curriculum');
+    var tasks=raw?JSON.parse(raw):ALL_TASKS.slice();
+    if(!Array.isArray(tasks))tasks=ALL_TASKS.slice();
+    // Remove this subject's LECTURE tasks; keep its PYQ block if any.
+    var kept=tasks.filter(function(t){return !(t.subject===name&&t.type==='lecture');});
+    // Also clear any done entries for those lectures (they no longer exist).
+    tasks.forEach(function(t){if(t.subject===name&&t.type==='lecture'&&ST.done[t.id])delete ST.done[t.id];});
+    localStorage.setItem('v5_curriculum',JSON.stringify(kept));
+    try{if(window._fb&&window._fb.ready&&typeof fbWrite==='function')fbWrite('v5_curriculum',kept);}catch(e){}
+    // Set offline flag
+    if(!ST.disabledSubjects)ST.disabledSubjects={};
+    ST.disabledSubjects[name]=1;
+    try{saveGateState();}catch(e){}
+    // Curriculum changed → reload so const ALL_TASKS rebuilds
+    try{showT('📴 '+name+' → Offline','Reloading…');}catch(e){}
+    setTimeout(function(){location.reload();},700);
+  }catch(e){console.warn('[offline clear]',e);try{showT('⚠️ Error',e.message.slice(0,60));}catch(_){}}
+}
+
+function offlineConfirm(name,lecCount,doneCount){
+  var old=document.getElementById('offConfOv');if(old)old.remove();
+  var ov=document.createElement('div');ov.id='offConfOv';
+  ov.style.cssText='position:fixed;inset:0;z-index:100060;display:flex;align-items:center;justify-content:center;padding:20px;';
+  var warn=lecCount>0?('Iske <b style="color:var(--s3);">'+lecCount+' recorded lecture'+(lecCount>1?'s':'')+'</b>'+(doneCount>0?(' (jinme '+doneCount+' done the)'):'')+' permanently delete ho jayenge.'):'Iske paas abhi koi recorded lecture nahi — kuch delete nahi hoga.';
+  ov.innerHTML='<div style="position:absolute;inset:0;background:rgba(8,10,12,.82);backdrop-filter:blur(6px);" onclick="document.getElementById(\'offConfOv\').remove()"></div>'
+    +'<div style="position:relative;z-index:1;background:var(--sf);border:1px solid var(--bd2);border-radius:18px;width:min(400px,94vw);padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.5);">'
+    +'<div style="font-size:16px;font-weight:800;color:var(--tx);margin-bottom:8px;">📴 "'+esc(name)+'" ko Offline karein?</div>'
+    +'<div style="font-size:12px;color:var(--mt2);line-height:1.6;margin-bottom:8px;">'+warn+'</div>'
+    +'<div style="font-size:11px;color:var(--mt);line-height:1.55;background:var(--s4b);border:1px solid var(--s4o);border-radius:10px;padding:10px 11px;margin-bottom:16px;">Offline karne ke baad: curriculum blank ho jayega, subject auto-schedule/rotation se hat jayega. Coaching-log se naye lecture add karoge. <b style="color:var(--s4);">PYQ + tests intact rahenge.</b></div>'
+    +'<div style="display:flex;gap:9px;">'
+    +'<button onclick="document.getElementById(\'offConfOv\').remove()" style="flex:1;background:var(--sf2);border:1px solid var(--bd2);color:var(--mt2);border-radius:11px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fn);">Cancel</button>'
+    +'<button onclick="document.getElementById(\'offConfOv\').remove();window._doOfflineClear(\''+String(name).replace(/'/g,"\\'")+'\')" style="flex:1;background:var(--s3);border:none;color:#fff;border-radius:11px;padding:12px;font-size:13px;font-weight:800;cursor:pointer;font-family:var(--fn);">📴 Offline karo</button>'
+    +'</div></div>';
+  document.body.appendChild(ov);
+}
+window._doOfflineClear=doClearAndOffline;
+
+})();
+</script>
+
 
 <script>
 // ═══════════════════════════════════════════════════════════════════════════
@@ -11941,6 +12255,18 @@ function tstMapOne(name){
   var raw=String(name||'').trim();
   if(SUBJ.indexOf(raw)>=0)return [raw];
   var k=raw.toLowerCase();
+  // User GATE-map override: if any curriculum subject is mapped to a GATE subject
+  // whose aliases include this test's subject name, attach the test to it.
+  try{
+    if(ST&&ST.subjGateMap&&window.GATE_ALIAS_OF){
+      var stripped=k.replace(/[-\s]*\d+$/,'').trim();
+      for(var cur in ST.subjGateMap){
+        var gate=ST.subjGateMap[cur];
+        var aliases=window.GATE_ALIAS_OF[gate];
+        if(aliases&&(aliases.indexOf(k)>=0||aliases.indexOf(stripped)>=0)&&SUBJ.indexOf(cur)>=0)return [cur];
+      }
+    }
+  }catch(e){}
   if(TST_ALIAS[k])return TST_ALIAS[k].slice();
   k=k.replace(/[-\s]*\d+$/,'').trim();
   if(TST_ALIAS[k])return TST_ALIAS[k].slice();
@@ -14217,7 +14543,7 @@ try{
   // checklist still renders in the daily routine card.
   window.dayfitConvertSlot=function(slotId,newType){
     try{
-      if(['study','class','revision','other'].indexOf(newType)<0)return;
+      if(['study','class','revision','coaching','other'].indexOf(newType)<0)return;
       var o=readObj();
       var slots, recalc=false, mode, bn=false;
       if(o){slots=deepClone(o.slots);recalc=!!o.recalc;mode=o.mode;bn=!!o.breakfastNote;}
@@ -14235,7 +14561,7 @@ try{
       refreshAll();
       closePicker();
       try{if(typeof haptic==='function')haptic([20,30,20]);}catch(e){}
-      var tl=newType==='class'?'Recorded':newType==='revision'?'Revision':newType==='other'?'Routine':'GATE lectures';
+      var tl=newType==='class'?'Recorded':newType==='revision'?'Revision':newType==='coaching'?'Coaching':newType==='other'?'Routine':'GATE lectures';
       try{showT('\uD83D\uDD00 Switched to '+tl,'This slot is '+tl+' for its remaining time \\u2014 logged in Followed. Undo with \\u21A9 on the card.');}catch(e){}
     }catch(e){console.warn('[dayfit convert]',e);}
   };
@@ -14293,6 +14619,7 @@ try{
       +opt('study','\uD83D\uDCDA','Gate Lectures','Live lecture study \u2014 pulls your next GATE task','var(--s1,#4d9fec)')
       +opt('class','\uD83D\uDCE1','Recorded','Recorded lecture watching','var(--s2,#3ecf8e)')
       +opt('revision','\uD83D\uDD04','Revision','Spaced-repetition revision block','#a78bfa')
+      +opt('coaching','\uD83C\uDF93','Coaching','Offline class \u2014 log covered lectures','#c58af9')
       +'</div>';
   }
   function closePicker(){var ov=document.getElementById('dayfitPicker');if(ov)ov.remove();}
@@ -14489,7 +14816,7 @@ try{
   }
 
   // ════════════════ STATS CARD ════════════════
-  var TYPE_META={study:{e:'\uD83D\uDCDA',l:'GATE',c:'#4d9fec'},'class':{e:'\uD83D\uDCE1',l:'Recorded',c:'#3ecf8e'},revision:{e:'\uD83D\uDD04',l:'Revision',c:'#a78bfa'},other:{e:'\uD83D\uDDD3\uFE0F',l:'Routine',c:'#e8b339'}};
+  var TYPE_META={study:{e:'\uD83D\uDCDA',l:'GATE',c:'#4d9fec'},'class':{e:'\uD83D\uDCE1',l:'Recorded',c:'#3ecf8e'},revision:{e:'\uD83D\uDD04',l:'Revision',c:'#a78bfa'},coaching:{e:'\uD83C\uDF93',l:'Coaching',c:'#c58af9'},other:{e:'\uD83D\uDDD3\uFE0F',l:'Routine',c:'#e8b339'}};
   function hm(mins){mins=Math.round(mins);if(mins<=0)return '0m';if(mins<60)return mins+'m';var h=Math.floor(mins/60),m=mins%60;return h+'h'+(m?' '+m+'m':'');}
   function fmtDateLbl(d){try{var t=todayK();if(d===t)return 'Today';if(d===prevDate(t,1))return 'Yesterday';return fromStr(d).toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});}catch(e){return d;}}
 
@@ -14614,7 +14941,7 @@ try{
     ov.innerHTML='<div style="width:100%;max-width:360px;background:#16181b;border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:18px;font-family:var(--fn);box-shadow:0 12px 50px rgba(0,0,0,.6);">'
       +'<div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:3px;">\uD83D\uDD00 Switch this session</div>'
       +'<div style="font-size:11px;color:rgba(255,255,255,.5);line-height:1.45;margin-bottom:14px;">"'+esc(as.label||'This slot')+'" \u2014 changes type for the rest of its time today. Timetable stays untouched; time before the switch keeps its old type.</div>'
-      +opt('study')+opt('class')+opt('revision')+opt('other')
+      +opt('study')+opt('class')+opt('coaching')+opt('revision')+opt('other')
       +'</div>';
     document.body.appendChild(ov);
     ov.querySelectorAll('button[data-tp]').forEach(function(b){
