@@ -2982,6 +2982,17 @@ function saveGateState(){
   },600);
 }
 var ST=loadGateState();
+// One-time repair: earlier coaching logs wrote ST.done[id]=1 (a number) instead of an
+// ISO timestamp, which broke heatmap/stats. Convert any non-string done-value into a
+// valid timestamp so those lectures count again. Runs once; harmless if nothing to fix.
+try{
+  var _repaired=0;
+  Object.keys(ST.done||{}).forEach(function(tid){
+    var v=ST.done[tid];
+    if(typeof v!=='string'){ ST.done[tid]=new Date().toISOString(); _repaired++; }
+  });
+  if(_repaired>0){ try{saveGateState();}catch(e){} console.log('[Repair] fixed',_repaired,'ST.done timestamp(s)'); }
+}catch(e){}
 // Keep the growth-config mirror (read by the early materializer before ALL_TASKS) in
 // sync with ST on every load. If ST has newer growth config (e.g. from Firebase sync),
 // this pushes it to the plain key so the next reload materializes correctly.
@@ -4122,7 +4133,7 @@ function renderCatchUp(){
   for(var i=1;i<=30;i++){
     d.setDate(d.getDate()-1);
     var ds=toStr(d);
-    var hadDone=Object.keys(ST.done).some(function(tid){return ST.done[tid]&&ST.done[tid].split('T')[0]===ds;});
+    var hadDone=Object.keys(ST.done).some(function(tid){return (typeof ST.done[tid]==='string')&&ST.done[tid].split('T')[0]===ds;});
     var hadScreen=false;
     try{var sft=JSON.parse(localStorage.getItem('v5_sft_'+ds)||'{}');hadScreen=Object.values(sft).some(function(v){return v>60;});}catch(e){}
     if(hadDone||hadScreen){lastActiveDate=ds;break;}
@@ -5631,7 +5642,7 @@ function renderHistDayList(){
     if(isExpanded){
       var panel=document.createElement('div');
       panel.className='hist-expand-panel';
-      var gateDoneOnDay=Object.keys(ST.done).filter(function(tid){return ST.done[tid]&&ST.done[tid].split('T')[0]===row.ds;});
+      var gateDoneOnDay=Object.keys(ST.done).filter(function(tid){return (typeof ST.done[tid]==='string')&&ST.done[tid].split('T')[0]===row.ds;});
       var ffHtml='';
       if(ffDay.length){
         ffHtml='<div class="hist-section-title">⚡ Free Focus Sessions ('+ffDay.length+')</div>'
@@ -6542,7 +6553,7 @@ window.doExportDownload=function(){
     }
     // Night: GATE tasks done today
     if(prefs.n_gate!==false){
-      var gateDoneToday=Object.keys(ST.done).filter(function(tid){return ST.done[tid]&&ST.done[tid].split('T')[0]===today;});
+      var gateDoneToday=Object.keys(ST.done).filter(function(tid){return (typeof ST.done[tid]==='string')&&ST.done[tid].split('T')[0]===today;});
       if(gateDoneToday.length){
         var gateSubjToday={};
         gateDoneToday.forEach(function(tid){var t=null;for(var x=0;x<ALL_TASKS.length;x++){if(ALL_TASKS[x].id===Number(tid)){t=ALL_TASKS[x];break;}}if(t){gateSubjToday[t.subject]=(gateSubjToday[t.subject]||0)+1;}});
@@ -6736,7 +6747,7 @@ window.exportMarkdown=function(mode){
     lines.push('## 📊 Stats');
     lines.push('- Screen time: '+Math.round(focusSecs/60)+'m');
     lines.push('- Water: '+waterLog.length+' glasses');
-    var doneTasks=Object.keys(ST.done).filter(function(tid){return ST.done[tid]&&ST.done[tid].split('T')[0]===getToday();});
+    var doneTasks=Object.keys(ST.done).filter(function(tid){return (typeof ST.done[tid]==='string')&&ST.done[tid].split('T')[0]===getToday();});
     lines.push('- GATE tasks done: '+doneTasks.length);
     lines.push('- Streak: '+streak+' days 🔥');
     lines.push('');
@@ -9097,7 +9108,7 @@ function renderDailyMinimum(){
   for(var di=1;di<=7;di++){
     var d7=addD(today,-di);
     var dayDoneCount=Object.keys(ST.done).filter(function(tid){
-      return ST.done[tid]&&ST.done[tid].split('T')[0]===d7;
+      return (typeof ST.done[tid]==='string')&&ST.done[tid].split('T')[0]===d7;
     }).length;
     if(dayDoneCount>0)lecCountsLast7.push(dayDoneCount);
   }
@@ -11876,6 +11887,7 @@ function tstCfg(){
 }
 function tstAmin(t){return (typeof t.amin==='number'&&t.amin>=0)?t.amin:(t.min||60);}
 function tstNorm(t){
+  if(!t||typeof t!=='object')return t;
   t.subjects=tArr(t.subjects).map(String);
   t.mistakes=tArr(t.mistakes);
   t.attempts=tArr(t.attempts);

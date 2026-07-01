@@ -1,7 +1,7 @@
 // ── Study OS · Service Worker ──────────────────────────────────────────────
 // DEPLOY CHECKLIST: bump CACHE string on every deploy to force cache refresh on all devices.
 // v27 — 2026-06-11: Test Series — ACE schedules, readiness-gated planner, score + mistake log
-const CACHE = 'studyos-v47'; // v47: FIX crashes — coaching log now stores ISO timestamp (was 1 → broke ts.split heatmap/stats) + all ts.split sites guarded + USER_ID hoisted (fixes 'access before initialization'). v46: readiness gate + Mark-Finished
+const CACHE = 'studyos-v48'; // v48: guard ALL remaining ST.done[tid].split sites (5 more) + auto-repair corrupted numeric done-values to timestamps on load + harden tstNorm vs null records. v47: coaching timestamp + USER_ID hoist
 
 // Static assets that are safe to cache forever (fonts, CDN libraries)
 // index.html is intentionally NOT cached here — it uses network-first below
