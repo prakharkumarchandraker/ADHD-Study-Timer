@@ -1,7 +1,7 @@
 // ── Study OS · Service Worker ──────────────────────────────────────────────
 // DEPLOY CHECKLIST: bump CACHE string on every deploy to force cache refresh on all devices.
 // v27 — 2026-06-11: Test Series — ACE schedules, readiness-gated planner, score + mistake log
-const CACHE = 'studyos-v50'; // v50: Offline↔Recorded subject mode (offline=blank curriculum, coaching-logged, clears recorded lectures w/ confirm, keeps PYQ+tests) + GATE-subject MAP dropdown (tests+PYQ auto-attach on rename) + coaching ADD-new-lecture flow (your unit+name → curriculum+done+revision) + rotation per-phase lectures/day (1/2/3) + fullscreen shows rotation subject. v49: coaching switch + multi-select
+const CACHE = 'studyos-v51'; // v51: Coaching pill in fullscreen is now a real ➕ LOG button → opens an in-focus quick-log sheet (add/tick lectures without leaving focus). v50: Offline mode + GATE map + coaching add-lecture + rotation per-phase counts
 
 // Static assets that are safe to cache forever (fonts, CDN libraries)
 // index.html is intentionally NOT cached here — it uses network-first below

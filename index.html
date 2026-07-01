@@ -6048,10 +6048,12 @@ function updateFocusOverlay(){
         taskPill.style.display=_itTotal>0?'block':'none';
         if(_itTotal>0)taskPill.textContent='🗓 '+_itDone+'/'+_itTotal+' routine items done';
       } else if(activeSlot.type==='coaching'){
-        // Coaching slots: show how many lectures logged today, tap opens the log
+        // Coaching slots: tappable pill opens an in-focus quick-log sheet
         taskPill.style.display='block';
+        taskPill.style.cursor='pointer';
+        taskPill.setAttribute('onclick','foCoachOpen(\''+activeSlot.id+'\')');
         var _cN=(typeof coachLoggedTodayCount==='function')?coachLoggedTodayCount():0;
-        taskPill.innerHTML='<span class="fo-pill-name" style="text-align:center;">🎓 '+_cN+' logged today · tap ⊕ to log</span>';
+        taskPill.innerHTML='<span class="fo-pill-chip" style="color:#c58af9;background:#c58af922;">➕ LOG</span><span class="fo-pill-name">🎓 '+_cN+' logged today · tap to log</span>';
       } else {
         taskPill.style.display='block';
         if(nextT4){
@@ -11679,6 +11681,30 @@ window.coachRenderRoutineBody=function(slotId){
   return h;
 };
 
+// ── In-focus coaching log sheet ───────────────────────────────────────────────
+// Opens a bottom sheet OVER the fullscreen focus overlay so you can log/add
+// coaching lectures without leaving focus mode. Reuses coachRenderRoutineBody.
+window.foCoachOpen=function(slotId){
+  var old=document.getElementById('foCoachSheet');if(old)old.remove();
+  var ov=document.createElement('div');ov.id='foCoachSheet';
+  ov.style.cssText='position:fixed;inset:0;z-index:100080;display:flex;align-items:flex-end;justify-content:center;';
+  ov.innerHTML='<div style="position:absolute;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(3px);" onclick="foCoachClose()"></div>'
+    +'<div style="position:relative;z-index:1;background:var(--sf);border:1px solid var(--bd2);border-top-left-radius:20px;border-top-right-radius:20px;width:min(500px,100vw);max-height:82vh;overflow-y:auto;padding:18px 18px 26px;box-shadow:0 -10px 40px rgba(0,0,0,.5);">'
+      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">'
+        +'<div style="font-size:15px;font-weight:800;color:var(--tx);">🎓 Log Coaching Lecture</div>'
+        +'<button onclick="foCoachClose()" style="background:var(--sf2);border:1px solid var(--bd2);color:var(--mt2);font-size:13px;font-weight:700;cursor:pointer;border-radius:9px;padding:5px 12px;font-family:var(--fn);">Done</button>'
+      +'</div>'
+      +'<div id="foCoachBody"></div>'
+    +'</div>';
+  document.body.appendChild(ov);
+  var body=document.getElementById('foCoachBody');
+  if(body)body.innerHTML=coachRenderRoutineBody(slotId);
+};
+window.foCoachClose=function(){
+  var ov=document.getElementById('foCoachSheet');if(ov)ov.remove();
+  try{if(window._foActive&&typeof updateFocusOverlay==='function')updateFocusOverlay();}catch(e){}
+};
+
 // Refresh just this slot's form in place (both timetable + routine contexts).
 function refresh(slotId){
   // Timetable editor form
@@ -11689,6 +11715,11 @@ function refresh(slotId){
       var tab=document.getElementById('tab-timetable');
       if(tab&&tab.classList&&tab.classList.contains('active')){renderTimetable();return;}
     }
+  }catch(e){}
+  // In-focus coaching sheet — re-render its body if open
+  try{
+    var fb=document.getElementById('foCoachBody');
+    if(fb&&typeof coachRenderRoutineBody==='function'){fb.innerHTML=coachRenderRoutineBody(slotId);return;}
   }catch(e){}
   // Today routine — rerender routine list
   try{if(typeof renderRoutineFromTimetable==='function')renderRoutineFromTimetable();}catch(e){}
