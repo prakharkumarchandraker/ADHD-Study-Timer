@@ -1,7 +1,7 @@
 // ── Study OS · Service Worker ──────────────────────────────────────────────
 // DEPLOY CHECKLIST: bump CACHE string on every deploy to force cache refresh on all devices.
 // v27 — 2026-06-11: Test Series — ACE schedules, readiness-gated planner, score + mistake log
-const CACHE = 'studyos-v45'; // v45: Add-Subject wizard (JSON/manual, lecture count, avg time) + auto-grow subjects (daily new lectures till date/total/stop). v44: Coaching slot + subject Active/Disable + Plus Jakarta Sans
+const CACHE = 'studyos-v46'; // v46: FIX tests scheduling for un-started/empty subjects (readiness gate now requires real lectures) + Mark-Finished toggle + coaching log removed from timetable editor (was stuck). v45: Add-Subject wizard + auto-grow
 
 // Static assets that are safe to cache forever (fonts, CDN libraries)
 // index.html is intentionally NOT cached here — it uses network-first below
