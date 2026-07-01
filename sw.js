@@ -1,12 +1,12 @@
 // ── Study OS · Service Worker ──────────────────────────────────────────────
 // DEPLOY CHECKLIST: bump CACHE string on every deploy to force cache refresh on all devices.
 // v27 — 2026-06-11: Test Series — ACE schedules, readiness-gated planner, score + mistake log
-const CACHE = 'studyos-v43'; // v43: FIX random daily-min count (type-switch no longer wipes snapshot) + speed-tier selector (1x-2x incl 1.75x) in hero + focus sheet
+const CACHE = 'studyos-v45'; // v45: Add-Subject wizard (JSON/manual, lecture count, avg time) + auto-grow subjects (daily new lectures till date/total/stop). v44: Coaching slot + subject Active/Disable + Plus Jakarta Sans
 
 // Static assets that are safe to cache forever (fonts, CDN libraries)
 // index.html is intentionally NOT cached here — it uses network-first below
 const STATIC_ASSETS = [
-  'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap',
+  'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap',
   'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'
 ];
 

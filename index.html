@@ -23,6 +23,9 @@
 .cm-scnt{font-family:var(--mo);font-size:10px;color:var(--mt);flex-shrink:0;}
 .cm-sact{background:none;border:none;color:var(--mt);padding:1px 4px;border-radius:4px;font-size:10px;cursor:pointer;flex-shrink:0;}
 .cm-sact:hover{color:var(--tx);}.cm-sdel:hover{color:var(--s3)!important;}
+.cm-stog{font-family:var(--fn)!important;font-size:9px!important;font-weight:800!important;padding:2px 7px!important;border-radius:6px!important;background:var(--s2b)!important;color:var(--s2)!important;border:1px solid var(--s2o)!important;white-space:nowrap;}
+.cm-stog.off{background:var(--sf3)!important;color:var(--mt)!important;border-color:var(--bd2)!important;}
+.cm-si-off{opacity:.72;}
 .cm-sec{background:var(--sf2);border:1px solid var(--bd);border-radius:11px;padding:13px;margin-bottom:9px;}
 .cm-sec-ttl{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--mt);font-family:var(--mo);margin-bottom:9px;}
 .cm-sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;}
@@ -55,33 +58,35 @@
   #cmOverlay.cm-editing #cmLeftPane{display:flex!important;}
 }
 </style>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root{
-  --bg:#0f1113;--sf:#16181b;--sf2:#1d2024;--sf3:#262a2f;
-  --bd:rgba(255,255,255,0.08);--bd2:rgba(255,255,255,0.15);
-  --tx:#eceef0;--mt:#7b828c;--mt2:#a8aeb6;
-  --s1:#4d9fec;--s1b:rgba(77,159,236,.12);--s1o:rgba(77,159,236,.3);
-  --s2:#3ecf8e;--s2b:rgba(62,207,142,.1);--s2o:rgba(62,207,142,.3);
-  --s3:#f2545b;--s3b:rgba(242,84,91,.1);--s3o:rgba(242,84,91,.3);
-  --am:#e8b339;--amb:rgba(232,179,57,.1);--amo:rgba(232,179,57,.3);
-  --r:16px;--rs:10px;--fn:'Inter',sans-serif;--mo:'JetBrains Mono',monospace;
+  --bg:#0f1113;--sf:#181b1f;--sf2:#20242a;--sf3:#2b3037;
+  --bd:rgba(255,255,255,0.10);--bd2:rgba(255,255,255,0.18);
+  --tx:#f4f6f8;--mt:#8b929c;--mt2:#c2c8d0;
+  --s1:#5aa9f0;--s1b:rgba(90,169,240,.14);--s1o:rgba(90,169,240,.38);
+  --s2:#43d99a;--s2b:rgba(67,217,154,.13);--s2o:rgba(67,217,154,.38);
+  --s3:#ff5c63;--s3b:rgba(255,92,99,.13);--s3o:rgba(255,92,99,.38);
+  --am:#f0bd4a;--amb:rgba(240,189,74,.13);--amo:rgba(240,189,74,.38);
+  --s4:#c58af9;--s4b:rgba(197,138,249,.15);--s4o:rgba(197,138,249,.42);
+  --r:16px;--rs:10px;--fn:'Plus Jakarta Sans','Inter',system-ui,sans-serif;--mo:'JetBrains Mono',monospace;
 }
 /* ── LIGHT MODE ── */
 body.light{
   --bg:#f5f6f7;--sf:#ffffff;--sf2:#eef0f2;--sf3:#e5e8eb;
-  --bd:rgba(15,23,32,0.10);--bd2:rgba(15,23,32,0.18);
-  --tx:#1b2026;--mt:#6e7681;--mt2:#49515a;
+  --bd:rgba(15,23,32,0.12);--bd2:rgba(15,23,32,0.22);
+  --tx:#141a20;--mt:#5c646e;--mt2:#39424b;
   --s1:#1f7ad4;--s1b:rgba(31,122,212,.1);--s1o:rgba(31,122,212,.3);
   --s2:#178a5e;--s2b:rgba(23,138,94,.1);--s2o:rgba(23,138,94,.3);
   --s3:#cf3a42;--s3b:rgba(207,58,66,.1);--s3o:rgba(207,58,66,.3);
   --am:#c8920a;--amb:rgba(200,146,10,.1);--amo:rgba(200,146,10,.3);
+  --s4:#8b3fd6;--s4b:rgba(139,63,214,.1);--s4o:rgba(139,63,214,.32);
 }
 body.light #sideDrawer{background:rgba(244,244,248,.98);}
 body.light .tt-slot,.light .card{box-shadow:0 1px 3px rgba(0,0,0,.06);}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html,body{background:var(--bg);color:var(--tx);font-family:var(--fn);font-size:15px;font-variant-numeric:tabular-nums;overflow-x:hidden;min-height:100vh;}
+html,body{background:var(--bg);color:var(--tx);font-family:var(--fn);font-size:15px;font-weight:600;letter-spacing:-0.01em;font-variant-numeric:tabular-nums;overflow-x:hidden;min-height:100vh;-webkit-font-smoothing:antialiased;}
 
 /* ── EXAM SETTINGS MODAL ── */
 #examSettingsOverlay{display:none;position:fixed;inset:0;z-index:9500;align-items:center;justify-content:center;}
@@ -998,6 +1003,7 @@ body.focus-mode .hero-cd{font-size:96px!important;letter-spacing:-4px;}
 .tt-type-class{background:rgba(62,207,142,.15);color:var(--s2);}
 .tt-type-other{background:rgba(232,179,57,.12);color:var(--am);}
 .tt-type-revision{background:rgba(180,190,254,.14);color:#b4befe;}
+.tt-type-coaching{background:var(--s4b);color:var(--s4);}
 .tt-chevron{color:var(--mt);font-size:14px;flex-shrink:0;transition:transform .2s;}
 .tt-slot.open .tt-chevron{transform:rotate(90deg);}
 .tt-slot-body{display:none;padding:0 13px 13px;border-top:1px solid var(--bd);}
@@ -1008,12 +1014,13 @@ body.focus-mode .hero-cd{font-size:96px!important;letter-spacing:-4px;}
 .tt-field-lbl{font-size:9px;color:var(--mt);letter-spacing:.08em;text-transform:uppercase;min-width:36px;flex-shrink:0;}
 .tt-field-inp{flex:1;background:var(--sf2);border:1px solid var(--bd2);border-radius:8px;padding:6px 10px;font-family:var(--fn);font-size:13px;color:var(--tx);outline:none;}
 .tt-field-inp:focus{border-color:var(--s1o);}
-.tt-type-toggle{display:flex;border-radius:8px;overflow:hidden;border:1px solid var(--bd2);}
-.tt-type-toggle button{flex:1;padding:5px 0;font-size:10px;font-weight:700;font-family:var(--fn);border:none;background:transparent;color:var(--mt);cursor:pointer;transition:all .15s;}
+.tt-type-toggle{display:flex;flex-wrap:wrap;border-radius:8px;overflow:hidden;border:1px solid var(--bd2);}
+.tt-type-toggle button{flex:1 1 33%;padding:6px 0;font-size:10px;font-weight:700;font-family:var(--fn);border:none;background:transparent;color:var(--mt);cursor:pointer;transition:all .15s;}
 .tt-type-toggle button.act-study{background:rgba(77,159,236,.25);color:var(--s1);}
 .tt-type-toggle button.act-class{background:rgba(62,207,142,.2);color:var(--s2);}
 .tt-type-toggle button.act-other{background:rgba(232,179,57,.15);color:var(--am);}
 .tt-type-toggle button.act-revision{background:rgba(180,190,254,.18);color:#b4befe;}
+.tt-type-toggle button.act-coaching{background:var(--s4b);color:var(--s4);}
 .tt-time-pair{display:flex;gap:6px;flex:1;}
 .tt-time-inp{flex:1;background:var(--sf2);border:1px solid var(--bd2);border-radius:8px;padding:6px 8px;font-family:var(--mo);font-size:13px;color:var(--tx);outline:none;}
 .tt-time-inp:focus{border-color:var(--s1o);}
@@ -2185,6 +2192,81 @@ try{
 </script>
 
 <script>
+// ── SUBJECT AUTO-GROW · early materializer (runs before ALL_TASKS builds) ─────
+// Reads growth configs from a standalone synced-mirror key and appends placeholder
+// lectures to v5_curriculum up to the date-anchored target, BEFORE ALL_TASKS reads
+// it. Additive-only + idempotent (date math) so it is multi-device safe. Wrapped in
+// try/catch: if anything fails, curriculum loads unchanged.
+(function materializeSubjectGrowth(){
+  try{
+    var rawG=localStorage.getItem('v5_subj_growth');
+    if(!rawG)return;
+    var cfgs=JSON.parse(rawG);
+    if(!cfgs||typeof cfgs!=='object')return;
+    var rawC=localStorage.getItem('v5_curriculum');
+    if(!rawC)return; // no custom curriculum yet → nothing to grow into
+    var tasks=JSON.parse(rawC);
+    if(!Array.isArray(tasks))return;
+
+    // logical "today" (respects the 4am rollover the rest of the app uses)
+    function _pad(n){return (n<10?'0':'')+n;}
+    function _toStr(d){return d.getFullYear()+'-'+_pad(d.getMonth()+1)+'-'+_pad(d.getDate());}
+    var _n=new Date();
+    if(_n.getHours()<4){var _y=new Date(_n);_y.setDate(_y.getDate()-1);_n=_y;}
+    var today=_toStr(_n);
+    function _fromStr(s){var p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2]);}
+    // count active weekdays in (start, upTo]  (start day itself excluded — new lectures arrive from the next class onward)
+    function activeDaysAfter(start,upTo,daysSet){
+      if(upTo<=start)return 0;
+      var d=_fromStr(start),end=_fromStr(upTo),n=0,guard=0;
+      d.setDate(d.getDate()+1);
+      while(d<=end&&guard++<4000){ if(daysSet.indexOf(d.getDay())>=0)n++; d.setDate(d.getDate()+1); }
+      return n;
+    }
+    var maxId=0; tasks.forEach(function(t){ if(typeof t.id==='number'&&t.id>maxId)maxId=t.id; });
+    var changed=false;
+
+    Object.keys(cfgs).forEach(function(subj){
+      var g=cfgs[subj];
+      if(!g||g.active===false)return;
+      var days=Array.isArray(g.days)&&g.days.length?g.days:[1,2,3,4,5,6]; // Mon..Sat default
+      var perDay=Math.max(1,parseInt(g.perDay,10)||1);
+      var base=Math.max(0,parseInt(g.baseCount,10)||0);
+      var start=g.startDate||today;
+      var avg=Math.max(0,parseFloat(g.avgDur)||0);
+      // effective "upTo" date: capped by until-date in date mode
+      var upTo=today;
+      if(g.mode==='date'&&g.until&&today>g.until)upTo=g.until;
+      var target=base+activeDaysAfter(start,upTo,days)*perDay;
+      if(g.mode==='total'&&g.until){ var tot=parseInt(g.until,10)||0; if(tot>0)target=Math.min(target,tot); }
+      // how many lectures this subject currently has
+      var existing=tasks.filter(function(t){return t.type==='lecture'&&t.subject===subj;});
+      var have=existing.length;
+      if(target<=have)return;
+      // find the unit to append into (last used unit, else 'General')
+      var unit='General';
+      if(existing.length)unit=existing[existing.length-1].unit||'General';
+      var toAdd=target-have;
+      var startNum=have;
+      // insert new lectures right after the subject's last lecture (before its pyq if any)
+      var lastIdx=-1;
+      for(var i=0;i<tasks.length;i++){ if(tasks[i].subject===subj&&tasks[i].type==='lecture')lastIdx=i; }
+      var newOnes=[];
+      for(var k=1;k<=toAdd;k++){
+        maxId++; var num=startNum+k;
+        newOnes.push({id:maxId,type:'lecture',subject:subj,unit:unit,name:'Lecture '+_pad(num),duration:avg,num:num,totalLecs:target,_grown:1});
+      }
+      if(lastIdx>=0){ Array.prototype.splice.apply(tasks,[lastIdx+1,0].concat(newOnes)); }
+      else { tasks=tasks.concat(newOnes); }
+      // refresh totalLecs on all lectures of this subject
+      tasks.forEach(function(t){ if(t.type==='lecture'&&t.subject===subj)t.totalLecs=target; });
+      changed=true;
+    });
+
+    if(changed){ localStorage.setItem('v5_curriculum',JSON.stringify(tasks)); console.log('[Growth] materialized new lectures'); }
+  }catch(e){ console.warn('[Growth] materialize skipped:',e); }
+})();
+
 const ALL_TASKS=(function(){try{var _co=localStorage.getItem('v5_curriculum');if(_co){var _cp=JSON.parse(_co);if(Array.isArray(_cp)&&_cp.length>0)return _cp;}}catch(e){}return [{"id":0,"type":"lecture","subject":"C Programming","unit":"Unit 01 : Foundation and C Tokens","name":"About Computer and Mapping Between HLL to LLL","duration":93.7,"num":1,"totalLecs":45},{"id":1,"type":"lecture","subject":"C Programming","unit":"Unit 01 : Foundation and C Tokens","name":"About Printf and Signature","duration":96.5,"num":2,"totalLecs":45},{"id":2,"type":"lecture","subject":"C Programming","unit":"Unit 01 : Foundation and C Tokens","name":"About Scanf and ESC","duration":111.2,"num":3,"totalLecs":45},{"id":3,"type":"lecture","subject":"C Programming","unit":"Unit 01 : Foundation and C Tokens","name":"Number Representation in Binary Form - Positive and Negative","duration":95.2,"num":4,"totalLecs":45},{"id":4,"type":"lecture","subject":"C Programming","unit":"Unit 01 : Foundation and C Tokens","name":"Data Type","duration":101.7,"num":5,"totalLecs":45},{"id":5,"type":"lecture","subject":"C Programming","unit":"Unit 01 : Foundation and C Tokens","name":"FS and C Tokens","duration":97.6,"num":6,"totalLecs":45},{"id":6,"type":"lecture","subject":"C Programming","unit":"Unit 01 : Foundation and C Tokens","name":"Arithmetic, Relational and Logical Operators","duration":121.6,"num":7,"totalLecs":45},{"id":7,"type":"lecture","subject":"C Programming","unit":"Unit 01 : Foundation and C Tokens","name":"Assignment Operators and Bitwise Operators","duration":91.9,"num":8,"totalLecs":45},{"id":8,"type":"lecture","subject":"C Programming","unit":"Unit 01 : Foundation and C Tokens","name":"Left and Right Shift Operators","duration":78.5,"num":9,"totalLecs":45},{"id":9,"type":"lecture","subject":"C Programming","unit":"Unit 01 : Foundation and C Tokens","name":"Ternary, Increment and Decrement and Other Operators","duration":127.1,"num":10,"totalLecs":45},{"id":10,"type":"lecture","subject":"C Programming","unit":"Unit 02 : Control Flow Statement","name":"If else statements","duration":97.3,"num":11,"totalLecs":45},{"id":11,"type":"lecture","subject":"C Programming","unit":"Unit 02 : Control Flow Statement","name":"Switch Case with Question Discussion","duration":97.8,"num":12,"totalLecs":45},{"id":12,"type":"lecture","subject":"C Programming","unit":"Unit 02 : Control Flow Statement","name":"For Loop with Question Discussion","duration":99.8,"num":13,"totalLecs":45},{"id":13,"type":"lecture","subject":"C Programming","unit":"Unit 02 : Control Flow Statement","name":"while and Do While Loop with Question Discussion","duration":102.3,"num":14,"totalLecs":45},{"id":14,"type":"lecture","subject":"C Programming","unit":"Unit 02 : Control Flow Statement","name":"Jump Statement - Break, Continue, Goto and Exit","duration":98.4,"num":15,"totalLecs":45},{"id":15,"type":"lecture","subject":"C Programming","unit":"Unit 03 : Pointers","name":"About Pointers and Indirection Operators","duration":98.7,"num":16,"totalLecs":45},{"id":16,"type":"lecture","subject":"C Programming","unit":"Unit 03 : Pointers","name":"Wild, Null, Void and Dangling Pointers","duration":97.3,"num":17,"totalLecs":45},{"id":17,"type":"lecture","subject":"C Programming","unit":"Unit 03 : Pointers","name":"Pointer to Pointer and Arithmetic Operation on Pointers","duration":95.9,"num":18,"totalLecs":45},{"id":18,"type":"lecture","subject":"C Programming","unit":"Unit 04 : Array","name":"About 1 D Array","duration":79.0,"num":19,"totalLecs":45},{"id":19,"type":"lecture","subject":"C Programming","unit":"Unit 04 : Array","name":"Relation Between 1 D Array and Pointers","duration":102.5,"num":20,"totalLecs":45},{"id":20,"type":"lecture","subject":"C Programming","unit":"Unit 04 : Array","name":"Array of Pointers and Top Level Question Discussion","duration":94.6,"num":21,"totalLecs":45},{"id":21,"type":"lecture","subject":"C Programming","unit":"Unit 04 : Array","name":"About 2 D Array","duration":90.4,"num":22,"totalLecs":45},{"id":22,"type":"lecture","subject":"C Programming","unit":"Unit 04 : Array","name":"Relation Between 2 D Array and Pointers","duration":116.4,"num":23,"totalLecs":45},{"id":23,"type":"lecture","subject":"C Programming","unit":"Unit 04 : Array","name":"About 3 D Array","duration":113.4,"num":24,"totalLecs":45},{"id":24,"type":"lecture","subject":"C Programming","unit":"Unit 05 : Strings","name":"About Strings and Relation with Pointers","duration":92.9,"num":25,"totalLecs":45},{"id":25,"type":"lecture","subject":"C Programming","unit":"Unit 05 : Strings","name":"String Library Function","duration":87.6,"num":26,"totalLecs":45},{"id":26,"type":"lecture","subject":"C Programming","unit":"Unit 05 : Strings","name":"Difference S[] and *p and Question Discussion on Pointers","duration":85.1,"num":27,"totalLecs":45},{"id":27,"type":"lecture","subject":"C Programming","unit":"Unit 05 : Strings","name":"PYQ Discussion","duration":106.1,"num":28,"totalLecs":45},{"id":28,"type":"lecture","subject":"C Programming","unit":"Unit 05 : Strings","name":"Ready Only Variable and difference between *s and s[]","duration":100.4,"num":29,"totalLecs":45},{"id":29,"type":"lecture","subject":"C Programming","unit":"Unit 06 : Functions","name":"About Function, Local Variable and Global Variable","duration":108.7,"num":30,"totalLecs":45},{"id":30,"type":"lecture","subject":"C Programming","unit":"Unit 06 : Functions","name":"Storage Classes - Auto, Register, Static and Extern","duration":110.7,"num":31,"totalLecs":45},{"id":31,"type":"lecture","subject":"C Programming","unit":"Unit 06 : Functions","name":"Macro Substitution","duration":102.4,"num":32,"totalLecs":45},{"id":32,"type":"lecture","subject":"C Programming","unit":"Unit 06 : Functions","name":"Static and Dynamic Scoping with PYQ","duration":89.2,"num":33,"totalLecs":45},{"id":33,"type":"lecture","subject":"C Programming","unit":"Unit 06 : Functions","name":"Call By Value, Call By Address and Calling Conversion","duration":90.0,"num":34,"totalLecs":45},{"id":34,"type":"lecture","subject":"C Programming","unit":"Unit 06 : Functions","name":"CBV, CBR, CICO and CBN with Example","duration":100.2,"num":35,"totalLecs":45},{"id":35,"type":"lecture","subject":"C Programming","unit":"Unit 06 : Functions","name":"Recursion - T0, T1, T3, T4 and T5","duration":104.5,"num":36,"totalLecs":45},{"id":36,"type":"lecture","subject":"C Programming","unit":"Unit 06 : Functions","name":"PYQ PART 1","duration":99.7,"num":37,"totalLecs":45},{"id":37,"type":"lecture","subject":"C Programming","unit":"Unit 06 : Functions","name":"PYQ PART 2","duration":78.4,"num":38,"totalLecs":45},{"id":38,"type":"lecture","subject":"C Programming","unit":"Unit 06 : Functions","name":"Dangling Pointer","duration":21.6,"num":39,"totalLecs":45},{"id":39,"type":"lecture","subject":"C Programming","unit":"Unit 07 : Structure and PYQ","name":"About Structure and Syntax","duration":89.6,"num":40,"totalLecs":45},{"id":40,"type":"lecture","subject":"C Programming","unit":"Unit 07 : Structure and PYQ","name":"Passing Entire Structure and Bit Operations","duration":100.9,"num":41,"totalLecs":45},{"id":41,"type":"lecture","subject":"C Programming","unit":"Unit 07 : Structure and PYQ","name":"Top Level Question Discussion on Structure","duration":98.5,"num":42,"totalLecs":45},{"id":42,"type":"lecture","subject":"C Programming","unit":"Unit 08: Union, Enum and Runtime Memory Allocation","name":"Union and Enum with Question Discussion","duration":127.1,"num":43,"totalLecs":45},{"id":43,"type":"lecture","subject":"C Programming","unit":"Unit 08: Union, Enum and Runtime Memory Allocation","name":"RunTime Memory Allocation and imp Pointer Concept","duration":95.5,"num":44,"totalLecs":45},{"id":44,"type":"lecture","subject":"C Programming","unit":"Unit 09 : C PYQ","name":"PYQ L01","duration":96.2,"num":45,"totalLecs":45},{"id":45,"type":"pyq","subject":"C Programming","duration":1315.2,"topics":[{"name":"Aliasing","count":1,"ref":"Vol2 §9.1"},{"name":"Array","count":10,"ref":"Vol2 §9.2"},{"name":"Functions","count":1,"ref":"Vol2 §9.3"},{"name":"Goto","count":2,"ref":"Vol2 §9.4"},{"name":"Identify Function","count":6,"ref":"Vol2 §9.5"},{"name":"Loop Invariants","count":8,"ref":"Vol2 §9.6"},{"name":"Output","count":10,"ref":"Vol2 §9.7"},{"name":"Parameter Passing","count":12,"ref":"Vol2 §9.8"},{"name":"Pointers","count":14,"ref":"Vol2 §9.9"},{"name":"Programming Constructs","count":1,"ref":"Vol2 §9.10"},{"name":"Programming in C","count":31,"ref":"Vol2 §9.11"},{"name":"Programming Paradigms","count":2,"ref":"Vol2 §9.12"},{"name":"Recursion","count":18,"ref":"Vol2 §9.13"},{"name":"Strings","count":1,"ref":"Vol2 §9.14"},{"name":"Structure","count":5,"ref":"Vol2 §9.15"},{"name":"Switch Case","count":2,"ref":"Vol2 §9.16"},{"name":"Type Checking","count":1,"ref":"Vol2 §9.17"},{"name":"Union","count":1,"ref":"Vol2 §9.18"},{"name":"Variable Binding","count":1,"ref":"Vol2 §9.19"}],"num":0,"totalLecs":45},{"id":46,"type":"lecture","subject":"Data Structures","unit":"Unit 01: Introduction of Data Structures","name":"Introduction of Data Structures","duration":90.8,"num":1,"totalLecs":61},{"id":47,"type":"lecture","subject":"Data Structures","unit":"Unit 01: Introduction of Data Structures","name":"About Type of DS and Algorithm","duration":95.4,"num":2,"totalLecs":61},{"id":48,"type":"lecture","subject":"Data Structures","unit":"Unit 02: Time Complexity","name":"Analysis of Algorithm - Relative and Absolute Analysis","duration":96.3,"num":3,"totalLecs":61},{"id":49,"type":"lecture","subject":"Data Structures","unit":"Unit 02: Time Complexity","name":"Relation Between Function, logarithmic and Other Formula","duration":99.6,"num":4,"totalLecs":61},{"id":50,"type":"lecture","subject":"Data Structures","unit":"Unit 02: Time Complexity","name":"Time Complexity of Iteration - Single Loop","duration":83.8,"num":5,"totalLecs":61},{"id":51,"type":"lecture","subject":"Data Structures","unit":"Unit 02: Time Complexity","name":"Time Complexity - Nested Iteration","duration":99.2,"num":6,"totalLecs":61},{"id":52,"type":"lecture","subject":"Data Structures","unit":"Unit 02: Time Complexity","name":"Time Complexity - Triple Nested Loop","duration":91.3,"num":7,"totalLecs":61},{"id":53,"type":"lecture","subject":"Data Structures","unit":"Unit 02: Time Complexity","name":"Find Approx Value S and Time Complexity","duration":90.5,"num":8,"totalLecs":61},{"id":54,"type":"lecture","subject":"Data Structures","unit":"Unit 02: Time Complexity","name":"Analysis of Insertion Sort - BC, AC and WC","duration":87.1,"num":9,"totalLecs":61},{"id":55,"type":"lecture","subject":"Data Structures","unit":"Unit 03 : Asymptotic Notation","name":"Asymptotic Function - Big O","duration":97.0,"num":10,"totalLecs":61},{"id":56,"type":"lecture","subject":"Data Structures","unit":"Unit 03 : Asymptotic Notation","name":"Big Omega, Theta, Little Oh and Little Omega","duration":127.9,"num":11,"totalLecs":61},{"id":57,"type":"lecture","subject":"Data Structures","unit":"Unit 03 : Asymptotic Notation","name":"PROPERTICS OF AN AND QUESTION ON ASYMPTOTIC NOTATION","duration":109.4,"num":12,"totalLecs":61},{"id":58,"type":"lecture","subject":"Data Structures","unit":"Unit 03 : Asymptotic Notation","name":"PYQ of Asymptotic Notation","duration":63.7,"num":13,"totalLecs":61},{"id":59,"type":"lecture","subject":"Data Structures","unit":"Unit 04 : Recurrence Relation and Solution","name":"About Recurrence","duration":107.5,"num":14,"totalLecs":61},{"id":60,"type":"lecture","subject":"Data Structures","unit":"Unit 04 : Recurrence Relation and Solution","name":"Iteration Methods - with Coding Example","duration":94.1,"num":15,"totalLecs":61},{"id":61,"type":"lecture","subject":"Data Structures","unit":"Unit 04 : Recurrence Relation and Solution","name":"Question Discussion on Iteration Method","duration":79.6,"num":16,"totalLecs":61},{"id":62,"type":"lecture","subject":"Data Structures","unit":"Unit 04 : Recurrence Relation and Solution","name":"PYQ on Iteration and Substitution Method","duration":68.5,"num":17,"totalLecs":61},{"id":63,"type":"lecture","subject":"Data Structures","unit":"Unit 04 : Recurrence Relation and Solution","name":"Recursion Tree Method","duration":40.3,"num":18,"totalLecs":61},{"id":64,"type":"lecture","subject":"Data Structures","unit":"Unit 04 : Recurrence Relation and Solution","name":"Question Discussion on Recursion Tree Method","duration":103.6,"num":19,"totalLecs":61},{"id":65,"type":"lecture","subject":"Data Structures","unit":"Unit 04 : Recurrence Relation and Solution","name":"MASTER THEOREM OF DIVIDE AND CONQUER","duration":99.0,"num":20,"totalLecs":61},{"id":66,"type":"lecture","subject":"Data Structures","unit":"Unit 04 : Recurrence Relation and Solution","name":"Changing Variable Method and PYQ","duration":108.6,"num":21,"totalLecs":61},{"id":67,"type":"lecture","subject":"Data Structures","unit":"Unit 05 : Stack and Application","name":"About Stack - PUSH and POP","duration":124.6,"num":22,"totalLecs":61},{"id":68,"type":"lecture","subject":"Data Structures","unit":"Unit 05 : Stack and Application","name":"Question Discussion of Stack and PYQ","duration":106.1,"num":23,"totalLecs":61},{"id":69,"type":"lecture","subject":"Data Structures","unit":"Unit 05 : Stack and Application","name":"Coding on Stack - PART 1","duration":73.2,"num":24,"totalLecs":61},{"id":70,"type":"lecture","subject":"Data Structures","unit":"Unit 05 : Stack and Application","name":"Coding on Stack - PART 2","duration":7.6,"num":25,"totalLecs":61},{"id":71,"type":"lecture","subject":"Data Structures","unit":"Unit 05 : Stack and Application","name":"Space Complexity","duration":34.4,"num":26,"totalLecs":61},{"id":72,"type":"lecture","subject":"Data Structures","unit":"Unit 05 : Stack and Application","name":"Infix to Postfix Conversion with PYQ","duration":89.3,"num":27,"totalLecs":61},{"id":73,"type":"lecture","subject":"Data Structures","unit":"Unit 05 : Stack and Application","name":"Infix to Prefix Conversion with PYQ","duration":84.3,"num":28,"totalLecs":61},{"id":74,"type":"lecture","subject":"Data Structures","unit":"Unit 05 : Stack and Application","name":"Postfix Evaluation with PYQ","duration":78.5,"num":29,"totalLecs":61},{"id":75,"type":"lecture","subject":"Data Structures","unit":"Unit 05 : Stack and Application","name":"Recursion and TOH","duration":84.0,"num":30,"totalLecs":61},{"id":76,"type":"lecture","subject":"Data Structures","unit":"Unit 06 : Queue and Its Applications","name":"About Question, Enqueue and Dequeue Operations","duration":69.9,"num":31,"totalLecs":61},{"id":77,"type":"lecture","subject":"Data Structures","unit":"Unit 06 : Queue and Its Applications","name":"Queue Operations Coding","duration":53.4,"num":32,"totalLecs":61},{"id":78,"type":"lecture","subject":"Data Structures","unit":"Unit 06 : Queue and Its Applications","name":"Question Discussion on Queue","duration":39.0,"num":33,"totalLecs":61},{"id":79,"type":"lecture","subject":"Data Structures","unit":"Unit 06 : Queue and Its Applications","name":"About Circular Queue and Coding","duration":90.9,"num":34,"totalLecs":61},{"id":80,"type":"lecture","subject":"Data Structures","unit":"Unit 06 : Queue and Its Applications","name":"Question Discussion on Queue and Stack","duration":65.9,"num":35,"totalLecs":61},{"id":81,"type":"lecture","subject":"Data Structures","unit":"Unit 06 : Queue and Its Applications","name":"DEQUE and Priority Queue with PYQ","duration":70.6,"num":36,"totalLecs":61},{"id":82,"type":"lecture","subject":"Data Structures","unit":"Unit 07 : Linked List","name":"Basic of Linked List and Creation of Node","duration":89.3,"num":37,"totalLecs":61},{"id":83,"type":"lecture","subject":"Data Structures","unit":"Unit 07 : Linked List","name":"LL Creation and Question Discussion","duration":103.7,"num":38,"totalLecs":61},{"id":84,"type":"lecture","subject":"Data Structures","unit":"Unit 07 : Linked List","name":"Insert and Delete Operation of FIRST and LAST Node","duration":83.4,"num":39,"totalLecs":61},{"id":85,"type":"lecture","subject":"Data Structures","unit":"Unit 07 : Linked List","name":"Insert Y after X and Before Y and Delete Node X","duration":140.7,"num":40,"totalLecs":61},{"id":86,"type":"lecture","subject":"Data Structures","unit":"Unit 07 : Linked List","name":"Stack and Queue using Linked List Implementation","duration":104.1,"num":41,"totalLecs":61},{"id":87,"type":"lecture","subject":"Data Structures","unit":"Unit 07 : Linked List","name":"Circular Linked List - Insertion and Deletion","duration":144.8,"num":42,"totalLecs":61},{"id":88,"type":"lecture","subject":"Data Structures","unit":"Unit 07 : Linked List","name":"PYQ PART 01, Find Mid Node and Sort Elements","duration":117.5,"num":43,"totalLecs":61},{"id":89,"type":"lecture","subject":"Data Structures","unit":"Unit 07 : Linked List","name":"Set Operation on Linked List, Find Loop and PYQ PART 02","duration":79.4,"num":44,"totalLecs":61},{"id":90,"type":"lecture","subject":"Data Structures","unit":"Unit 07 : Linked List","name":"PYQ PART 03 Discussion","duration":104.2,"num":45,"totalLecs":61},{"id":91,"type":"lecture","subject":"Data Structures","unit":"Unit 08 : Hashing Function","name":"About Hashing Function and Type of Hashing Function","duration":104.8,"num":46,"totalLecs":61},{"id":92,"type":"lecture","subject":"Data Structures","unit":"Unit 08 : Hashing Function","name":"Collision Resolution Technique: LP and QP","duration":101.6,"num":47,"totalLecs":61},{"id":93,"type":"lecture","subject":"Data Structures","unit":"Unit 08 : Hashing Function","name":"Collision Resolution Technique: DH and RH","duration":70.8,"num":48,"totalLecs":61},{"id":94,"type":"lecture","subject":"Data Structures","unit":"Unit 09 : TREE","name":"About Tree, Binary Tree and Type of Binary Tree","duration":131.1,"num":49,"totalLecs":61},{"id":95,"type":"lecture","subject":"Data Structures","unit":"Unit 09 : TREE","name":"Memory Representation of Binary Tree","duration":86.2,"num":50,"totalLecs":61},{"id":96,"type":"lecture","subject":"Data Structures","unit":"Unit 09 : TREE","name":"Question Discussion on Binary Tree","duration":62.9,"num":51,"totalLecs":61},{"id":97,"type":"lecture","subject":"Data Structures","unit":"Unit 09 : TREE","name":"Traversal of Binary Tree","duration":85.3,"num":52,"totalLecs":61},{"id":98,"type":"lecture","subject":"Data Structures","unit":"Unit 09 : TREE","name":"Application of Binary Tree","duration":13.2,"num":53,"totalLecs":61},{"id":99,"type":"lecture","subject":"Data Structures","unit":"Unit 09 : TREE","name":"Construction of Binary Tree","duration":93.6,"num":54,"totalLecs":61},{"id":100,"type":"lecture","subject":"Data Structures","unit":"Unit 09 : TREE","name":"Binary Search Tree and Search Operation","duration":96.3,"num":55,"totalLecs":61},{"id":101,"type":"lecture","subject":"Data Structures","unit":"Unit 09 : TREE","name":"Insertion, Deletion and PYQ Discussion","duration":80.8,"num":56,"totalLecs":61},{"id":102,"type":"lecture","subject":"Data Structures","unit":"Unit 09 : TREE","name":"AVL TREE and Operation","duration":112.8,"num":57,"totalLecs":61},{"id":103,"type":"lecture","subject":"Data Structures","unit":"Unit 09 : TREE","name":"Threaded BT and Extended BT","duration":109.9,"num":58,"totalLecs":61},{"id":104,"type":"lecture","subject":"Data Structures","unit":"Unit 09 : TREE","name":"M Way Search Tree and B Tree","duration":108.7,"num":59,"totalLecs":61},{"id":105,"type":"lecture","subject":"Data Structures","unit":"Unit 09 : TREE","name":"Max and Min Number of Keys in B Tree","duration":85.4,"num":60,"totalLecs":61},{"id":106,"type":"lecture","subject":"Data Structures","unit":"Unit 09 : TREE","name":"2 - 3 Tree and Operation","duration":59.5,"num":61,"totalLecs":61},{"id":107,"type":"pyq","subject":"Data Structures","duration":1612.5,"topics":[{"name":"AVL Tree","count":6,"ref":"Vol2 §8.1"},{"name":"Array","count":13,"ref":"Vol2 §8.2"},{"name":"Binary Heap","count":29,"ref":"Vol2 §8.3"},{"name":"Binary Search Tree","count":36,"ref":"Vol2 §8.4"},{"name":"Binary Tree","count":53,"ref":"Vol2 §8.5"},{"name":"Data Structures","count":5,"ref":"Vol2 §8.6"},{"name":"Hashing","count":16,"ref":"Vol2 §8.7"},{"name":"Infix/Prefix","count":5,"ref":"Vol2 §8.8"},{"name":"Linked List","count":23,"ref":"Vol2 §8.9"},{"name":"Number of Swap","count":1,"ref":"Vol2 §8.10"},{"name":"Priority Queue","count":2,"ref":"Vol2 §8.11"},{"name":"Queue","count":14,"ref":"Vol2 §8.12"},{"name":"Stack","count":18,"ref":"Vol2 §8.13"},{"name":"Time Complexity","count":1,"ref":"Vol2 §8.14"},{"name":"Tree","count":14,"ref":"Vol2 §8.15"}],"num":0,"totalLecs":61},{"id":108,"type":"lecture","subject":"Algorithms","unit":"Unit 01 : Sorting and Searching Algorithm","name":"Bubble Sort and Analysis","duration":107.6,"num":1,"totalLecs":53},{"id":109,"type":"lecture","subject":"Algorithms","unit":"Unit 01 : Sorting and Searching Algorithm","name":"Selection Sort Algorithm and Analysis","duration":81.4,"num":2,"totalLecs":53},{"id":110,"type":"lecture","subject":"Algorithms","unit":"Unit 01 : Sorting and Searching Algorithm","name":"Insertion Sort and Analysis","duration":70.2,"num":3,"totalLecs":53},{"id":111,"type":"lecture","subject":"Algorithms","unit":"Unit 01 : Sorting and Searching Algorithm","name":"Counting Sort, Radix Sort Algorithm and Analysis","duration":103.7,"num":4,"totalLecs":53},{"id":112,"type":"lecture","subject":"Algorithms","unit":"Unit 01 : Sorting and Searching Algorithm","name":"Linear Search, Application and Analysis","duration":86.6,"num":5,"totalLecs":53},{"id":113,"type":"lecture","subject":"Algorithms","unit":"Unit 01 : Sorting and Searching Algorithm","name":"Binary Search Algorithm and Analysis","duration":90.7,"num":6,"totalLecs":53},{"id":114,"type":"lecture","subject":"Algorithms","unit":"Unit 01 : Sorting and Searching Algorithm","name":"Question Discussion on Searching","duration":61.2,"num":7,"totalLecs":53},{"id":115,"type":"lecture","subject":"Algorithms","unit":"Unit 02 : GRAPH, BFS and DFS with APPLICATION","name":"Basic of Graph and Representation of Graph","duration":128.4,"num":8,"totalLecs":53},{"id":116,"type":"lecture","subject":"Algorithms","unit":"Unit 02 : GRAPH, BFS and DFS with APPLICATION","name":"BFS Traversal and BFS Algorithm Analysis","duration":175.7,"num":9,"totalLecs":53},{"id":117,"type":"lecture","subject":"Algorithms","unit":"Unit 02 : GRAPH, BFS and DFS with APPLICATION","name":"Application of BFS","duration":52.4,"num":10,"totalLecs":53},{"id":118,"type":"lecture","subject":"Algorithms","unit":"Unit 02 : GRAPH, BFS and DFS with APPLICATION","name":"DFS Algorithm and analysis","duration":122.3,"num":11,"totalLecs":53},{"id":119,"type":"lecture","subject":"Algorithms","unit":"Unit 02 : GRAPH, BFS and DFS with APPLICATION","name":"Application of DFS and Analysis","duration":101.7,"num":12,"totalLecs":53},{"id":120,"type":"lecture","subject":"Algorithms","unit":"Unit 02 : GRAPH, BFS and DFS with APPLICATION","name":"Question Discussion on DFS","duration":72.5,"num":13,"totalLecs":53},{"id":121,"type":"lecture","subject":"Algorithms","unit":"Unit 02 : GRAPH, BFS and DFS with APPLICATION","name":"About Bi Connected Component and Question Discussion","duration":38.5,"num":14,"totalLecs":53},{"id":122,"type":"lecture","subject":"Algorithms","unit":"Unit 03 : Heap, Analysis and Heap Sort","name":"About Complete Binary Tree","duration":74.2,"num":15,"totalLecs":53},{"id":123,"type":"lecture","subject":"Algorithms","unit":"Unit 03 : Heap, Analysis and Heap Sort","name":"About Heap and Property","duration":107.2,"num":16,"totalLecs":53},{"id":124,"type":"lecture","subject":"Algorithms","unit":"Unit 03 : Heap, Analysis and Heap Sort","name":"Heap Construction and Analysis","duration":68.0,"num":17,"totalLecs":53},{"id":125,"type":"lecture","subject":"Algorithms","unit":"Unit 03 : Heap, Analysis and Heap Sort","name":"Heap Sort and Analysis","duration":121.9,"num":18,"totalLecs":53},{"id":126,"type":"lecture","subject":"Algorithms","unit":"Unit 03 : Heap, Analysis and Heap Sort","name":"PYQ Discussion on Heap","duration":67.5,"num":19,"totalLecs":53},{"id":127,"type":"lecture","subject":"Algorithms","unit":"Unit 04 : Divide and Conquer","name":"About Recursion","duration":66.1,"num":20,"totalLecs":53},{"id":128,"type":"lecture","subject":"Algorithms","unit":"Unit 04 : Divide and Conquer","name":"Finding Min Max Using Divide and Conquer","duration":83.2,"num":21,"totalLecs":53},{"id":129,"type":"lecture","subject":"Algorithms","unit":"Unit 04 : Divide and Conquer","name":"Analysis of finding Max and Min Using DAC","duration":58.7,"num":22,"totalLecs":53},{"id":130,"type":"lecture","subject":"Algorithms","unit":"Unit 04 : Divide and Conquer","name":"Power of an Element Using DAC","duration":77.7,"num":23,"totalLecs":53},{"id":131,"type":"lecture","subject":"Algorithms","unit":"Unit 04 : Divide and Conquer","name":"Binary Search using Divide and Conqur","duration":53.0,"num":24,"totalLecs":53},{"id":132,"type":"lecture","subject":"Algorithms","unit":"Unit 04 : Divide and Conquer","name":"Merge Sort and Analysis","duration":133.2,"num":25,"totalLecs":53},{"id":133,"type":"lecture","subject":"Algorithms","unit":"Unit 04 : Divide and Conquer","name":"Merge Sort Question Discussion","duration":60.2,"num":26,"totalLecs":53},{"id":134,"type":"lecture","subject":"Algorithms","unit":"Unit 04 : Divide and Conquer","name":"Question Discussion on Merge Sort and Binary Search","duration":107.5,"num":27,"totalLecs":53},{"id":135,"type":"lecture","subject":"Algorithms","unit":"Unit 04 : Divide and Conquer","name":"About Quick Sort and Analysis","duration":154.7,"num":28,"totalLecs":53},{"id":136,"type":"lecture","subject":"Algorithms","unit":"Unit 04 : Divide and Conquer","name":"Best Case and Worst Case of Question Sort","duration":30.4,"num":29,"totalLecs":53},{"id":137,"type":"lecture","subject":"Algorithms","unit":"Unit 04 : Divide and Conquer","name":"Question Discussion on Sorting","duration":159.4,"num":30,"totalLecs":53},{"id":138,"type":"lecture","subject":"Algorithms","unit":"Unit 04 : Divide and Conquer","name":"Selection Procedure and Analysis","duration":37.6,"num":31,"totalLecs":53},{"id":139,"type":"lecture","subject":"Algorithms","unit":"Unit 05: Greedy Algorithm","name":"About Greedy, Activity Selection Problem & Analysis","duration":87.4,"num":32,"totalLecs":53},{"id":140,"type":"lecture","subject":"Algorithms","unit":"Unit 05: Greedy Algorithm","name":"Job Scheduling with Deadline and Analysis","duration":54.5,"num":33,"totalLecs":53},{"id":141,"type":"lecture","subject":"Algorithms","unit":"Unit 05: Greedy Algorithm","name":"Fractional Knapsack Problem and Analysis","duration":39.5,"num":34,"totalLecs":53},{"id":142,"type":"lecture","subject":"Algorithms","unit":"Unit 05: Greedy Algorithm","name":"Huffman Coding Algorithm","duration":89.5,"num":35,"totalLecs":53},{"id":143,"type":"lecture","subject":"Algorithms","unit":"Unit 05: Greedy Algorithm","name":"PYQ Discussion of Huffman Coding","duration":49.9,"num":36,"totalLecs":53},{"id":144,"type":"lecture","subject":"Algorithms","unit":"Unit 05: Greedy Algorithm","name":"Optimal Merge Pattern and Analysis","duration":58.1,"num":37,"totalLecs":53},{"id":145,"type":"lecture","subject":"Algorithms","unit":"Unit 05: Greedy Algorithm","name":"Kruskal MST Algorithm and Analysis","duration":82.9,"num":38,"totalLecs":53},{"id":146,"type":"lecture","subject":"Algorithms","unit":"Unit 05: Greedy Algorithm","name":"Prim MST Algorithm and Analysis","duration":85.1,"num":39,"totalLecs":53},{"id":147,"type":"lecture","subject":"Algorithms","unit":"Unit 05: Greedy Algorithm","name":"Dijkstra Algorithm SSSP Algorithm and Analysis","duration":87.8,"num":40,"totalLecs":53},{"id":148,"type":"lecture","subject":"Algorithms","unit":"Unit 05: Greedy Algorithm","name":"PYQ Discussion on MST and SP","duration":106.0,"num":41,"totalLecs":53},{"id":149,"type":"lecture","subject":"Algorithms","unit":"Unit 05: Greedy Algorithm","name":"Bellford Algorithm and Analysis","duration":44.8,"num":42,"totalLecs":53},{"id":150,"type":"lecture","subject":"Algorithms","unit":"Unit 06 : Dynamic Programming","name":"About Dynamic Programming and Fibonacci Series","duration":101.6,"num":43,"totalLecs":53},{"id":151,"type":"lecture","subject":"Algorithms","unit":"Unit 06 : Dynamic Programming","name":"Longest Common Subsequence and Analysis","duration":144.9,"num":44,"totalLecs":53},{"id":152,"type":"lecture","subject":"Algorithms","unit":"Unit 06 : Dynamic Programming","name":"Matrix Chain Multiplication : Objective and Analysis","duration":115.0,"num":45,"totalLecs":53},{"id":153,"type":"lecture","subject":"Algorithms","unit":"Unit 06 : Dynamic Programming","name":"Question Discuss on Matrix Chain Multiplication","duration":54.9,"num":46,"totalLecs":53},{"id":154,"type":"lecture","subject":"Algorithms","unit":"Unit 06 : Dynamic Programming","name":"0/1 Knapsack Problem and Analysis","duration":99.6,"num":47,"totalLecs":53},{"id":155,"type":"lecture","subject":"Algorithms","unit":"Unit 06 : Dynamic Programming","name":"Question Discussion on 0/1 knapsack Problem","duration":44.6,"num":48,"totalLecs":53},{"id":156,"type":"lecture","subject":"Algorithms","unit":"Unit 06 : Dynamic Programming","name":"About Sum Of Subset","duration":22.3,"num":49,"totalLecs":53},{"id":157,"type":"lecture","subject":"Algorithms","unit":"Unit 06 : Dynamic Programming","name":"Sum Of Subset Problem and Analysis","duration":57.9,"num":50,"totalLecs":53},{"id":158,"type":"lecture","subject":"Algorithms","unit":"Unit 06 : Dynamic Programming","name":"Travelling Salesman Problem and Analysis","duration":63.2,"num":51,"totalLecs":53},{"id":159,"type":"lecture","subject":"Algorithms","unit":"Unit 06 : Dynamic Programming","name":"All Pair Shortest Path Problem - Floyd Warshall Algorithm","duration":105.4,"num":52,"totalLecs":53},{"id":160,"type":"lecture","subject":"Algorithms","unit":"Unit 06 : Dynamic Programming","name":"Question Discussion on APSPP and TC","duration":53.5,"num":53,"totalLecs":53},{"id":161,"type":"pyq","subject":"Algorithms","duration":1320.5,"topics":[{"name":"Algorithm Design","count":8,"ref":"Vol2 §1.1"},{"name":"Algorithm Design Technique","count":9,"ref":"Vol2 §1.2"},{"name":"Asymptotic Notation","count":7,"ref":"Vol2 §1.3"},{"name":"Asymptotic Notations","count":14,"ref":"Vol2 §1.4"},{"name":"Bellman Ford","count":2,"ref":"Vol2 §1.5"},{"name":"Binary Search","count":3,"ref":"Vol2 §1.6"},{"name":"Bitonic Array","count":1,"ref":"Vol2 §1.7"},{"name":"Depth First Search","count":1,"ref":"Vol2 §1.8"},{"name":"Dijkstra","count":6,"ref":"Vol2 §1.9"},{"name":"Directed Graph","count":1,"ref":"Vol2 §1.10"},{"name":"Double Hashing","count":1,"ref":"Vol2 §1.11"},{"name":"Dynamic Programming","count":9,"ref":"Vol2 §1.12"},{"name":"Graph Algorithms","count":11,"ref":"Vol2 §1.13"},{"name":"Graph Search","count":22,"ref":"Vol2 §1.14"},{"name":"Greedy Algorithms","count":5,"ref":"Vol2 §1.15"},{"name":"Hashing","count":7,"ref":"Vol2 §1.16"},{"name":"Huffman Code","count":6,"ref":"Vol2 §1.17"},{"name":"Identify Function","count":38,"ref":"Vol2 §1.18"},{"name":"Insertion Sort","count":3,"ref":"Vol2 §1.19"},{"name":"Linear Probing","count":1,"ref":"Vol2 §1.20"},{"name":"Matrix Chain Ordering","count":3,"ref":"Vol2 §1.21"},{"name":"Merge Sort","count":3,"ref":"Vol2 §1.22"},{"name":"Merging","count":2,"ref":"Vol2 §1.23"},{"name":"Minimum Spanning Tree","count":34,"ref":"Vol2 §1.24"},{"name":"Prim's Algorithm","count":2,"ref":"Vol2 §1.25"},{"name":"Quick Sort","count":14,"ref":"Vol2 §1.26"},{"name":"Recurrence Relation","count":35,"ref":"Vol2 §1.27"},{"name":"Recursion","count":4,"ref":"Vol2 §1.28"},{"name":"Searching","count":7,"ref":"Vol2 §1.29"},{"name":"Shortest Path","count":9,"ref":"Vol2 §1.30"},{"name":"Sorting","count":28,"ref":"Vol2 §1.31"},{"name":"Space Complexity","count":1,"ref":"Vol2 §1.32"},{"name":"Strongly Connected Components","count":3,"ref":"Vol2 §1.33"},{"name":"Time Complexity","count":29,"ref":"Vol2 §1.34"},{"name":"Topological Sort","count":4,"ref":"Vol2 §1.35"}],"num":0,"totalLecs":53},{"id":162,"type":"lecture","subject":"TOC","unit":"Unit 01 : Finite Automata","name":"About Symbol, Alphabet, String and Language","duration":99.3,"num":1,"totalLecs":73},{"id":163,"type":"lecture","subject":"TOC","unit":"Unit 01 : Finite Automata","name":"Kleen Closure and Example","duration":19.1,"num":2,"totalLecs":73},{"id":164,"type":"lecture","subject":"TOC","unit":"Unit 01 : Finite Automata","name":"Positive Closure and Language of Bulb Machine","duration":70.1,"num":3,"totalLecs":73},{"id":165,"type":"lecture","subject":"TOC","unit":"Unit 01 : Finite Automata","name":"Coffee Machine Design and Type Of Language","duration":110.2,"num":4,"totalLecs":73},{"id":166,"type":"lecture","subject":"TOC","unit":"Unit 01 : Finite Automata","name":"About FA and Architecture","duration":93.9,"num":5,"totalLecs":73},{"id":167,"type":"lecture","subject":"TOC","unit":"Unit 01 : Finite Automata","name":"About DFA and Language","duration":88.0,"num":6,"totalLecs":73},{"id":168,"type":"lecture","subject":"TOC","unit":"Unit 01 : Finite Automata","name":"Type of State- Productive & Non Productive State","duration":99.2,"num":7,"totalLecs":73},{"id":169,"type":"lecture","subject":"TOC","unit":"Unit 01 : Finite Automata","name":"Construction of DFA for Finite Language","duration":96.2,"num":8,"totalLecs":73},{"id":170,"type":"lecture","subject":"TOC","unit":"Unit 01 : Finite Automata","name":"Construction of Finite Automata PART 01","duration":96.9,"num":9,"totalLecs":73},{"id":171,"type":"lecture","subject":"TOC","unit":"Unit 01 : Finite Automata","name":"Construction of Finite Automata PART 02","duration":98.8,"num":10,"totalLecs":73},{"id":172,"type":"lecture","subject":"TOC","unit":"Unit 01 : Finite Automata","name":"Construction of Finite Automata PART 3","duration":108.2,"num":11,"totalLecs":73},{"id":173,"type":"lecture","subject":"TOC","unit":"Unit 01 : Finite Automata","name":"Construction of Finite Automata PART 4","duration":89.6,"num":12,"totalLecs":73},{"id":174,"type":"lecture","subject":"TOC","unit":"Unit 01 : Finite Automata","name":"Compound Finite Automata","duration":102.1,"num":13,"totalLecs":73},{"id":175,"type":"lecture","subject":"TOC","unit":"Unit 01 : Finite Automata","name":"Home Work Solution and PYQ Discussion PART 01","duration":92.5,"num":14,"totalLecs":73},{"id":176,"type":"lecture","subject":"TOC","unit":"Unit 01 : Finite Automata","name":"PYQ Discussion PART 2","duration":53.5,"num":15,"totalLecs":73},{"id":177,"type":"lecture","subject":"TOC","unit":"Unit 01 : Finite Automata","name":"Construction of Finite Automata PART 05","duration":48.0,"num":16,"totalLecs":73},{"id":178,"type":"lecture","subject":"TOC","unit":"Unit 01 : Finite Automata","name":"Construction of NFA PART 1","duration":98.6,"num":17,"totalLecs":73},{"id":179,"type":"lecture","subject":"TOC","unit":"Unit 01 : Finite Automata","name":"Construction of NFA PART 2","duration":100.5,"num":18,"totalLecs":73},{"id":180,"type":"lecture","subject":"TOC","unit":"Unit 01 : Finite Automata","name":"Conversion from NFA to DFA and Epsilon NFA","duration":97.7,"num":19,"totalLecs":73},{"id":181,"type":"lecture","subject":"TOC","unit":"Unit 01 : Finite Automata","name":"Epsilon NFA to NFA and DFA","duration":81.5,"num":20,"totalLecs":73},{"id":182,"type":"lecture","subject":"TOC","unit":"Unit 01 : Finite Automata","name":"Optimisation of Finite Automata","duration":84.8,"num":21,"totalLecs":73},{"id":183,"type":"lecture","subject":"TOC","unit":"Unit 01 : Finite Automata","name":"Decision Property - Emptiness, Finiteness and EQ","duration":63.6,"num":22,"totalLecs":73},{"id":184,"type":"lecture","subject":"TOC","unit":"Unit 01 : Finite Automata","name":"PYQ on Finite Automata","duration":87.3,"num":23,"totalLecs":73},{"id":185,"type":"lecture","subject":"TOC","unit":"Unit 02 : Regular Language and Regular Expression","name":"About Regular Language and Propertices","duration":88.8,"num":24,"totalLecs":73},{"id":186,"type":"lecture","subject":"TOC","unit":"Unit 02 : Regular Language and Regular Expression","name":"Regular Expression Construction PART 01","duration":89.6,"num":25,"totalLecs":73},{"id":187,"type":"lecture","subject":"TOC","unit":"Unit 02 : Regular Language and Regular Expression","name":"Regular Expression Construction PART 02","duration":97.5,"num":26,"totalLecs":73},{"id":188,"type":"lecture","subject":"TOC","unit":"Unit 02 : Regular Language and Regular Expression","name":"Construction of Regular Expression PART 03","duration":103.7,"num":27,"totalLecs":73},{"id":189,"type":"lecture","subject":"TOC","unit":"Unit 02 : Regular Language and Regular Expression","name":"Equivalence Between FA and RE","duration":88.7,"num":28,"totalLecs":73},{"id":190,"type":"lecture","subject":"TOC","unit":"Unit 02 : Regular Language and Regular Expression","name":"Algebric Property of RE and Ardens Theorem","duration":104.4,"num":29,"totalLecs":73},{"id":191,"type":"lecture","subject":"TOC","unit":"Unit 02 : Regular Language and Regular Expression","name":"Construction of RE","duration":59.1,"num":30,"totalLecs":73},{"id":192,"type":"lecture","subject":"TOC","unit":"Unit 02 : Regular Language and Regular Expression","name":"Home Work Solution","duration":14.4,"num":31,"totalLecs":73},{"id":193,"type":"lecture","subject":"TOC","unit":"Unit 02 : Regular Language and Regular Expression","name":"PYQ of RE","duration":49.2,"num":32,"totalLecs":73},{"id":194,"type":"lecture","subject":"TOC","unit":"Unit 02 : Regular Language and Regular Expression","name":"My Hill ANIL NARODE Theorem","duration":43.1,"num":33,"totalLecs":73},{"id":195,"type":"lecture","subject":"TOC","unit":"Unit 02 : Regular Language and Regular Expression","name":"Moore Machine and Construction of Mo","duration":90.3,"num":34,"totalLecs":73},{"id":196,"type":"lecture","subject":"TOC","unit":"Unit 02 : Regular Language and Regular Expression","name":"Mealy Macine and Conversion Between Mo and Me","duration":80.3,"num":35,"totalLecs":73},{"id":197,"type":"lecture","subject":"TOC","unit":"Unit 02 : Regular Language and Regular Expression","name":"Question Discussion on Mealy Machine","duration":37.8,"num":36,"totalLecs":73},{"id":198,"type":"lecture","subject":"TOC","unit":"Unit 02 : Regular Language and Regular Expression","name":"Closure Property of RL PART 01","duration":60.0,"num":37,"totalLecs":73},{"id":199,"type":"lecture","subject":"TOC","unit":"Unit 02 : Regular Language and Regular Expression","name":"Closure Property of RL PART 02","duration":66.6,"num":38,"totalLecs":73},{"id":200,"type":"lecture","subject":"TOC","unit":"Unit 02 : Regular Language and Regular Expression","name":"Closure Property of RL PART 03","duration":118.6,"num":39,"totalLecs":73},{"id":201,"type":"lecture","subject":"TOC","unit":"Unit 02 : Regular Language and Regular Expression","name":"Pummping Lemma","duration":95.0,"num":40,"totalLecs":73},{"id":202,"type":"lecture","subject":"TOC","unit":"Unit 02 : Regular Language and Regular Expression","name":"Check Regular Language","duration":68.6,"num":41,"totalLecs":73},{"id":203,"type":"lecture","subject":"TOC","unit":"Unit 03 : Grammer and Type of Grammar contents","name":"About Grammar, Type and CFG","duration":119.7,"num":42,"totalLecs":73},{"id":204,"type":"lecture","subject":"TOC","unit":"Unit 03 : Grammer and Type of Grammar contents","name":"Classification of CFG","duration":86.6,"num":43,"totalLecs":73},{"id":205,"type":"lecture","subject":"TOC","unit":"Unit 03 : Grammer and Type of Grammar contents","name":"Checking Ambiguous and Left Factoring","duration":104.2,"num":44,"totalLecs":73},{"id":206,"type":"lecture","subject":"TOC","unit":"Unit 03 : Grammer and Type of Grammar contents","name":"Construction of CFG","duration":129.0,"num":45,"totalLecs":73},{"id":207,"type":"lecture","subject":"TOC","unit":"Unit 03 : Grammer and Type of Grammar contents","name":"Simplification of CFG","duration":116.2,"num":46,"totalLecs":73},{"id":208,"type":"lecture","subject":"TOC","unit":"Unit 03 : Grammer and Type of Grammar contents","name":"Question Discussion on Simplification","duration":19.5,"num":47,"totalLecs":73},{"id":209,"type":"lecture","subject":"TOC","unit":"Unit 03 : Grammer and Type of Grammar contents","name":"Normal Form - CNF and GNF","duration":102.4,"num":48,"totalLecs":73},{"id":210,"type":"lecture","subject":"TOC","unit":"Unit 03 : Grammer and Type of Grammar contents","name":"Home Work - CNF and GNF","duration":47.6,"num":49,"totalLecs":73},{"id":211,"type":"lecture","subject":"TOC","unit":"Unit 03 : Grammer and Type of Grammar contents","name":"Regular Grammar - RG to FA","duration":59.5,"num":50,"totalLecs":73},{"id":212,"type":"lecture","subject":"TOC","unit":"Unit 03 : Grammer and Type of Grammar contents","name":"FA to RG and RG to RE","duration":75.0,"num":51,"totalLecs":73},{"id":213,"type":"lecture","subject":"TOC","unit":"Unit 03 : Grammer and Type of Grammar contents","name":"Decision Property in CFG","duration":130.8,"num":52,"totalLecs":73},{"id":214,"type":"lecture","subject":"TOC","unit":"Unit 04 : Push Down Automata","name":"About PDA and Stack Operation","duration":95.5,"num":53,"totalLecs":73},{"id":215,"type":"lecture","subject":"TOC","unit":"Unit 04 : Push Down Automata","name":"Construction of PDA - RL and CFL","duration":89.7,"num":54,"totalLecs":73},{"id":216,"type":"lecture","subject":"TOC","unit":"Unit 04 : Push Down Automata","name":"Construction of PDA - CFL","duration":70.8,"num":55,"totalLecs":73},{"id":217,"type":"lecture","subject":"TOC","unit":"Unit 04 : Push Down Automata","name":"Prefix Property","duration":33.4,"num":56,"totalLecs":73},{"id":218,"type":"lecture","subject":"TOC","unit":"Unit 04 : Push Down Automata","name":"CFG to NPDA","duration":45.3,"num":57,"totalLecs":73},{"id":219,"type":"lecture","subject":"TOC","unit":"Unit 04 : Push Down Automata","name":"Closure Property of Context Free Language","duration":72.6,"num":58,"totalLecs":73},{"id":220,"type":"lecture","subject":"TOC","unit":"Unit 04 : Push Down Automata","name":"Pumping Lemma and Question Practices","duration":111.2,"num":59,"totalLecs":73},{"id":221,"type":"lecture","subject":"TOC","unit":"Unit 05 : Turing Machine","name":"About TM Concepts","duration":77.4,"num":60,"totalLecs":73},{"id":222,"type":"lecture","subject":"TOC","unit":"Unit 05 : Turing Machine","name":"Construction of Turing Machine","duration":88.5,"num":61,"totalLecs":73},{"id":223,"type":"lecture","subject":"TOC","unit":"Unit 05 : Turing Machine","name":"Construction of TM - Home Work","duration":75.1,"num":62,"totalLecs":73},{"id":224,"type":"lecture","subject":"TOC","unit":"Unit 05 : Turing Machine","name":"Recursive and Recursive Enumerable Set","duration":65.9,"num":63,"totalLecs":73},{"id":225,"type":"lecture","subject":"TOC","unit":"Unit 06 : Decidable and Undecidable","name":"Decidable, SemiDecidable and Undecidable problem PART 01","duration":23.9,"num":64,"totalLecs":73},{"id":226,"type":"lecture","subject":"TOC","unit":"Unit 06 : Decidable and Undecidable","name":"Decidable, SemiDecidable and Undecidable problem PART 02","duration":83.2,"num":65,"totalLecs":73},{"id":227,"type":"lecture","subject":"TOC","unit":"Unit 06 : Decidable and Undecidable","name":"Decidable, SemiDecidable and Undecidable problem PART 03","duration":38.9,"num":66,"totalLecs":73},{"id":228,"type":"lecture","subject":"TOC","unit":"Unit 06 : Decidable and Undecidable","name":"TM - RE or NOT RE Problems","duration":103.7,"num":67,"totalLecs":73},{"id":229,"type":"lecture","subject":"TOC","unit":"Unit 06 : Decidable and Undecidable","name":"Question Discussion on U and D","duration":134.6,"num":68,"totalLecs":73},{"id":230,"type":"lecture","subject":"TOC","unit":"Unit 06 : Decidable and Undecidable","name":"Closure of Formal Langunge","duration":58.2,"num":69,"totalLecs":73},{"id":231,"type":"lecture","subject":"TOC","unit":"Unit 06 : Decidable and Undecidable","name":"Question Discussion on Closure Problem","duration":100.0,"num":70,"totalLecs":73},{"id":232,"type":"lecture","subject":"TOC","unit":"Unit 06 : Decidable and Undecidable","name":"Theory of Complexity - P, NP, NPC and NPH","duration":101.4,"num":71,"totalLecs":73},{"id":233,"type":"lecture","subject":"TOC","unit":"Unit 06 : Decidable and Undecidable","name":"Reduction Technique","duration":88.3,"num":72,"totalLecs":73},{"id":234,"type":"lecture","subject":"TOC","unit":"Unit 06 : Decidable and Undecidable","name":"PYQ Discussion on TOC","duration":78.0,"num":73,"totalLecs":73},{"id":235,"type":"pyq","subject":"TOC","duration":1788.4,"topics":[{"name":"Closure Property","count":9,"ref":"Vol2 §10.1"},{"name":"Context Free Grammar","count":2,"ref":"Vol2 §10.2"},{"name":"Context Free Language","count":33,"ref":"Vol2 §10.3"},{"name":"Countable/Uncountable Set","count":3,"ref":"Vol2 §10.4"},{"name":"Decidability","count":29,"ref":"Vol2 §10.5"},{"name":"DPDA","count":1,"ref":"Vol2 §10.6"},{"name":"Finite Automata","count":42,"ref":"Vol2 §10.7"},{"name":"Finite State Machines","count":1,"ref":"Vol2 §10.8"},{"name":"Identify Class of Language","count":31,"ref":"Vol2 §10.9"},{"name":"Minimal State Automata","count":25,"ref":"Vol2 §10.10"},{"name":"Non-Determinism","count":6,"ref":"Vol2 §10.11"},{"name":"Number of States","count":1,"ref":"Vol2 §10.12"},{"name":"Pumping Lemma","count":2,"ref":"Vol2 §10.13"},{"name":"Pushdown Automata","count":15,"ref":"Vol2 §10.14"},{"name":"Recursive & RE Languages","count":16,"ref":"Vol2 §10.15"},{"name":"Reduction","count":2,"ref":"Vol2 §10.16"},{"name":"Regular Expression","count":29,"ref":"Vol2 §10.17"},{"name":"Regular Grammar","count":3,"ref":"Vol2 §10.18"},{"name":"Regular Language","count":36,"ref":"Vol2 §10.19"}],"num":0,"totalLecs":73},{"id":236,"type":"lecture","subject":"Compiler Design","unit":"Unit 01 : Lexical Analysis","name":"About LPS, Compiler Vs Interpreter","duration":98.3,"num":1,"totalLecs":32},{"id":237,"type":"lecture","subject":"Compiler Design","unit":"Unit 01 : Lexical Analysis","name":"About Phases Of Compiler, Lexeme, Tokens and Patterns","duration":112.2,"num":2,"totalLecs":32},{"id":238,"type":"lecture","subject":"Compiler Design","unit":"Unit 01 : Lexical Analysis","name":"Lexical, Syntax and Semantic Analysis Phase","duration":86.9,"num":3,"totalLecs":32},{"id":239,"type":"lecture","subject":"Compiler Design","unit":"Unit 01 : Lexical Analysis","name":"ICG, CO, CG, ST and EHT","duration":101.5,"num":4,"totalLecs":32},{"id":240,"type":"lecture","subject":"Compiler Design","unit":"Unit 01 : Lexical Analysis","name":"LA Design, RE and FA of Tokens","duration":89.0,"num":5,"totalLecs":32},{"id":241,"type":"lecture","subject":"Compiler Design","unit":"Unit 02 : Syntax Analysis","name":"About CFG and Types","duration":103.9,"num":6,"totalLecs":32},{"id":242,"type":"lecture","subject":"Compiler Design","unit":"Unit 02 : Syntax Analysis","name":"Left Recursion Removal and Unambiguous Grammar","duration":48.0,"num":7,"totalLecs":32},{"id":243,"type":"lecture","subject":"Compiler Design","unit":"Unit 02 : Syntax Analysis","name":"Left Factoring","duration":36.4,"num":8,"totalLecs":32},{"id":244,"type":"lecture","subject":"Compiler Design","unit":"Unit 02 : Syntax Analysis","name":"Recursive Descent PARSER","duration":82.5,"num":9,"totalLecs":32},{"id":245,"type":"lecture","subject":"Compiler Design","unit":"Unit 02 : Syntax Analysis","name":"LL(1) PARSER","duration":118.1,"num":10,"totalLecs":32},{"id":246,"type":"lecture","subject":"Compiler Design","unit":"Unit 02 : Syntax Analysis","name":"FIRST and FOLLOW","duration":108.9,"num":11,"totalLecs":32},{"id":247,"type":"lecture","subject":"Compiler Design","unit":"Unit 02 : Syntax Analysis","name":"Construction of LL(1) Parse Table","duration":61.6,"num":12,"totalLecs":32},{"id":248,"type":"lecture","subject":"Compiler Design","unit":"Unit 02 : Syntax Analysis","name":"Checking LL(1) grammer or NOT","duration":76.6,"num":13,"totalLecs":32},{"id":249,"type":"lecture","subject":"Compiler Design","unit":"Unit 02 : Syntax Analysis","name":"Bottom Top PARSER","duration":102.3,"num":14,"totalLecs":32},{"id":250,"type":"lecture","subject":"Compiler Design","unit":"Unit 02 : Syntax Analysis","name":"Construction of LR(0) PARSER","duration":129.9,"num":15,"totalLecs":32},{"id":251,"type":"lecture","subject":"Compiler Design","unit":"Unit 02 : Syntax Analysis","name":"Checking LR(0) OR NOT","duration":87.7,"num":16,"totalLecs":32},{"id":252,"type":"lecture","subject":"Compiler Design","unit":"Unit 02 : Syntax Analysis","name":"Construction of SLR(1) PARSER","duration":102.0,"num":17,"totalLecs":32},{"id":253,"type":"lecture","subject":"Compiler Design","unit":"Unit 02 : Syntax Analysis","name":"Checking SLR(1) OR NOT","duration":50.2,"num":18,"totalLecs":32},{"id":254,"type":"lecture","subject":"Compiler Design","unit":"Unit 02 : Syntax Analysis","name":"Construction of LR(1) PARSER","duration":109.7,"num":19,"totalLecs":32},{"id":255,"type":"lecture","subject":"Compiler Design","unit":"Unit 02 : Syntax Analysis","name":"Construction of LALR(1) and Relation Between PARSER","duration":94.0,"num":20,"totalLecs":32},{"id":256,"type":"lecture","subject":"Compiler Design","unit":"Unit 02 : Syntax Analysis","name":"NOTES and Operator Precedence","duration":109.2,"num":21,"totalLecs":32},{"id":257,"type":"lecture","subject":"Compiler Design","unit":"Unit 02 : Syntax Analysis","name":"Operator Precedence Function and Question Discussion","duration":146.2,"num":22,"totalLecs":32},{"id":258,"type":"lecture","subject":"Compiler Design","unit":"Unit 02 : Syntax Analysis","name":"PYQ Question Discussion","duration":66.0,"num":23,"totalLecs":32},{"id":259,"type":"lecture","subject":"Compiler Design","unit":"Unit 03 : Semantic Analysis","name":"Semantics Analysis Phase and TOP Level Question Discussion","duration":190.9,"num":24,"totalLecs":32},{"id":260,"type":"lecture","subject":"Compiler Design","unit":"Unit 03 : Semantic Analysis","name":"Question Discussion on Semantics Analysis","duration":46.4,"num":25,"totalLecs":32},{"id":261,"type":"lecture","subject":"Compiler Design","unit":"Unit 03 : Semantic Analysis","name":"PYQ Question Discussion on Semantic Analysis","duration":45.0,"num":26,"totalLecs":32},{"id":262,"type":"lecture","subject":"Compiler Design","unit":"Unit 04 : Intermediate Code Generator","name":"ICG and Three Address Code","duration":102.8,"num":27,"totalLecs":32},{"id":263,"type":"lecture","subject":"Compiler Design","unit":"Unit 04 : Intermediate Code Generator","name":"Question Discussion on 3 AC","duration":115.5,"num":28,"totalLecs":32},{"id":264,"type":"lecture","subject":"Compiler Design","unit":"Unit 04 : Intermediate Code Generator","name":"Question Discussion and Representation of 3AC","duration":71.2,"num":29,"totalLecs":32},{"id":265,"type":"lecture","subject":"Compiler Design","unit":"Unit 05 : Code Optimization","name":"About Code Optimization","duration":67.7,"num":30,"totalLecs":32},{"id":266,"type":"lecture","subject":"Compiler Design","unit":"Unit 05 : Code Optimization","name":"Loop Optimization and Question Discussion","duration":89.1,"num":31,"totalLecs":32},{"id":267,"type":"lecture","subject":"Compiler Design","unit":"Unit 05 : Code Optimization","name":"PYQ Discussion on CO","duration":75.6,"num":32,"totalLecs":32},{"id":268,"type":"pyq","subject":"Compiler Design","duration":877.6,"topics":[{"name":"Assembler","count":9,"ref":"Vol2 §3.1"},{"name":"Backpatching","count":1,"ref":"Vol2 §3.2"},{"name":"Basic Blocks","count":1,"ref":"Vol2 §3.3"},{"name":"Code Optimization","count":10,"ref":"Vol2 §3.4"},{"name":"Compilation Phases","count":12,"ref":"Vol2 §3.5"},{"name":"Expression Evaluation","count":2,"ref":"Vol2 §3.6"},{"name":"First and Follow","count":6,"ref":"Vol2 §3.7"},{"name":"Grammar","count":51,"ref":"Vol2 §3.8"},{"name":"Intermediate Code","count":11,"ref":"Vol2 §3.9"},{"name":"LR Parser","count":20,"ref":"Vol2 §3.10"},{"name":"Lexical Analysis","count":6,"ref":"Vol2 §3.11"},{"name":"Linker","count":3,"ref":"Vol2 §3.12"},{"name":"Live Variable Analysis","count":3,"ref":"Vol2 §3.13"},{"name":"Macros","count":4,"ref":"Vol2 §3.14"},{"name":"Operator Precedence","count":3,"ref":"Vol2 §3.15"},{"name":"Parameter Passing","count":14,"ref":"Vol2 §3.16"},{"name":"Parsing","count":27,"ref":"Vol2 §3.17"},{"name":"Register Allocation","count":6,"ref":"Vol2 §3.18"},{"name":"Runtime Environment","count":22,"ref":"Vol2 §3.19"},{"name":"Static Single Assignment","count":3,"ref":"Vol2 §3.20"},{"name":"Symbol Table","count":1,"ref":"Vol2 §3.21"},{"name":"Syntax Directed Translation","count":17,"ref":"Vol2 §3.22"},{"name":"Variable Scope","count":2,"ref":"Vol2 §3.23"}],"num":0,"totalLecs":32},{"id":269,"type":"lecture","subject":"CO","unit":"Unit 01 : Number System","name":"Syllabus, Relation Between Combination and Number Of Bits","duration":101.0,"num":1,"totalLecs":80},{"id":270,"type":"lecture","subject":"CO","unit":"Unit 01 : Number System","name":"Decimal to Binary and Binary to Decimal","duration":101.8,"num":2,"totalLecs":80},{"id":271,"type":"lecture","subject":"CO","unit":"Unit 01 : Number System","name":"PYQ and Question Discussion on Number System","duration":89.2,"num":3,"totalLecs":80},{"id":272,"type":"lecture","subject":"CO","unit":"Unit 01 : Number System","name":"Unsigned Number and Signed Magnitude Number Range and OvF","duration":114.9,"num":4,"totalLecs":80},{"id":273,"type":"lecture","subject":"CO","unit":"Unit 01 : Number System","name":"1's Complement and 2's Complement Number and OvF","duration":116.6,"num":5,"totalLecs":80},{"id":274,"type":"lecture","subject":"CO","unit":"Unit 01 : Number System","name":"2's Complements OvF and PYQ Question Discussion","duration":92.0,"num":6,"totalLecs":80},{"id":275,"type":"lecture","subject":"CO","unit":"Unit 02 : Floating Pointer Representation","name":"Implicit and Explicit Normalisation","duration":142.4,"num":7,"totalLecs":80},{"id":276,"type":"lecture","subject":"CO","unit":"Unit 02 : Floating Pointer Representation","name":"Single Precision Format - 32 bits Version","duration":134.3,"num":8,"totalLecs":80},{"id":277,"type":"lecture","subject":"CO","unit":"Unit 02 : Floating Pointer Representation","name":"Top Level Question on Single Precision Format","duration":83.7,"num":9,"totalLecs":80},{"id":278,"type":"lecture","subject":"CO","unit":"Unit 02 : Floating Pointer Representation","name":"Question Discussion on FP Format and NaN","duration":98.3,"num":10,"totalLecs":80},{"id":279,"type":"lecture","subject":"CO","unit":"Unit 02 : Floating Pointer Representation","name":"Booth Recording Pattern and Algorithm","duration":135.1,"num":11,"totalLecs":80},{"id":280,"type":"lecture","subject":"CO","unit":"Unit 02 : Floating Pointer Representation","name":"Floating Point Multiplication and Division","duration":106.2,"num":12,"totalLecs":80},{"id":281,"type":"lecture","subject":"CO","unit":"Unit 03 : Foundation Of CO","name":"About Computer and Execution of Program","duration":93.6,"num":13,"totalLecs":80},{"id":282,"type":"lecture","subject":"CO","unit":"Unit 03 : Foundation Of CO","name":"Memory Chip Configuration, Byte and Word Addressable Memory","duration":124.1,"num":14,"totalLecs":80},{"id":283,"type":"lecture","subject":"CO","unit":"Unit 03 : Foundation Of CO","name":"Address Decoding and Question Discussion on BA, Wa and bA","duration":95.8,"num":15,"totalLecs":80},{"id":284,"type":"lecture","subject":"CO","unit":"Unit 03 : Foundation Of CO","name":"Little and Big Endian Mechanisms","duration":113.6,"num":16,"totalLecs":80},{"id":285,"type":"lecture","subject":"CO","unit":"Unit 03 : Foundation Of CO","name":"Processor Pin Structures and CPU Memory Interfacing","duration":99.7,"num":17,"totalLecs":80},{"id":286,"type":"lecture","subject":"CO","unit":"Unit 03 : Foundation Of CO","name":"Clock Cycle, Memory Cycle and Bus Structure","duration":89.1,"num":18,"totalLecs":80},{"id":287,"type":"lecture","subject":"CO","unit":"Unit 03 : Foundation Of CO","name":"Bus Configuration","duration":94.0,"num":19,"totalLecs":80},{"id":288,"type":"lecture","subject":"CO","unit":"Unit 04 : Instruction Cycle, Instruction Format and Addressing Mode","name":"About Fetch Cycle and Question Discussion","duration":116.6,"num":20,"totalLecs":80},{"id":289,"type":"lecture","subject":"CO","unit":"Unit 04 : Instruction Cycle, Instruction Format and Addressing Mode","name":"Execution Cycle and 0AIF and 1AIF","duration":117.3,"num":21,"totalLecs":80},{"id":290,"type":"lecture","subject":"CO","unit":"Unit 04 : Instruction Cycle, Instruction Format and Addressing Mode","name":"Expand Opcode Technique","duration":103.0,"num":22,"totalLecs":80},{"id":291,"type":"lecture","subject":"CO","unit":"Unit 04 : Instruction Cycle, Instruction Format and Addressing Mode","name":"2 AI, 3 AI format and Question Discussion","duration":107.8,"num":23,"totalLecs":80},{"id":292,"type":"lecture","subject":"CO","unit":"Unit 04 : Instruction Cycle, Instruction Format and Addressing Mode","name":"Top Level Question Discussion on Instruction Format","duration":107.8,"num":24,"totalLecs":80},{"id":293,"type":"lecture","subject":"CO","unit":"Unit 04 : Instruction Cycle, Instruction Format and Addressing Mode","name":"Execution Sequence of Instruction","duration":99.8,"num":25,"totalLecs":80},{"id":294,"type":"lecture","subject":"CO","unit":"Unit 04 : Instruction Cycle, Instruction Format and Addressing Mode","name":"Flag Register ( Program Status Word )","duration":84.8,"num":26,"totalLecs":80},{"id":295,"type":"lecture","subject":"CO","unit":"Unit 04 : Instruction Cycle, Instruction Format and Addressing Mode","name":"Addressing Mode With Practice Example","duration":106.6,"num":27,"totalLecs":80},{"id":296,"type":"lecture","subject":"CO","unit":"Unit 04 : Instruction Cycle, Instruction Format and Addressing Mode","name":"Indexed Addressing Mode and PYQ","duration":91.0,"num":28,"totalLecs":80},{"id":297,"type":"lecture","subject":"CO","unit":"Unit 04 : Instruction Cycle, Instruction Format and Addressing Mode","name":"Unconditional and Conditional TOC Instruction","duration":104.0,"num":29,"totalLecs":80},{"id":298,"type":"lecture","subject":"CO","unit":"Unit 05 : Pipeline","name":"Instruction Cycle with Interrupts","duration":117.8,"num":30,"totalLecs":80},{"id":299,"type":"lecture","subject":"CO","unit":"Unit 05 : Pipeline","name":"Pipeline and Non Pipeline Processor and Performance","duration":113.2,"num":31,"totalLecs":80},{"id":300,"type":"lecture","subject":"CO","unit":"Unit 05 : Pipeline","name":"Question Discussion on Linear Pipeline PART 1","duration":112.1,"num":32,"totalLecs":80},{"id":301,"type":"lecture","subject":"CO","unit":"Unit 05 : Pipeline","name":"Question Discussion on Linear Pipeline PART 2","duration":121.3,"num":33,"totalLecs":80},{"id":302,"type":"lecture","subject":"CO","unit":"Unit 05 : Pipeline","name":"RISC Pipeline","duration":102.5,"num":34,"totalLecs":80},{"id":303,"type":"lecture","subject":"CO","unit":"Unit 05 : Pipeline","name":"Write Back Stage in RISC Pipeline","duration":11.6,"num":35,"totalLecs":80},{"id":304,"type":"lecture","subject":"CO","unit":"Unit 05 : Pipeline","name":"Question Discussion, Stalls and Structural Dependency","duration":115.2,"num":36,"totalLecs":80},{"id":305,"type":"lecture","subject":"CO","unit":"Unit 05 : Pipeline","name":"Data Dependency, Anti Dependency and Output Dependency","duration":122.3,"num":37,"totalLecs":80},{"id":306,"type":"lecture","subject":"CO","unit":"Unit 05 : Pipeline","name":"Data Hazards, Dependency Vs Hazard and Numerical Discussion","duration":160.0,"num":38,"totalLecs":80},{"id":307,"type":"lecture","subject":"CO","unit":"Unit 05 : Pipeline","name":"Control Dependency and Branch Penalty","duration":83.3,"num":39,"totalLecs":80},{"id":308,"type":"lecture","subject":"CO","unit":"Unit 05 : Pipeline","name":"Conditional TOC and Branch Prediction Buffer","duration":73.8,"num":40,"totalLecs":80},{"id":309,"type":"lecture","subject":"CO","unit":"Unit 05 : Pipeline","name":"Question Discussion on Branching Prediction","duration":122.2,"num":41,"totalLecs":80},{"id":310,"type":"lecture","subject":"CO","unit":"Unit 05 : Pipeline","name":"PYQ and Question Discussion PART 1","duration":95.0,"num":42,"totalLecs":80},{"id":311,"type":"lecture","subject":"CO","unit":"Unit 05 : Pipeline","name":"PYQ Discussion PART 2","duration":147.3,"num":43,"totalLecs":80},{"id":312,"type":"lecture","subject":"CO","unit":"Unit 05 : Pipeline","name":"Dynamic Pipeline and PYQ Discussion PART 3","duration":98.5,"num":44,"totalLecs":80},{"id":313,"type":"lecture","subject":"CO","unit":"Unit 05 : Pipeline","name":"PYQ Discussion PART 4","duration":88.9,"num":45,"totalLecs":80},{"id":314,"type":"lecture","subject":"CO","unit":"Unit 06 : Memory Organisation","name":"About Memory Organisation and Addressability of Memory","duration":89.1,"num":46,"totalLecs":80},{"id":315,"type":"lecture","subject":"CO","unit":"Unit 06 : Memory Organisation","name":"A Connection Between CPU and Memory","duration":65.7,"num":47,"totalLecs":80},{"id":316,"type":"lecture","subject":"CO","unit":"Unit 06 : Memory Organisation","name":"Question Discussion on RAM and ROM and PYQ","duration":164.0,"num":48,"totalLecs":80},{"id":317,"type":"lecture","subject":"CO","unit":"Unit 06 : Memory Organisation","name":"Memory Hierarchy System Design","duration":97.4,"num":49,"totalLecs":80},{"id":318,"type":"lecture","subject":"CO","unit":"Unit 06 : Memory Organisation","name":"Type of Memory Organisation, Avg Access Time and Throughput","duration":97.0,"num":50,"totalLecs":80},{"id":319,"type":"lecture","subject":"CO","unit":"Unit 06 : Memory Organisation","name":"Question Discussion on type of Memory Organisation - PART 1","duration":123.5,"num":51,"totalLecs":80},{"id":320,"type":"lecture","subject":"CO","unit":"Unit 06 : Memory Organisation","name":"Question Discussion on Memory Organisation - PART 2","duration":44.5,"num":52,"totalLecs":80},{"id":321,"type":"lecture","subject":"CO","unit":"Unit 06 : Memory Organisation","name":"Cache Memory and Organisation","duration":94.8,"num":53,"totalLecs":80},{"id":322,"type":"lecture","subject":"CO","unit":"Unit 06 : Memory Organisation","name":"Associative Mapping and Instruction Execution","duration":76.8,"num":54,"totalLecs":80},{"id":323,"type":"lecture","subject":"CO","unit":"Unit 06 : Memory Organisation","name":"Advantage and Disadvantage of Associative Mapping and DM","duration":87.3,"num":55,"totalLecs":80},{"id":324,"type":"lecture","subject":"CO","unit":"Unit 06 : Memory Organisation","name":"Direct Mapping, Advantage and Disadvanatge","duration":91.2,"num":56,"totalLecs":80},{"id":325,"type":"lecture","subject":"CO","unit":"Unit 06 : Memory Organisation","name":"Set Associative Mapping","duration":44.8,"num":57,"totalLecs":80},{"id":326,"type":"lecture","subject":"CO","unit":"Unit 06 : Memory Organisation","name":"Set Associative Mapping and Question Discussion on Mapping","duration":114.6,"num":58,"totalLecs":80},{"id":327,"type":"lecture","subject":"CO","unit":"Unit 06 : Memory Organisation","name":"Question Discussion on Mapping - DM, AM and SAM","duration":82.2,"num":59,"totalLecs":80},{"id":328,"type":"lecture","subject":"CO","unit":"Unit 06 : Memory Organisation","name":"Replacement Algorithm and Question Discussion","duration":86.8,"num":60,"totalLecs":80},{"id":329,"type":"lecture","subject":"CO","unit":"Unit 06 : Memory Organisation","name":"Type Of Miss - CM, CP and CF","duration":77.8,"num":61,"totalLecs":80},{"id":330,"type":"lecture","subject":"CO","unit":"Unit 06 : Memory Organisation","name":"Size of Comparator and Latency - Question Discussion On Hit","duration":150.0,"num":62,"totalLecs":80},{"id":331,"type":"lecture","subject":"CO","unit":"Unit 06 : Memory Organisation","name":"Update Technique and Write Through Procedure","duration":140.4,"num":63,"totalLecs":80},{"id":332,"type":"lecture","subject":"CO","unit":"Unit 06 : Memory Organisation","name":"Write Back Procedure","duration":63.5,"num":64,"totalLecs":80},{"id":333,"type":"lecture","subject":"CO","unit":"Unit 06 : Memory Organisation","name":"PYQ PART 1","duration":96.3,"num":65,"totalLecs":80},{"id":334,"type":"lecture","subject":"CO","unit":"Unit 06 : Memory Organisation","name":"PYQ PART 2","duration":136.1,"num":66,"totalLecs":80},{"id":335,"type":"lecture","subject":"CO","unit":"Unit 06 : Memory Organisation","name":"GATE PYQ 3","duration":170.1,"num":67,"totalLecs":80},{"id":336,"type":"lecture","subject":"CO","unit":"Unit 06 : Memory Organisation","name":"PYQ on Memory PART 4","duration":106.5,"num":68,"totalLecs":80},{"id":337,"type":"lecture","subject":"CO","unit":"Unit 07 : Disk Structure","name":"About Disk Structure, Access Time and Capacity","duration":132.9,"num":69,"totalLecs":80},{"id":338,"type":"lecture","subject":"CO","unit":"Unit 07 : Disk Structure","name":"Question Discussion on Disk PART 1","duration":104.8,"num":70,"totalLecs":80},{"id":339,"type":"lecture","subject":"CO","unit":"Unit 07 : Disk Structure","name":"Question Discussion on Disk PART 2","duration":93.5,"num":71,"totalLecs":80},{"id":340,"type":"lecture","subject":"CO","unit":"Unit 07 : Disk Structure","name":"CAV, CLV and PYQ Discussion on Disk","duration":99.6,"num":72,"totalLecs":80},{"id":341,"type":"lecture","subject":"CO","unit":"Unit 07 : Disk Structure","name":"Magnetic Disk and Question Discussion","duration":77.1,"num":73,"totalLecs":80},{"id":342,"type":"lecture","subject":"CO","unit":"Unit 08 : Control Unit","name":"About Control Unit, Hardwired CU and Microprogrammed CU","duration":130.0,"num":74,"totalLecs":80},{"id":343,"type":"lecture","subject":"CO","unit":"Unit 08 : Control Unit","name":"Horizontal and Vertical Micro Programmed Control Unit","duration":99.9,"num":75,"totalLecs":80},{"id":344,"type":"lecture","subject":"CO","unit":"Unit 08 : Control Unit","name":"Nano Programmed Control Control and Question Discussion","duration":75.3,"num":76,"totalLecs":80},{"id":345,"type":"lecture","subject":"CO","unit":"Unit 09 : IO Operations","name":"About Programmed IO and Interrupt IO","duration":63.0,"num":77,"totalLecs":80},{"id":346,"type":"lecture","subject":"CO","unit":"Unit 09 : IO Operations","name":"Top Level Question Discussion on PIO and IDIO","duration":65.0,"num":78,"totalLecs":80},{"id":347,"type":"lecture","subject":"CO","unit":"Unit 09 : IO Operations","name":"Type of Interrupts","duration":91.8,"num":79,"totalLecs":80},{"id":348,"type":"lecture","subject":"CO","unit":"Unit 09 : IO Operations","name":"DMA Controller and PYQ Numerical Discussion","duration":114.2,"num":80,"totalLecs":80},{"id":349,"type":"pyq","subject":"CO","duration":2459.0,"topics":[{"name":"Addressing Modes","count":18,"ref":"Vol2 §2.1"},{"name":"Avg Memory Access Time","count":2,"ref":"Vol2 §2.2"},{"name":"CISC/RISC","count":2,"ref":"Vol2 §2.3"},{"name":"Cache Memory","count":73,"ref":"Vol2 §2.4"},{"name":"Clock Cycles","count":1,"ref":"Vol2 §2.5"},{"name":"DMA","count":9,"ref":"Vol2 §2.6"},{"name":"Data Dependency","count":2,"ref":"Vol2 §2.7"},{"name":"Data Path","count":7,"ref":"Vol2 §2.8"},{"name":"IO Handling","count":7,"ref":"Vol2 §2.9"},{"name":"Instruction Execution","count":6,"ref":"Vol2 §2.10"},{"name":"Instruction Format","count":9,"ref":"Vol2 §2.11"},{"name":"ISA","count":1,"ref":"Vol2 §2.12"},{"name":"Interrupts","count":9,"ref":"Vol2 §2.13"},{"name":"Machine Instruction","count":21,"ref":"Vol2 §2.14"},{"name":"Memory Interfacing","count":6,"ref":"Vol2 §2.15"},{"name":"Microprogramming","count":13,"ref":"Vol2 §2.16"},{"name":"Pipelining","count":43,"ref":"Vol2 §2.17"},{"name":"Runtime Environment","count":2,"ref":"Vol2 §2.18"},{"name":"Speedup","count":4,"ref":"Vol2 §2.19"},{"name":"Virtual Memory","count":3,"ref":"Vol2 §2.20"}],"num":0,"totalLecs":80},{"id":350,"type":"lecture","subject":"OS","unit":"Unit 01: Introduction and Background","name":"About OS, Shell, Kernel,System Call, User and Kernel Mode.","duration":137.7,"num":1,"totalLecs":63},{"id":351,"type":"lecture","subject":"OS","unit":"Unit 01: Introduction and Background","name":"Type Of OS-Batch, Uni, Multiprogramming and MultiTasking OS","duration":140.2,"num":2,"totalLecs":63},{"id":352,"type":"lecture","subject":"OS","unit":"Unit 01: Introduction and Background","name":"Multiprocessor OS and Real Time OS with Example","duration":106.0,"num":3,"totalLecs":63},{"id":353,"type":"lecture","subject":"OS","unit":"Unit 01: Introduction and Background","name":"Distributed OS, Spool and Buffer","duration":99.2,"num":4,"totalLecs":63},{"id":354,"type":"lecture","subject":"OS","unit":"Unit 02 : Process Management","name":"About Process, Attribute and Sate Diagram","duration":144.4,"num":5,"totalLecs":63},{"id":355,"type":"lecture","subject":"OS","unit":"Unit 02 : Process Management","name":"Schedular- LTS, STS and MTS","duration":100.0,"num":6,"totalLecs":63},{"id":356,"type":"lecture","subject":"OS","unit":"Unit 02 : Process Management","name":"Fork() System Call","duration":108.2,"num":7,"totalLecs":63},{"id":357,"type":"lecture","subject":"OS","unit":"Unit 02 : Process Management","name":"Fork(), Wait() and Exec() System Call","duration":111.0,"num":8,"totalLecs":63},{"id":358,"type":"lecture","subject":"OS","unit":"Unit 03 : CPU Scheduling","name":"About CPU Scheduling and FCFS Algorithm Discussion","duration":108.0,"num":9,"totalLecs":63},{"id":359,"type":"lecture","subject":"OS","unit":"Unit 03 : CPU Scheduling","name":"SJF and SRTF CPU Scheduling Algorithm","duration":109.8,"num":10,"totalLecs":63},{"id":360,"type":"lecture","subject":"OS","unit":"Unit 03 : CPU Scheduling","name":"LJF, LRTF, Priority Scheduling Algorithm","duration":111.8,"num":11,"totalLecs":63},{"id":361,"type":"lecture","subject":"OS","unit":"Unit 03 : CPU Scheduling","name":"Round Robin Scheduling Algorithm","duration":116.1,"num":12,"totalLecs":63},{"id":362,"type":"lecture","subject":"OS","unit":"Unit 03 : CPU Scheduling","name":"HRRN and Question On BT=CPU + IO","duration":120.8,"num":13,"totalLecs":63},{"id":363,"type":"lecture","subject":"OS","unit":"Unit 03 : CPU Scheduling","name":"PYQ Question Discussion","duration":95.3,"num":14,"totalLecs":63},{"id":364,"type":"lecture","subject":"OS","unit":"Unit 03 : CPU Scheduling","name":"MLQ, MLFQ and Real Time Scheduling Algorithm","duration":117.3,"num":15,"totalLecs":63},{"id":365,"type":"lecture","subject":"OS","unit":"Unit 04 : Synchronisation","name":"About Synchronisation","duration":109.2,"num":16,"totalLecs":63},{"id":366,"type":"lecture","subject":"OS","unit":"Unit 04 : Synchronisation","name":"Producer Consumer Problem and Printer Spooler Problem","duration":115.2,"num":17,"totalLecs":63},{"id":367,"type":"lecture","subject":"OS","unit":"Unit 04 : Synchronisation","name":"Condition for Synchronisation - ME, Progress and BW","duration":89.0,"num":18,"totalLecs":63},{"id":368,"type":"lecture","subject":"OS","unit":"Unit 04 : Synchronisation","name":"How to Check - ME, Progress and BW with Q Discussion","duration":114.7,"num":19,"totalLecs":63},{"id":369,"type":"lecture","subject":"OS","unit":"Unit 04 : Synchronisation","name":"Software Solution - Lock, Turn Variable and Peterson Algo","duration":115.5,"num":20,"totalLecs":63},{"id":370,"type":"lecture","subject":"OS","unit":"Unit 04 : Synchronisation","name":"Question Discussion of Synchronisation - ME, Progress & BW","duration":117.4,"num":21,"totalLecs":63},{"id":371,"type":"lecture","subject":"OS","unit":"Unit 04 : Synchronisation","name":"Test and Set Instruction and PYQ Discussion","duration":117.2,"num":22,"totalLecs":63},{"id":372,"type":"lecture","subject":"OS","unit":"Unit 04 : Synchronisation","name":"Binary and Counting Semaphore","duration":134.5,"num":23,"totalLecs":63},{"id":373,"type":"lecture","subject":"OS","unit":"Unit 04 : Synchronisation","name":"Question Discussion on BS and CS","duration":120.1,"num":24,"totalLecs":63},{"id":374,"type":"lecture","subject":"OS","unit":"Unit 04 : Synchronisation","name":"Producer and Consumer with Semaphore","duration":130.6,"num":25,"totalLecs":63},{"id":375,"type":"lecture","subject":"OS","unit":"Unit 04 : Synchronisation","name":"Reader and Writer with Semaphore","duration":86.5,"num":26,"totalLecs":63},{"id":376,"type":"lecture","subject":"OS","unit":"Unit 04 : Synchronisation","name":"Question Discussion on RW","duration":71.6,"num":27,"totalLecs":63},{"id":377,"type":"lecture","subject":"OS","unit":"Unit 04 : Synchronisation","name":"Dining Philosopher Problem and Solution","duration":121.7,"num":28,"totalLecs":63},{"id":378,"type":"lecture","subject":"OS","unit":"Unit 04 : Synchronisation","name":"About Monitor and Producer - Consumer with Monitor","duration":86.8,"num":29,"totalLecs":63},{"id":379,"type":"lecture","subject":"OS","unit":"Unit 04 : Synchronisation","name":"Concurrent Programming","duration":125.2,"num":30,"totalLecs":63},{"id":380,"type":"lecture","subject":"OS","unit":"Unit 04 : Synchronisation","name":"Threads","duration":99.3,"num":31,"totalLecs":63},{"id":381,"type":"lecture","subject":"OS","unit":"Unit 05 : DealLock","name":"About Deadlock and Safe Sequence","duration":119.8,"num":32,"totalLecs":63},{"id":382,"type":"lecture","subject":"OS","unit":"Unit 05 : DealLock","name":"Deadlock Characteristics","duration":95.0,"num":33,"totalLecs":63},{"id":383,"type":"lecture","subject":"OS","unit":"Unit 05 : DealLock","name":"Deadlock Prevention","duration":49.9,"num":34,"totalLecs":63},{"id":384,"type":"lecture","subject":"OS","unit":"Unit 05 : DealLock","name":"Deadlock Avoidance, Advantage and Limitations","duration":82.1,"num":35,"totalLecs":63},{"id":385,"type":"lecture","subject":"OS","unit":"Unit 05 : DealLock","name":"Deadlock Detection and Recovery","duration":84.7,"num":36,"totalLecs":63},{"id":386,"type":"lecture","subject":"OS","unit":"Unit 06 : Memory Management Techniques","name":"Fundamental of MMT and Single Partition Scheme","duration":102.3,"num":37,"totalLecs":63},{"id":387,"type":"lecture","subject":"OS","unit":"Unit 06 : Memory Management Techniques","name":"Fixed anb Variable Partition Scheme","duration":120.1,"num":38,"totalLecs":63},{"id":388,"type":"lecture","subject":"OS","unit":"Unit 06 : Memory Management Techniques","name":"Question on Fixed and Variable Partition Scheme","duration":41.4,"num":39,"totalLecs":63},{"id":389,"type":"lecture","subject":"OS","unit":"Unit 06 : Memory Management Techniques","name":"Paging System - LA and PA","duration":89.7,"num":40,"totalLecs":63},{"id":390,"type":"lecture","subject":"OS","unit":"Unit 06 : Memory Management Techniques","name":"Paging System and Question Discussion on Paging","duration":135.1,"num":41,"totalLecs":63},{"id":391,"type":"lecture","subject":"OS","unit":"Unit 06 : Memory Management Techniques","name":"Question Discussion on Paging System","duration":83.2,"num":42,"totalLecs":63},{"id":392,"type":"lecture","subject":"OS","unit":"Unit 06 : Memory Management Techniques","name":"Paging System with TLB","duration":57.7,"num":43,"totalLecs":63},{"id":393,"type":"lecture","subject":"OS","unit":"Unit 06 : Memory Management Techniques","name":"Question Discussion on Paging System Using TLB","duration":50.6,"num":44,"totalLecs":63},{"id":394,"type":"lecture","subject":"OS","unit":"Unit 06 : Memory Management Techniques","name":"About Multi Level Paging System","duration":56.7,"num":45,"totalLecs":63},{"id":395,"type":"lecture","subject":"OS","unit":"Unit 06 : Memory Management Techniques","name":"Performance of Multi Level Paging System","duration":140.5,"num":46,"totalLecs":63},{"id":396,"type":"lecture","subject":"OS","unit":"Unit 06 : Memory Management Techniques","name":"PYQ Discussion on Paging","duration":79.0,"num":47,"totalLecs":63},{"id":397,"type":"lecture","subject":"OS","unit":"Unit 06 : Memory Management Techniques","name":"Inverted Page Table","duration":35.2,"num":48,"totalLecs":63},{"id":398,"type":"lecture","subject":"OS","unit":"Unit 06 : Memory Management Techniques","name":"Protection and Sharing in Paging System","duration":72.7,"num":49,"totalLecs":63},{"id":399,"type":"lecture","subject":"OS","unit":"Unit 06 : Memory Management Techniques","name":"Segmentation and Segmented Paging Concept","duration":101.0,"num":50,"totalLecs":63},{"id":400,"type":"lecture","subject":"OS","unit":"Unit 06 : Memory Management Techniques","name":"Segmented Paging and Paging on Segment Table","duration":84.6,"num":51,"totalLecs":63},{"id":401,"type":"lecture","subject":"OS","unit":"Unit 06 : Memory Management Techniques","name":"Question Discussion on Segmentation Paging","duration":72.9,"num":52,"totalLecs":63},{"id":402,"type":"lecture","subject":"OS","unit":"Unit 06 : Memory Management Techniques","name":"Virtual Memory - Demand Paging","duration":81.6,"num":53,"totalLecs":63},{"id":403,"type":"lecture","subject":"OS","unit":"Unit 06 : Memory Management Techniques","name":"Question Discussion on Page Fault","duration":105.2,"num":54,"totalLecs":63},{"id":404,"type":"lecture","subject":"OS","unit":"Unit 06 : Memory Management Techniques","name":"Page Replacement Algorithm","duration":112.0,"num":55,"totalLecs":63},{"id":405,"type":"lecture","subject":"OS","unit":"Unit 06 : Memory Management Techniques","name":"Problem Due to Page Fault and Respective Solution","duration":87.6,"num":56,"totalLecs":63},{"id":406,"type":"lecture","subject":"OS","unit":"Unit 06 : Memory Management Techniques","name":"Threashing and Frame Allocation Polices","duration":105.6,"num":57,"totalLecs":63},{"id":407,"type":"lecture","subject":"OS","unit":"Unit 07 : File Management System","name":"File Structure and Disk Space Allocation","duration":106.5,"num":58,"totalLecs":63},{"id":408,"type":"lecture","subject":"OS","unit":"Unit 07 : File Management System","name":"I Node Unix OS","duration":69.2,"num":59,"totalLecs":63},{"id":409,"type":"lecture","subject":"OS","unit":"Unit 07 : File Management System","name":"Disk Scheduling Algorithm","duration":77.2,"num":60,"totalLecs":63},{"id":410,"type":"lecture","subject":"OS","unit":"Unit 07 : File Management System","name":"Disk Free Space Management","duration":63.7,"num":61,"totalLecs":63},{"id":411,"type":"lecture","subject":"OS","unit":"Unit 07 : File Management System","name":"Disk Interleaving System","duration":83.7,"num":62,"totalLecs":63},{"id":412,"type":"lecture","subject":"OS","unit":"Unit 07 : File Management System","name":"PYQ Discussion","duration":91.5,"num":63,"totalLecs":63},{"id":413,"type":"pyq","subject":"OS","duration":1865.5,"topics":[{"name":"Context Switch","count":4,"ref":"Vol2 §7.1"},{"name":"Deadlock","count":4,"ref":"Vol2 §7.2"},{"name":"Disk","count":31,"ref":"Vol2 §7.3"},{"name":"Disk Scheduling","count":14,"ref":"Vol2 §7.4"},{"name":"File System","count":9,"ref":"Vol2 §7.5"},{"name":"Fork System Call","count":7,"ref":"Vol2 §7.6"},{"name":"IO Handling","count":7,"ref":"Vol2 §7.7"},{"name":"Input Output","count":1,"ref":"Vol2 §7.8"},{"name":"IPC","count":1,"ref":"Vol2 §7.9"},{"name":"Interrupts","count":6,"ref":"Vol2 §7.10"},{"name":"Linked Allocation","count":1,"ref":"Vol2 §7.11"},{"name":"Memory Management","count":10,"ref":"Vol2 §7.12"},{"name":"Multilevel Paging","count":1,"ref":"Vol2 §7.13"},{"name":"OS Protection","count":3,"ref":"Vol2 §7.14"},{"name":"Optimal Page Replacement","count":1,"ref":"Vol2 §7.15"},{"name":"Page Replacement","count":33,"ref":"Vol2 §7.16"},{"name":"Precedence Graph","count":3,"ref":"Vol2 §7.17"},{"name":"Process","count":5,"ref":"Vol2 §7.18"},{"name":"Process Scheduling","count":48,"ref":"Vol2 §7.19"},{"name":"Process Synchronization","count":52,"ref":"Vol2 §7.20"},{"name":"Resource Allocation","count":27,"ref":"Vol2 §7.21"},{"name":"Resource Allocation Graph","count":1,"ref":"Vol2 §7.22"},{"name":"Semaphore","count":10,"ref":"Vol2 §7.23"},{"name":"SRTF","count":1,"ref":"Vol2 §7.24"},{"name":"System Calls","count":1,"ref":"Vol2 §7.25"},{"name":"Threads","count":10,"ref":"Vol2 §7.26"},{"name":"Virtual Memory","count":43,"ref":"Vol2 §7.27"}],"num":0,"totalLecs":63},{"id":414,"type":"lecture","subject":"CN","unit":"Unit 01 : Introduction and Logical Addressing System","name":"About Network, Problem and Solution","duration":111.8,"num":1,"totalLecs":63},{"id":415,"type":"lecture","subject":"CN","unit":"Unit 01 : Introduction and Logical Addressing System","name":"IP Address PART 1","duration":76.8,"num":2,"totalLecs":63},{"id":416,"type":"lecture","subject":"CN","unit":"Unit 01 : Introduction and Logical Addressing System","name":"IP Address PART 2","duration":21.6,"num":3,"totalLecs":63},{"id":417,"type":"lecture","subject":"CN","unit":"Unit 01 : Introduction and Logical Addressing System","name":"Classful Addressing - A, B, C, D, E","duration":129.1,"num":4,"totalLecs":63},{"id":418,"type":"lecture","subject":"CN","unit":"Unit 01 : Introduction and Logical Addressing System","name":"Type of Casting and Special Addressing System","duration":128.9,"num":5,"totalLecs":63},{"id":419,"type":"lecture","subject":"CN","unit":"Unit 01 : Introduction and Logical Addressing System","name":"Default Mask and Private Address","duration":110.5,"num":6,"totalLecs":63},{"id":420,"type":"lecture","subject":"CN","unit":"Unit 01 : Introduction and Logical Addressing System","name":"Public and Private Network Setup","duration":121.8,"num":7,"totalLecs":63},{"id":421,"type":"lecture","subject":"CN","unit":"Unit 01 : Introduction and Logical Addressing System","name":"Design Of Subnetting","duration":137.0,"num":8,"totalLecs":63},{"id":422,"type":"lecture","subject":"CN","unit":"Unit 01 : Introduction and Logical Addressing System","name":"Sunet Mark Design and Question Practice on SM","duration":118.8,"num":9,"totalLecs":63},{"id":423,"type":"lecture","subject":"CN","unit":"Unit 01 : Introduction and Logical Addressing System","name":"Classless Inter Domain Routing and Variable Subnetting","duration":122.8,"num":10,"totalLecs":63},{"id":424,"type":"lecture","subject":"CN","unit":"Unit 01 : Introduction and Logical Addressing System","name":"Supernetting and Question Practices","duration":108.2,"num":11,"totalLecs":63},{"id":425,"type":"lecture","subject":"CN","unit":"Unit 01 : Introduction and Logical Addressing System","name":"Aggregation Of Subnetting and Question Practices","duration":119.5,"num":12,"totalLecs":63},{"id":426,"type":"lecture","subject":"CN","unit":"Unit 01 : Introduction and Logical Addressing System","name":"PYQ - Subnetting and Supernetting","duration":114.6,"num":13,"totalLecs":63},{"id":427,"type":"lecture","subject":"CN","unit":"Unit 02 : Reference Model","name":"Design Of Network","duration":108.3,"num":14,"totalLecs":63},{"id":428,"type":"lecture","subject":"CN","unit":"Unit 02 : Reference Model","name":"Physical Layer and Data Link Layer","duration":141.2,"num":15,"totalLecs":63},{"id":429,"type":"lecture","subject":"CN","unit":"Unit 02 : Reference Model","name":"NL, TL, DLLL and PL","duration":125.1,"num":16,"totalLecs":63},{"id":430,"type":"lecture","subject":"CN","unit":"Unit 02 : Reference Model","name":"Question Practice on Layering System","duration":88.0,"num":17,"totalLecs":63},{"id":431,"type":"lecture","subject":"CN","unit":"Unit 03 : Flow Control","name":"Delays and Type Of Delays","duration":114.4,"num":18,"totalLecs":63},{"id":432,"type":"lecture","subject":"CN","unit":"Unit 03 : Flow Control","name":"Stop and Wait Protocol","duration":117.3,"num":19,"totalLecs":63},{"id":433,"type":"lecture","subject":"CN","unit":"Unit 03 : Flow Control","name":"Question with Details Solution Discussion on Stop n Wait P","duration":108.2,"num":20,"totalLecs":63},{"id":434,"type":"lecture","subject":"CN","unit":"Unit 03 : Flow Control","name":"RTT and Sliding Window Protocol","duration":118.6,"num":21,"totalLecs":63},{"id":435,"type":"lecture","subject":"CN","unit":"Unit 03 : Flow Control","name":"Question Practice on Sliding Window Protocol","duration":114.1,"num":22,"totalLecs":63},{"id":436,"type":"lecture","subject":"CN","unit":"Unit 03 : Flow Control","name":"Go Back N Protocol","duration":147.1,"num":23,"totalLecs":63},{"id":437,"type":"lecture","subject":"CN","unit":"Unit 03 : Flow Control","name":"Selective Repeat Protocol","duration":105.8,"num":24,"totalLecs":63},{"id":438,"type":"lecture","subject":"CN","unit":"Unit 03 : Flow Control","name":"Question and Solution Discussion on FC PART 1","duration":105.2,"num":25,"totalLecs":63},{"id":439,"type":"lecture","subject":"CN","unit":"Unit 03 : Flow Control","name":"Question and Solution Discussion on FC PART 2","duration":112.0,"num":26,"totalLecs":63},{"id":440,"type":"lecture","subject":"CN","unit":"Unit 04 : Error Detection and Correction","name":"Error Detection Method - VRC, LRC and Checksum","duration":112.3,"num":27,"totalLecs":63},{"id":441,"type":"lecture","subject":"CN","unit":"Unit 04 : Error Detection and Correction","name":"Error Detection CRC METHOD","duration":115.8,"num":28,"totalLecs":63},{"id":442,"type":"lecture","subject":"CN","unit":"Unit 04 : Error Detection and Correction","name":"Hamming Distance, Hamming Code and Error Correction","duration":138.2,"num":29,"totalLecs":63},{"id":443,"type":"lecture","subject":"CN","unit":"Unit 04 : Error Detection and Correction","name":"Framing","duration":115.4,"num":30,"totalLecs":63},{"id":444,"type":"lecture","subject":"CN","unit":"Unit 04 : Error Detection and Correction","name":"Encoding","duration":113.2,"num":31,"totalLecs":63},{"id":445,"type":"lecture","subject":"CN","unit":"Unit 05 : Access Control","name":"ABOUT LAN, TYPE COMPONENT AND STANDARD","duration":118.7,"num":32,"totalLecs":63},{"id":446,"type":"lecture","subject":"CN","unit":"Unit 05 : Access Control","name":"ALOHA","duration":86.5,"num":33,"totalLecs":63},{"id":447,"type":"lecture","subject":"CN","unit":"Unit 05 : Access Control","name":"Pure Aloha and Slotted Aloha","duration":109.5,"num":34,"totalLecs":63},{"id":448,"type":"lecture","subject":"CN","unit":"Unit 05 : Access Control","name":"TDM and Polling Access Method","duration":107.4,"num":35,"totalLecs":63},{"id":449,"type":"lecture","subject":"CN","unit":"Unit 05 : Access Control","name":"CSMA/CD","duration":136.6,"num":36,"totalLecs":63},{"id":450,"type":"lecture","subject":"CN","unit":"Unit 05 : Access Control","name":"Question Discussion and Efficiency of Ethernet","duration":107.8,"num":37,"totalLecs":63},{"id":451,"type":"lecture","subject":"CN","unit":"Unit 05 : Access Control","name":"Ethernet Frame Format","duration":128.1,"num":38,"totalLecs":63},{"id":452,"type":"lecture","subject":"CN","unit":"Unit 05 : Access Control","name":"PYQ Discussion","duration":124.8,"num":39,"totalLecs":63},{"id":453,"type":"lecture","subject":"CN","unit":"Unit 05 : Access Control","name":"Wi Fi - Wireless Fidelity - Basic Mode","duration":123.8,"num":40,"totalLecs":63},{"id":454,"type":"lecture","subject":"CN","unit":"Unit 05 : Access Control","name":"Wi Fi - CTS / RTS Mode","duration":97.8,"num":41,"totalLecs":63},{"id":455,"type":"lecture","subject":"CN","unit":"Unit 05 : Access Control","name":"Wi Fi Frame Format","duration":130.5,"num":42,"totalLecs":63},{"id":456,"type":"lecture","subject":"CN","unit":"Unit 06 : Switching and Circuit","name":"About Circuit, Message and Packet Switching (Optimal PS)","duration":116.0,"num":43,"totalLecs":63},{"id":457,"type":"lecture","subject":"CN","unit":"Unit 06 : Switching and Circuit","name":"Type of Packet Switching and Question Practices","duration":111.7,"num":44,"totalLecs":63},{"id":458,"type":"lecture","subject":"CN","unit":"Unit 07 : Routing Algorithm","name":"Static RA and Dynamic RA - Distance Vector Algorithm","duration":154.7,"num":45,"totalLecs":63},{"id":459,"type":"lecture","subject":"CN","unit":"Unit 07 : Routing Algorithm","name":"Count to Infinite Problem and PYQ","duration":105.5,"num":46,"totalLecs":63},{"id":460,"type":"lecture","subject":"CN","unit":"Unit 07 : Routing Algorithm","name":"Link State Routing Algorithm and PYQ","duration":86.4,"num":47,"totalLecs":63},{"id":461,"type":"lecture","subject":"CN","unit":"Unit 08 : IP Protocol","name":"IP Header PART 1","duration":58.2,"num":48,"totalLecs":63},{"id":462,"type":"lecture","subject":"CN","unit":"Unit 08 : IP Protocol","name":"IP Protocol and PYQ","duration":185.1,"num":49,"totalLecs":63},{"id":463,"type":"lecture","subject":"CN","unit":"Unit 08 : IP Protocol","name":"TTL, Prototype, Option Field and IPv6 Address","duration":144.8,"num":50,"totalLecs":63},{"id":464,"type":"lecture","subject":"CN","unit":"Unit 08 : IP Protocol","name":"IPv6 Header Format","duration":46.2,"num":51,"totalLecs":63},{"id":465,"type":"lecture","subject":"CN","unit":"Unit 09 : TCP and UDP","name":"Basic of TCP and Characteristics","duration":69.5,"num":52,"totalLecs":63},{"id":466,"type":"lecture","subject":"CN","unit":"Unit 09 : TCP and UDP","name":"Sequence Number WAT and LT","duration":109.8,"num":53,"totalLecs":63},{"id":467,"type":"lecture","subject":"CN","unit":"Unit 09 : TCP and UDP","name":"ACK Policies and Retransmission Policies","duration":159.0,"num":54,"totalLecs":63},{"id":468,"type":"lecture","subject":"CN","unit":"Unit 09 : TCP and UDP","name":"Flags and Connection Establishment and Termination Process","duration":119.2,"num":55,"totalLecs":63},{"id":469,"type":"lecture","subject":"CN","unit":"Unit 09 : TCP and UDP","name":"State Diagram of TCP","duration":114.3,"num":56,"totalLecs":63},{"id":470,"type":"lecture","subject":"CN","unit":"Unit 09 : TCP and UDP","name":"TCP Control Policy","duration":161.2,"num":57,"totalLecs":63},{"id":471,"type":"lecture","subject":"CN","unit":"Unit 09 : TCP and UDP","name":"PYQ Discussion","duration":128.2,"num":58,"totalLecs":63},{"id":472,"type":"lecture","subject":"CN","unit":"Unit 09 : TCP and UDP","name":"Window Size and Silly Window Syndrome","duration":133.1,"num":59,"totalLecs":63},{"id":473,"type":"lecture","subject":"CN","unit":"Unit 09 : TCP and UDP","name":"TCP Timer and PYQ Discussion","duration":136.0,"num":60,"totalLecs":63},{"id":474,"type":"lecture","subject":"CN","unit":"Unit 09 : TCP and UDP","name":"Leaky Bucket and UDP","duration":96.4,"num":61,"totalLecs":63},{"id":475,"type":"lecture","subject":"CN","unit":"Unit 10 : Application layer","name":"HTTP Part 1","duration":27.2,"num":62,"totalLecs":63},{"id":476,"type":"lecture","subject":"CN","unit":"Unit 10 : Application layer","name":"HTTP Part 2","duration":46.6,"num":63,"totalLecs":63},{"id":477,"type":"pyq","subject":"CN","duration":2130.7,"topics":[{"name":"Application Layer Protocols","count":12,"ref":"Vol2 §4.1"},{"name":"ARP","count":1,"ref":"Vol2 §4.2"},{"name":"Bit Stuffing","count":2,"ref":"Vol2 §4.3"},{"name":"Bridges","count":3,"ref":"Vol2 §4.4"},{"name":"CRC Polynomial","count":4,"ref":"Vol2 §4.5"},{"name":"CSMA/CD","count":6,"ref":"Vol2 §4.6"},{"name":"Channel Utilization","count":1,"ref":"Vol2 §4.7"},{"name":"Communication","count":4,"ref":"Vol2 §4.8"},{"name":"Congestion Control","count":6,"ref":"Vol2 §4.9"},{"name":"Distance Vector Routing","count":8,"ref":"Vol2 §4.10"},{"name":"Error Detection","count":10,"ref":"Vol2 §4.11"},{"name":"Ethernet","count":7,"ref":"Vol2 §4.12"},{"name":"Fragmentation","count":2,"ref":"Vol2 §4.13"},{"name":"IP Addressing","count":11,"ref":"Vol2 §4.14"},{"name":"IP Packet","count":11,"ref":"Vol2 §4.15"},{"name":"LAN Technologies","count":7,"ref":"Vol2 §4.16"},{"name":"MAC Protocol","count":5,"ref":"Vol2 §4.17"},{"name":"Network Flow","count":4,"ref":"Vol2 §4.18"},{"name":"Network Layering","count":6,"ref":"Vol2 §4.19"},{"name":"Network Protocols","count":10,"ref":"Vol2 §4.20"},{"name":"Network Switching","count":4,"ref":"Vol2 §4.21"},{"name":"OSI Model","count":1,"ref":"Vol2 §4.22"},{"name":"Probability","count":1,"ref":"Vol2 §4.23"},{"name":"Routing","count":13,"ref":"Vol2 §4.24"},{"name":"Routing Protocols","count":1,"ref":"Vol2 §4.25"},{"name":"Sliding Window","count":15,"ref":"Vol2 §4.26"},{"name":"Sockets","count":4,"ref":"Vol2 §4.27"},{"name":"Stop and Wait","count":6,"ref":"Vol2 §4.28"},{"name":"Subnetting","count":21,"ref":"Vol2 §4.29"},{"name":"TCP","count":22,"ref":"Vol2 §4.30"},{"name":"Token Bucket","count":2,"ref":"Vol2 §4.31"},{"name":"UDP","count":4,"ref":"Vol2 §4.32"}],"num":0,"totalLecs":63},{"id":478,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 01","duration":204.3,"num":1,"totalLecs":47},{"id":479,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 02","duration":178.8,"num":2,"totalLecs":47},{"id":480,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 03","duration":186.7,"num":3,"totalLecs":47},{"id":481,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 04","duration":180.1,"num":4,"totalLecs":47},{"id":482,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 05","duration":193.4,"num":5,"totalLecs":47},{"id":483,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 06","duration":118.1,"num":6,"totalLecs":47},{"id":484,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 07","duration":134.5,"num":7,"totalLecs":47},{"id":485,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 08","duration":185.9,"num":8,"totalLecs":47},{"id":486,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 09","duration":67.3,"num":9,"totalLecs":47},{"id":487,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 10","duration":71.5,"num":10,"totalLecs":47},{"id":488,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 11","duration":69.5,"num":11,"totalLecs":47},{"id":489,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 12","duration":76.5,"num":12,"totalLecs":47},{"id":490,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 13","duration":101.2,"num":13,"totalLecs":47},{"id":491,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 14","duration":134.0,"num":14,"totalLecs":47},{"id":492,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 15","duration":34.5,"num":15,"totalLecs":47},{"id":493,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 16","duration":67.8,"num":16,"totalLecs":47},{"id":494,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 17","duration":51.7,"num":17,"totalLecs":47},{"id":495,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 18","duration":74.2,"num":18,"totalLecs":47},{"id":496,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 19","duration":89.0,"num":19,"totalLecs":47},{"id":497,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 20","duration":50.7,"num":20,"totalLecs":47},{"id":498,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 21","duration":57.4,"num":21,"totalLecs":47},{"id":499,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 22","duration":68.2,"num":22,"totalLecs":47},{"id":500,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 23","duration":74.0,"num":23,"totalLecs":47},{"id":501,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 24","duration":63.9,"num":24,"totalLecs":47},{"id":502,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 25","duration":33.8,"num":25,"totalLecs":47},{"id":503,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 26","duration":87.6,"num":26,"totalLecs":47},{"id":504,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 27","duration":92.5,"num":27,"totalLecs":47},{"id":505,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 28","duration":64.3,"num":28,"totalLecs":47},{"id":506,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 29","duration":69.7,"num":29,"totalLecs":47},{"id":507,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 30","duration":54.1,"num":30,"totalLecs":47},{"id":508,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 31","duration":59.6,"num":31,"totalLecs":47},{"id":509,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 32","duration":93.6,"num":32,"totalLecs":47},{"id":510,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 33","duration":10.2,"num":33,"totalLecs":47},{"id":511,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 34","duration":36.4,"num":34,"totalLecs":47},{"id":512,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 35","duration":65.1,"num":35,"totalLecs":47},{"id":513,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 36","duration":74.0,"num":36,"totalLecs":47},{"id":514,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 37","duration":76.5,"num":37,"totalLecs":47},{"id":515,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 38","duration":71.5,"num":38,"totalLecs":47},{"id":516,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 39","duration":72.1,"num":39,"totalLecs":47},{"id":517,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 40","duration":81.2,"num":40,"totalLecs":47},{"id":518,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 41","duration":103.5,"num":41,"totalLecs":47},{"id":519,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 42","duration":74.2,"num":42,"totalLecs":47},{"id":520,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 43","duration":74.7,"num":43,"totalLecs":47},{"id":521,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 44","duration":58.0,"num":44,"totalLecs":47},{"id":522,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 45","duration":75.3,"num":45,"totalLecs":47},{"id":523,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 46","duration":66.2,"num":46,"totalLecs":47},{"id":524,"type":"lecture","subject":"DBMS","unit":"General","name":"Lecture 47","duration":105.8,"num":47,"totalLecs":47},{"id":525,"type":"pyq","subject":"DBMS","duration":1239.9,"topics":[{"name":"B Tree","count":31,"ref":"Vol2 §5.1"},{"name":"Candidate Key","count":5,"ref":"Vol2 §5.2"},{"name":"Conflict Serializable","count":9,"ref":"Vol2 §5.3"},{"name":"Database Design","count":1,"ref":"Vol2 §5.4"},{"name":"Database Normalization","count":56,"ref":"Vol2 §5.5"},{"name":"Decomposition","count":1,"ref":"Vol2 §5.6"},{"name":"ER Diagram","count":12,"ref":"Vol2 §5.7"},{"name":"Functional Dependency","count":2,"ref":"Vol2 §5.8"},{"name":"Indexing","count":13,"ref":"Vol2 §5.9"},{"name":"Joins","count":7,"ref":"Vol2 §5.10"},{"name":"Multivalued Dependency/4NF","count":1,"ref":"Vol2 §5.11"},{"name":"Natural Join","count":3,"ref":"Vol2 §5.12"},{"name":"Query","count":1,"ref":"Vol2 §5.13"},{"name":"Referential Integrity","count":5,"ref":"Vol2 §5.14"},{"name":"Relational Algebra","count":31,"ref":"Vol2 §5.15"},{"name":"Relational Calculus","count":15,"ref":"Vol2 §5.16"},{"name":"Relational Model","count":2,"ref":"Vol2 §5.17"},{"name":"SQL","count":58,"ref":"Vol2 §5.18"},{"name":"Transaction and Concurrency","count":30,"ref":"Vol2 §5.19"},{"name":"Tuple Relational Calculus","count":1,"ref":"Vol2 §5.20"}],"num":0,"totalLecs":47},{"id":526,"type":"lecture","subject":"DLD","unit":"General","name":"Lecture 01","duration":110.7,"num":1,"totalLecs":31},{"id":527,"type":"lecture","subject":"DLD","unit":"General","name":"Lecture 02","duration":140.1,"num":2,"totalLecs":31},{"id":528,"type":"lecture","subject":"DLD","unit":"General","name":"Lecture 03","duration":99.3,"num":3,"totalLecs":31},{"id":529,"type":"lecture","subject":"DLD","unit":"General","name":"Lecture 04","duration":99.7,"num":4,"totalLecs":31},{"id":530,"type":"lecture","subject":"DLD","unit":"General","name":"Lecture 05","duration":104.9,"num":5,"totalLecs":31},{"id":531,"type":"lecture","subject":"DLD","unit":"General","name":"Lecture 06","duration":19.0,"num":6,"totalLecs":31},{"id":532,"type":"lecture","subject":"DLD","unit":"General","name":"Lecture 07","duration":91.4,"num":7,"totalLecs":31},{"id":533,"type":"lecture","subject":"DLD","unit":"General","name":"Lecture 08","duration":94.5,"num":8,"totalLecs":31},{"id":534,"type":"lecture","subject":"DLD","unit":"General","name":"Lecture 09","duration":106.7,"num":9,"totalLecs":31},{"id":535,"type":"lecture","subject":"DLD","unit":"General","name":"Lecture 10","duration":91.9,"num":10,"totalLecs":31},{"id":536,"type":"lecture","subject":"DLD","unit":"General","name":"Lecture 11","duration":104.8,"num":11,"totalLecs":31},{"id":537,"type":"lecture","subject":"DLD","unit":"General","name":"Lecture 12","duration":99.0,"num":12,"totalLecs":31},{"id":538,"type":"lecture","subject":"DLD","unit":"General","name":"Lecture 13","duration":119.2,"num":13,"totalLecs":31},{"id":539,"type":"lecture","subject":"DLD","unit":"General","name":"Lecture 14","duration":100.0,"num":14,"totalLecs":31},{"id":540,"type":"lecture","subject":"DLD","unit":"General","name":"lecture 15","duration":126.8,"num":15,"totalLecs":31},{"id":541,"type":"lecture","subject":"DLD","unit":"General","name":"Lecture 16","duration":89.3,"num":16,"totalLecs":31},{"id":542,"type":"lecture","subject":"DLD","unit":"General","name":"Lecture 17","duration":126.7,"num":17,"totalLecs":31},{"id":543,"type":"lecture","subject":"DLD","unit":"General","name":"Lecture 18","duration":127.8,"num":18,"totalLecs":31},{"id":544,"type":"lecture","subject":"DLD","unit":"General","name":"Lecture 19","duration":114.6,"num":19,"totalLecs":31},{"id":545,"type":"lecture","subject":"DLD","unit":"General","name":"Lecture 20","duration":101.8,"num":20,"totalLecs":31},{"id":546,"type":"lecture","subject":"DLD","unit":"General","name":"Lecture 21","duration":123.7,"num":21,"totalLecs":31},{"id":547,"type":"lecture","subject":"DLD","unit":"General","name":"Lecture 22","duration":176.1,"num":22,"totalLecs":31},{"id":548,"type":"lecture","subject":"DLD","unit":"General","name":"Lecture 23","duration":143.3,"num":23,"totalLecs":31},{"id":549,"type":"lecture","subject":"DLD","unit":"General","name":"Lecture 24","duration":144.0,"num":24,"totalLecs":31},{"id":550,"type":"lecture","subject":"DLD","unit":"General","name":"Lecture 25","duration":167.4,"num":25,"totalLecs":31},{"id":551,"type":"lecture","subject":"DLD","unit":"General","name":"Lecture 26A","duration":214.0,"num":26,"totalLecs":31},{"id":552,"type":"lecture","subject":"DLD","unit":"General","name":"Lecture 26","duration":141.4,"num":27,"totalLecs":31},{"id":553,"type":"lecture","subject":"DLD","unit":"General","name":"Lecture 27","duration":112.6,"num":28,"totalLecs":31},{"id":554,"type":"lecture","subject":"DLD","unit":"General","name":"Lecture 28","duration":76.0,"num":29,"totalLecs":31},{"id":555,"type":"lecture","subject":"DLD","unit":"General","name":"Lecture 29","duration":84.2,"num":30,"totalLecs":31},{"id":556,"type":"lecture","subject":"DLD","unit":"General","name":"Lecture 30","duration":100.4,"num":31,"totalLecs":31},{"id":557,"type":"pyq","subject":"DLD","duration":1065.4,"topics":[{"name":"Adder","count":9,"ref":"Vol2 §6.1"},{"name":"Array Multiplier","count":2,"ref":"Vol2 §6.2"},{"name":"Boolean Algebra","count":34,"ref":"Vol2 §6.3"},{"name":"Booth's Algorithm","count":7,"ref":"Vol2 §6.4"},{"name":"Canonical Normal Form","count":9,"ref":"Vol2 §6.5"},{"name":"Carry Generator","count":2,"ref":"Vol2 §6.6"},{"name":"Circuit Output","count":40,"ref":"Vol2 §6.7"},{"name":"Combinational Circuit","count":2,"ref":"Vol2 §6.8"},{"name":"Decoder","count":3,"ref":"Vol2 §6.9"},{"name":"Digital Circuits","count":6,"ref":"Vol2 §6.10"},{"name":"Digital Counter","count":17,"ref":"Vol2 §6.11"},{"name":"Finite State Machines","count":4,"ref":"Vol2 §6.12"},{"name":"Fixed Point Representation","count":2,"ref":"Vol2 §6.13"},{"name":"Flip Flop","count":6,"ref":"Vol2 §6.14"},{"name":"Floating Point Representation","count":12,"ref":"Vol2 §6.15"},{"name":"Functional Completeness","count":7,"ref":"Vol2 §6.16"},{"name":"IEEE Representation","count":8,"ref":"Vol2 §6.17"},{"name":"K-Map","count":20,"ref":"Vol2 §6.18"},{"name":"Memory Interfacing","count":5,"ref":"Vol2 §6.19"},{"name":"Min No Gates","count":4,"ref":"Vol2 §6.20"},{"name":"Min POS Form","count":2,"ref":"Vol2 §6.21"},{"name":"Min SOP Form","count":15,"ref":"Vol2 §6.22"},{"name":"Multiplexer","count":14,"ref":"Vol2 §6.23"},{"name":"Number Representation","count":58,"ref":"Vol2 §6.24"},{"name":"Prime Implicants","count":2,"ref":"Vol2 §6.25"},{"name":"ROM","count":4,"ref":"Vol2 §6.26"},{"name":"Ripple Counter","count":1,"ref":"Vol2 §6.27"},{"name":"Sequential Circuit","count":1,"ref":"Vol2 §6.28"},{"name":"Shift Registers","count":2,"ref":"Vol2 §6.29"},{"name":"Static Hazard","count":1,"ref":"Vol2 §6.30"},{"name":"Synchronous/Asynchronous","count":4,"ref":"Vol2 §6.31"}],"num":0,"totalLecs":31},{"id":558,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 01","duration":38.3,"num":1,"totalLecs":31},{"id":559,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 02","duration":92.4,"num":2,"totalLecs":31},{"id":560,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 03","duration":116.4,"num":3,"totalLecs":31},{"id":561,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 04","duration":127.5,"num":4,"totalLecs":31},{"id":562,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 05","duration":109.0,"num":5,"totalLecs":31},{"id":563,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 06","duration":91.4,"num":6,"totalLecs":31},{"id":564,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 07","duration":72.3,"num":7,"totalLecs":31},{"id":565,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 08","duration":54.4,"num":8,"totalLecs":31},{"id":566,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 09","duration":34.6,"num":9,"totalLecs":31},{"id":567,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 10","duration":143.1,"num":10,"totalLecs":31},{"id":568,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 11","duration":110.3,"num":11,"totalLecs":31},{"id":569,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 12","duration":123.0,"num":12,"totalLecs":31},{"id":570,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 13","duration":124.6,"num":13,"totalLecs":31},{"id":571,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 14","duration":134.6,"num":14,"totalLecs":31},{"id":572,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 15","duration":48.5,"num":15,"totalLecs":31},{"id":573,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 16","duration":67.7,"num":16,"totalLecs":31},{"id":574,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 17","duration":132.1,"num":17,"totalLecs":31},{"id":575,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 18","duration":109.0,"num":18,"totalLecs":31},{"id":576,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 19","duration":97.2,"num":19,"totalLecs":31},{"id":577,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 20","duration":117.4,"num":20,"totalLecs":31},{"id":578,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 21","duration":97.0,"num":21,"totalLecs":31},{"id":579,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 22","duration":93.9,"num":22,"totalLecs":31},{"id":580,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 23","duration":85.8,"num":23,"totalLecs":31},{"id":581,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 24","duration":97.0,"num":24,"totalLecs":31},{"id":582,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 25","duration":101.7,"num":25,"totalLecs":31},{"id":583,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 26","duration":99.8,"num":26,"totalLecs":31},{"id":584,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 27","duration":116.9,"num":27,"totalLecs":31},{"id":585,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 28","duration":93.6,"num":28,"totalLecs":31},{"id":586,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 29","duration":88.7,"num":29,"totalLecs":31},{"id":587,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 30","duration":77.2,"num":30,"totalLecs":31},{"id":588,"type":"lecture","subject":"Aptitude","unit":"General","name":"Lecture 31","duration":125.8,"num":31,"totalLecs":31},{"id":589,"type":"pyq","subject":"Aptitude","duration":906.4,"topics":[{"name":"Analytical Aptitude","count":139,"ref":"Vol1 §8"},{"name":"Quantitative Aptitude","count":494,"ref":"Vol1 §9"},{"name":"Spatial Aptitude","count":49,"ref":"Vol1 §10"},{"name":"Verbal Aptitude","count":376,"ref":"Vol1 §11"}],"num":0,"totalLecs":31}];})();
 const COLORS=(function(){try{var _m=localStorage.getItem('v5_curriculum_meta');if(_m){var _mm=JSON.parse(_m);if(_mm&&_mm.colors&&Object.keys(_mm.colors).length>0)return _mm.colors;}}catch(e){}return {"C Programming": "#a6e3a1", "Data Structures": "#f38ba8", "Algorithms": "#89dceb", "TOC": "#f9e2af", "Compiler Design": "#b4befe", "CO": "#fab387", "OS": "#89b4fa", "CN": "#cba6f7", "DBMS": "#f5c2e7", "DLD": "#94e2d5", "Aptitude": "#eba0ac"};})();
 // ── CRITICAL SAFETY STUBS ─────────────────────────────────────────────────────
@@ -2213,6 +2295,23 @@ function getSubjOrder(){
   if(ST&&ST.subjOrder&&Array.isArray(ST.subjOrder)&&ST.subjOrder.length===SUBJ.length)return ST.subjOrder;
   return SUBJ.slice();
 }
+// ── SUBJECT ACTIVE / DISABLE ──────────────────────────────────────────────────
+// Disabled subjects are hidden from the Today scheduler, Daily Minimum, Pace Calc
+// and Rotation — but stay fully available in Revision, PYQ, Tests and the Coaching
+// log. Toggle lives in the Curriculum Manager. Stored in ST so it syncs via Firebase.
+function isSubjDisabled(subj){try{return !!(ST&&ST.disabledSubjects&&ST.disabledSubjects[subj]);}catch(e){return false;}}
+function getActiveSubjOrder(){return getSubjOrder().filter(function(s){return !isSubjDisabled(s);});}
+window.toggleSubjDisabled=function(subj){
+  if(!ST.disabledSubjects)ST.disabledSubjects={};
+  if(ST.disabledSubjects[subj])delete ST.disabledSubjects[subj];else ST.disabledSubjects[subj]=1;
+  try{saveGateState();}catch(e){}
+  try{if(typeof buildSchedule==='function')buildSchedule();}catch(e){}
+  try{if(typeof renderGate==='function')renderGate();}catch(e){}
+  try{if(typeof renderDailyMinimum==='function')renderDailyMinimum();}catch(e){}
+  try{if(typeof window.renderSpeedCalc==='function')window.renderSpeedCalc();}catch(e){}
+  try{if(typeof cmRenderSList==='function')cmRenderSList();}catch(e){}
+  try{if(typeof haptic==='function')haptic([25]);}catch(e){}
+};
 // FIXED_START_DATE is now set dynamically from exam config above
 // ── EXAM CONFIG SYSTEM ───────────────────────────────────────────────────────
 // All dates/names previously hardcoded are now read from localStorage
@@ -2696,10 +2795,10 @@ function rebuildFromTimetable(){
   ALL_SLOTS=getTodaySlots().map(function(s){
     var dur=(s.eh*60+s.em)-(s.sh*60+s.sm);
     var displayEnd=s.eh>=24?pad(s.eh-24)+':'+pad(s.em):pad(s.eh)+':'+pad(s.em);
-    return {id:s.id,emoji:s.emoji||(s.type==='study'?'📚':s.type==='class'?'📡':s.type==='revision'?'🔄':'⚡'),
+    return {id:s.id,emoji:s.emoji||(s.type==='study'?'📚':s.type==='class'?'📡':s.type==='revision'?'🔄':s.type==='coaching'?'🎓':'⚡'),
       time:pad(s.sh)+':'+pad(s.sm)+'\u2013'+displayEnd,
       start:[s.sh,s.sm],end:[s.eh,s.em],label:s.name,
-      subs:s.type==='study'?s.name+' \u00b7 '+dur+'m':s.type==='class'?s.name+' \u00b7 Recorded':s.type==='revision'?s.name+' \u00b7 Revision':s.name+' \u00b7 Routine',
+      subs:s.type==='study'?s.name+' \u00b7 '+dur+'m':s.type==='class'?s.name+' \u00b7 Recorded':s.type==='revision'?s.name+' \u00b7 Revision':s.type==='coaching'?s.name+' \u00b7 Coaching':s.name+' \u00b7 Routine',
       isLive:s.type==='class',liveKey:s.type==='class'?s.id:null,
       type:s.type,dur:dur,items:s.items||[]};
   });
@@ -2841,7 +2940,7 @@ function daysBetween(a,b){return Math.round((fromStr(b)-fromStr(a))/86400000);}
 function hmColor(m){if(!m||m<1)return '#1a1a2e';var h=m/60;if(h<2)return '#1e3b2e';if(h<4)return '#2d5e3a';if(h<6)return '#3d8c4e';if(h<8)return '#5ab86b';return '#a6e3a1';}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 
-function defaultState(){return{done:{},pyqTopics:{},potato:[],viewDate:null,skips:[],expanded:[],flags:{},revisions:{},revDone:{},live:{},subjOrder:null,pinnedNext:null,revUnits:{},revSubjects:{},revBlockMode:'B',rotation:null,tests:null};}
+function defaultState(){return{done:{},pyqTopics:{},potato:[],viewDate:null,skips:[],expanded:[],flags:{},revisions:{},revDone:{},live:{},subjOrder:null,pinnedNext:null,revUnits:{},revSubjects:{},revBlockMode:'B',rotation:null,tests:null,disabledSubjects:{},subjGrowth:{}};}
 function loadGateState(){try{var s=localStorage.getItem('gate2027v6');if(s){var p=JSON.parse(s);var d=defaultState();for(var k in d)if(p[k]===undefined)p[k]=d[k];return p;}}catch(e){}return defaultState();}
 var _saveGateTimer=null;
 function saveGateState(){
@@ -2865,6 +2964,10 @@ function saveGateState(){
   },600);
 }
 var ST=loadGateState();
+// Keep the growth-config mirror (read by the early materializer before ALL_TASKS) in
+// sync with ST on every load. If ST has newer growth config (e.g. from Firebase sync),
+// this pushes it to the plain key so the next reload materializes correctly.
+try{if(ST&&ST.subjGrowth&&typeof ST.subjGrowth==='object')localStorage.setItem('v5_subj_growth',JSON.stringify(ST.subjGrowth));}catch(e){}
 
 var UNDO_GATE=[];
 function pushUndo(){UNDO_GATE.push(JSON.stringify(ST));if(UNDO_GATE.length>30)UNDO_GATE.shift();rUndo();}
@@ -2961,7 +3064,7 @@ function buildSched(){
   var rot=(typeof getRotation==='function')?getRotation():null;
   if(rot){
     var queues={};rot.master.forEach(function(s){queues[s]=[];});
-    var restR=ALL_TASKS.filter(function(t){return !done.has(t.id)&&(!pinnedTask||t.id!==pinnedTask.id);});
+    var restR=ALL_TASKS.filter(function(t){return !done.has(t.id)&&!isSubjDisabled(t.subject)&&(!pinnedTask||t.id!==pinnedTask.id);});
     restR.sort(function(a,b){return a.id-b.id;});
     restR.forEach(function(t){if(queues[t.subject])queues[t.subject].push(t);});
     var qi={},laid={};rot.master.forEach(function(s){qi[s]=0;laid[s]=0;});
@@ -3019,7 +3122,7 @@ function buildSched(){
   // ── SEQUENTIAL MODE (rotation off): original behavior ──
   // Sort ALL_TASKS by subject order, then by task id within subject
   var subjOrd=getSubjOrder();
-  var ordered=ALL_TASKS.filter(function(t){return !done.has(t.id)&&(!pinnedTask||t.id!==pinnedTask.id);});
+  var ordered=ALL_TASKS.filter(function(t){return !done.has(t.id)&&!isSubjDisabled(t.subject)&&(!pinnedTask||t.id!==pinnedTask.id);});
   ordered.sort(function(a,b){
     var ai=subjOrd.indexOf(a.subject),bi=subjOrd.indexOf(b.subject);
     if(ai!==bi)return ai-bi;
@@ -5860,7 +5963,7 @@ function updateFocusOverlay(){
     if(timerEl) timerEl.textContent = fmtSecs(remSecs);
     if(timerLbl) timerLbl.textContent = 'time remaining';
     if(sessionBadge){
-      var _sTypeLabel = activeSlot.type==='class'?'📡 RECORDED':activeSlot.type==='other'?'🗓 ROUTINE':activeSlot.type==='revision'?'🔄 REVISION':'📚 GATE';
+      var _sTypeLabel = activeSlot.type==='class'?'📡 RECORDED':activeSlot.type==='other'?'🗓 ROUTINE':activeSlot.type==='revision'?'🔄 REVISION':activeSlot.type==='coaching'?'🎓 COACHING':'📚 GATE';
       sessionBadge.textContent = _sTypeLabel+' · '+(activeSlot.label||'SESSION').toUpperCase();
     }
     if(sessionName) sessionName.textContent = activeSlot.label||'Study Session';
@@ -5878,6 +5981,11 @@ function updateFocusOverlay(){
         var _itDone=activeSlot.items?activeSlot.items.filter(function(_x,_ii){return isRoutineDone(activeSlot.id,_ii);}).length:0;
         taskPill.style.display=_itTotal>0?'block':'none';
         if(_itTotal>0)taskPill.textContent='🗓 '+_itDone+'/'+_itTotal+' routine items done';
+      } else if(activeSlot.type==='coaching'){
+        // Coaching slots: show how many lectures logged today, tap opens the log
+        taskPill.style.display='block';
+        var _cN=(typeof coachLoggedTodayCount==='function')?coachLoggedTodayCount():0;
+        taskPill.innerHTML='<span class="fo-pill-name" style="text-align:center;">🎓 '+_cN+' logged today · tap ⊕ to log</span>';
       } else {
         taskPill.style.display='block';
         if(nextT4){
@@ -8230,10 +8338,15 @@ function cmRenderSList(){
   var d=document.getElementById('cmDirtyDot');if(d)d.style.display=_cm.dirty?'inline-block':'none';
   if(!_cm.subjects.length){el.innerHTML='<div style="padding:14px;font-size:12px;color:var(--mt);text-align:center;">No subjects — click + Add Subject or upload a patch file</div>';return;}
   el.innerHTML=_cm.subjects.map(function(s,i){
-    return '<div class="cm-si'+(i===_cm.selIdx?' sel':'')+'" onclick="cmSelSubj('+i+')">'+
-      '<div class="cm-dot" style="background:'+s.color+'"></div>'+
-      '<span class="cm-sname">'+cmEv(s.name)+'</span>'+
+    var _disabled=(typeof isSubjDisabled==='function')&&isSubjDisabled(s.name);
+    return '<div class="cm-si'+(i===_cm.selIdx?' sel':'')+(_disabled?' cm-si-off':'')+'" onclick="cmSelSubj('+i+')">'+
+      '<div class="cm-dot" style="background:'+(_disabled?'var(--mt)':s.color)+'"></div>'+
+      '<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:0;">'+
+        '<span class="cm-sname"'+(_disabled?' style="color:var(--mt);text-decoration:line-through;"':'')+'>'+cmEv(s.name)+'</span>'+
+        ((typeof growthStatusHTML==='function')?growthStatusHTML(s.name):'')+
+      '</div>'+
       '<span class="cm-scnt">'+cmTL(s)+'</span>'+
+      '<button class="cm-sact cm-stog'+(_disabled?' off':'')+'" onclick="event.stopPropagation();toggleSubjDisabled(\''+String(s.name).replace(/'/g,"\\'")+'\')" title="'+(_disabled?'Disabled — tap to activate':'Active — tap to disable')+'">'+(_disabled?'○ Off':'● On')+'</button>'+
       '<button class="cm-sact" onclick="event.stopPropagation();cmMoveSubj('+i+',-1)" title="Move up" style="'+(i===0?'opacity:.3;cursor:not-allowed':'')+'">↑</button>'+
       '<button class="cm-sact" onclick="event.stopPropagation();cmMoveSubj('+i+',1)" title="Move down" style="'+(i===_cm.subjects.length-1?'opacity:.3;cursor:not-allowed':'')+'">↓</button>'+
       '<button class="cm-sact cm-sdel" onclick="event.stopPropagation();cmDelSubj('+i+')" title="Delete">✕</button>'+
@@ -8564,7 +8677,7 @@ function getSubjectVelocity(){
   });
 
   // Find the active subject (most recently worked on with remaining tasks)
-  var subjOrder=getSubjOrder();
+  var subjOrder=(typeof getActiveSubjOrder==='function')?getActiveSubjOrder():getSubjOrder();
   var activeSubj=null;
   var activeRate=0;
   subjOrder.forEach(function(subj){
@@ -8686,10 +8799,10 @@ function dmBuildTierList(budgetMins, done){
     }
     return result;
   }
-  var subjOrd=getSubjOrder();
-  // Build ordered undone tasks (same order as buildSched)
+  var subjOrd=(typeof getActiveSubjOrder==='function')?getActiveSubjOrder():getSubjOrder();
+  // Build ordered undone tasks (same order as buildSched); skip disabled subjects
   var ordered=ALL_TASKS.filter(function(t){
-    return !done.has(t.id)&&!isPyqAllDone(t.id);
+    return !done.has(t.id)&&!isPyqAllDone(t.id)&&subjOrd.indexOf(t.subject)>=0;
   });
   ordered.sort(function(a,b){
     var ai=subjOrd.indexOf(a.subject),bi=subjOrd.indexOf(b.subject);
@@ -9025,7 +9138,7 @@ window.renderSpeedCalc=function(){
   var dailyMins=dailyHours*60;
 
   var done=new Set(Object.keys(ST.done).map(Number));
-  var subjOrder=getSubjOrder();
+  var subjOrder=(typeof getActiveSubjOrder==='function')?getActiveSubjOrder():getSubjOrder();
 
   // Compute remaining per subject
   var subjData=[];
@@ -9512,7 +9625,7 @@ function renderRoutineFromTimetable(){
   // Include 'other' slots always, and 'class' slots that have items — merged by time
   var allSlots=getTodaySlots();
   var routineSlots=allSlots.filter(function(s){
-    return s.type==='other'||(s.type==='class'&&s.items&&s.items.length>0)||(s.type==='study'&&s.items&&s.items.length>0)||(s.type==='revision'&&s.items&&s.items.length>0);
+    return s.type==='other'||(s.type==='class'&&s.items&&s.items.length>0)||(s.type==='study'&&s.items&&s.items.length>0)||(s.type==='revision'&&s.items&&s.items.length>0)||s.type==='coaching';
   });
   if(routineSlots.length===0){
     list.innerHTML='<div style=\"text-align:center;padding:16px;font-size:12px;color:var(--mt);font-style:italic;\">No routine today. Add Routine/Recorded/Gate Lecture tasks in the Timetable tab.</div>';
@@ -9522,6 +9635,7 @@ function renderRoutineFromTimetable(){
   }
   var total=0,done=0;
   routineSlots.forEach(function(s){
+    if(s.type==='coaching')return;
     if(s.items&&s.items.length>0){s.items.forEach(function(_,ii){total++;if(isRoutineDone(s.id,ii))done++;});}
     else{total++;if(isRoutineDone(s.id,-1))done++;}
   });
@@ -9530,12 +9644,14 @@ function renderRoutineFromTimetable(){
   var sumEl=document.getElementById('routineSummaryTop');if(sumEl)sumEl.textContent=done+'/'+total+' done \u00b7 '+pct+'%';
   var html='';
   routineSlots.forEach(function(s){
-    var isClass=s.type==='class'; var isStudy=s.type==='study'; var isRev=s.type==='revision';
-    var headerColor=isStudy?'var(--s1)':isClass?'var(--s2)':isRev?'#a78bfa':'var(--am)';
-    var classBadge=isStudy?' <span style=\"font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(77,159,236,.12);color:var(--s1);border:1px solid rgba(77,159,236,.25);\">GATE</span>':isClass?' <span style=\"font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(62,207,142,.12);color:var(--s2);border:1px solid rgba(62,207,142,.25);\">RECORDED</span>':isRev?' <span style=\"font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(167,139,250,.12);color:#a78bfa;border:1px solid rgba(167,139,250,.25);\">REVISION</span>':'';
+    var isClass=s.type==='class'; var isStudy=s.type==='study'; var isRev=s.type==='revision'; var isCoach=s.type==='coaching';
+    var headerColor=isStudy?'var(--s1)':isClass?'var(--s2)':isRev?'#a78bfa':isCoach?'var(--s4)':'var(--am)';
+    var classBadge=isStudy?' <span style=\"font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(77,159,236,.12);color:var(--s1);border:1px solid rgba(77,159,236,.25);\">GATE</span>':isClass?' <span style=\"font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(62,207,142,.12);color:var(--s2);border:1px solid rgba(62,207,142,.25);\">RECORDED</span>':isRev?' <span style=\"font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(167,139,250,.12);color:#a78bfa;border:1px solid rgba(167,139,250,.25);\">REVISION</span>':isCoach?' <span style=\"font-size:9px;padding:1px 5px;border-radius:4px;background:var(--s4b);color:var(--s4);border:1px solid var(--s4o);\">COACHING</span>':'';
     html+='<div class=\"routine-block\">';
     html+='<div class=\"routine-time\" style=\"color:'+headerColor+';\">'+(s.emoji||'\u26a1')+' '+esc(s.name)+' \u00b7 '+pad(s.sh)+':'+pad(s.sm)+classBadge+'</div>';
-    if(!s.items||s.items.length===0){
+    if(isCoach){
+      html+=coachRenderRoutineBody(s.id);
+    } else if(!s.items||s.items.length===0){
       var d=isRoutineDone(s.id,-1);
       html+='<div class=\"routine-item'+(d?' done':'')+'\" onclick=\"toggleRoutineItemNew(\''+s.id+'\',-1)\">';
       html+='<div class=\"routine-chk\">'+(d?'\u2713':'')+'</div><div class=\"routine-txt\">'+esc(s.name)+'</div></div>';
@@ -9570,11 +9686,12 @@ function renderTTSummary(){
     study:{label:'Gate Lectures',color:'#4d9fec'},
     class:{label:'Recorded',color:'#45c4a0'},
     revision:{label:'Revision',color:'#a78bfa'},
+    coaching:{label:'🎓 Coaching',color:'#c58af9'},
     other:{label:'Routine',color:'#f0ac4e'}
   };
 
   function calcMins(slots){
-    var result={study:0,class:0,revision:0,other:0,total:0};
+    var result={study:0,class:0,revision:0,coaching:0,other:0,total:0};
     (slots||[]).forEach(function(s){
       var dur=Math.max(0,(s.eh*60+s.em)-(s.sh*60+s.sm));
       var t=TYPE_CONFIG[s.type]?s.type:'other';
@@ -9585,10 +9702,10 @@ function renderTTSummary(){
 
   var mins,modeLabel;
   if(_ttSummaryWeekMode){
-    mins={study:0,class:0,revision:0,other:0,total:0};
+    mins={study:0,class:0,revision:0,coaching:0,other:0,total:0};
     TT_DAYS.forEach(function(d){
       var m=calcMins(_timetable[d]||[]);
-      mins.study+=m.study;mins.class+=m.class;mins.revision+=m.revision;mins.other+=m.other;mins.total+=m.total;
+      mins.study+=m.study;mins.class+=m.class;mins.revision+=m.revision;mins.coaching+=m.coaching;mins.other+=m.other;mins.total+=m.total;
     });
     modeLabel='This week · tap for today';
   } else {
@@ -9609,7 +9726,7 @@ function renderTTSummary(){
     +'<span class="tt-summary-week-toggle" onclick="_ttSummaryWeekMode=!_ttSummaryWeekMode;renderTTSummary();">'+modeLabel+'</span>'
     +'</div>';
 
-  ['study','class','revision','other'].forEach(function(t){
+  ['study','class','revision','coaching','other'].forEach(function(t){
     if(mins[t]===0)return;
     var pct=mins.total>0?Math.round(mins[t]/mins.total*100):0;
     var cfg=TYPE_CONFIG[t];
@@ -9706,7 +9823,7 @@ function makeTTSlotCard(s,i,day,conflicts){
 
   // Head (collapsed view)
   var head=document.createElement('div');head.className='tt-slot-head';
-  var _typeLabel=s.type==='study'?'GATE LECTURES':s.type==='class'?'RECORDED':s.type==='revision'?'REVISION':'ROUTINE'; var typePill='<span class="tt-type-pill tt-type-'+s.type+'">'+_typeLabel+'</span>';
+  var _typeLabel=s.type==='study'?'GATE LECTURES':s.type==='class'?'RECORDED':s.type==='revision'?'REVISION':s.type==='coaching'?'🎓 COACHING':'ROUTINE'; var typePill='<span class="tt-type-pill tt-type-'+s.type+'">'+_typeLabel+'</span>';
   var endStr=s.eh>=24?pad(s.eh-24)+':'+pad(s.em):pad(s.eh)+':'+pad(s.em);
   var timeStr=pad(s.sh)+':'+pad(s.sm)+'\u2013'+endStr;
   var durStr=dur>=60?Math.floor(dur/60)+'h'+(dur%60?' '+dur%60+'m':''):dur+'m';
@@ -9835,6 +9952,7 @@ function makeTTSlotCard(s,i,day,conflicts){
     +'<button class="'+(s.type==='class'?'act-class':'')+'" onclick="ttSetType(\''+s.id+'\',\''+day+'\',\'class\')">Recorded</button>'
     +'<button class="'+(s.type==='other'?'act-other':'')+'" onclick="ttSetType(\''+s.id+'\',\''+day+'\',\'other\')">Routine</button>'
     +'<button class="'+(s.type==='revision'?'act-revision':'')+'" onclick="ttSetType(\''+s.id+'\',\''+day+'\',\'revision\')">Revision</button>'
+    +'<button class="'+(s.type==='coaching'?'act-coaching':'')+'" onclick="ttSetType(\''+s.id+'\',\''+day+'\',\'coaching\')">🎓 Coaching</button>'
     +'</div></div>';
 
   // Times with ±15min nudge buttons
@@ -9878,6 +9996,11 @@ function makeTTSlotCard(s,i,day,conflicts){
       +'<button class="tt-sub-add-btn" onclick="ttAddSubItem(\''+s.id+'\',\''+day+'\')">+ Add</button>'
       +'</div></div>';
     body.innerHTML+=subHtml;
+  }
+
+  // Coaching slot: "Log Covered Lecture" form → marks done + schedules revision
+  if(s.type==='coaching'){
+    body.innerHTML+=coachRenderForm(s.id);
   }
 
   // Delete button — double-tap confirm (no browser confirm() dialog)
@@ -10016,6 +10139,7 @@ window.ttSetType=function(id,day,type){
   // Auto-assign emoji if default
   if(type==='study'&&s.emoji==='\u26a1')s.emoji='📚';
   if(type==='class'&&s.emoji==='\u26a1')s.emoji='📡';
+  if(type==='coaching'&&(s.emoji==='\u26a1'||s.emoji==='📚'||s.emoji==='📡'))s.emoji='🎓';
   saveTimetable();
 };
 window.ttSetTime=function(id,day,which,val){
@@ -10908,13 +11032,13 @@ window.getRotation=function(){
     var seen={},phases=[];
     r.phases.forEach(function(ph){
       if(!Array.isArray(ph))return;
-      var clean=ph.filter(function(s){return SUBJ.indexOf(s)>=0&&!seen[s]&&(seen[s]=1);}).slice(0,4);
+      var clean=ph.filter(function(s){return SUBJ.indexOf(s)>=0&&!isSubjDisabled(s)&&!seen[s]&&(seen[s]=1);}).slice(0,4);
       if(clean.length)phases.push(clean);
     });
     if(!phases.length)return null;
     var master=[];phases.forEach(function(ph){ph.forEach(function(s){master.push(s);});});
     // unassigned subjects trail in subjOrder, one at a time (implicit solo phases)
-    getSubjOrder().forEach(function(s){if(master.indexOf(s)<0){master.push(s);phases.push([s]);}});
+    getActiveSubjOrder().forEach(function(s){if(master.indexOf(s)<0){master.push(s);phases.push([s]);}});
     var days={};
     if(r.days&&typeof r.days==='object'){
       Object.keys(r.days).forEach(function(k){
@@ -11141,6 +11265,467 @@ try{
 document.addEventListener('DOMContentLoaded',function(){try{rotRender();}catch(e){}},{once:true});
 })();
 </script>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// ── COACHING LOG · v44 ───────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// A "Coaching" timetable slot type for offline classes. You pick subject → unit
+// → lecture(s) that got covered and log them. Logging a lecture does EXACTLY what
+// finishing a recorded lecture does: marks ST.done[id]=1 and calls revScheduleUnit
+// so it enters the revision queue immediately (per-lecture, not end-of-unit). It
+// also counts toward subject completion → unlocks weekend tests automatically.
+// Everything lives in ST (done + a small coachLog history), so it syncs via
+// Firebase for free.
+(function(){
+'use strict';
+
+// Per-slot UI selection (subject/unit currently chosen in the picker). Ephemeral,
+// not persisted — the actual logged state is ST.done + ST.coachLog.
+var _sel={}; // { slotId: { subj:'', unit:'' } }
+
+function cEsc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function cLbl(s){try{return (typeof LABELS!=='undefined'&&LABELS[s])||s;}catch(e){return s;}}
+function cCol(s){try{return (typeof COLORS!=='undefined'&&COLORS[s])||'#c58af9';}catch(e){return '#c58af9';}}
+function todayStr(){try{return getToday();}catch(e){return new Date().toISOString().slice(0,10);}}
+
+// ── Log history (for "logged today" list + undo) ──────────────────────────────
+function coachLog(){if(!ST.coachLog)ST.coachLog=[];return ST.coachLog;}
+window.coachLoggedTodayCount=function(){
+  var t=todayStr();
+  return coachLog().filter(function(e){return e.date===t;}).length;
+};
+
+// ── Data helpers ──────────────────────────────────────────────────────────────
+function subjectsWithLectures(){
+  var seen={},out=[];
+  ALL_TASKS.forEach(function(t){if(t.type==='lecture'&&!seen[t.subject]){seen[t.subject]=1;out.push(t.subject);}});
+  // keep subject order stable to curriculum order
+  return out;
+}
+function unitsOf(subj){
+  var seen={},out=[];
+  ALL_TASKS.forEach(function(t){if(t.type==='lecture'&&t.subject===subj){var u=t.unit||'General';if(!seen[u]){seen[u]=1;out.push(u);}}});
+  return out;
+}
+function lecturesOf(subj,unit){
+  return ALL_TASKS.filter(function(t){return t.type==='lecture'&&t.subject===subj&&(t.unit||'General')===unit;})
+    .sort(function(a,b){return (a.num||0)-(b.num||0);});
+}
+function isDone(id){try{return !!ST.done[id];}catch(e){return false;}}
+
+// Pick a sensible default subject/unit for a slot: first subject that still has
+// un-logged lectures, then its first unit with an un-logged lecture.
+function defaultSel(slotId){
+  if(_sel[slotId]&&_sel[slotId].subj)return _sel[slotId];
+  var subs=subjectsWithLectures();
+  var chosenS=subs[0]||'',chosenU='';
+  for(var i=0;i<subs.length;i++){
+    var us=unitsOf(subs[i]);
+    for(var j=0;j<us.length;j++){
+      var lecs=lecturesOf(subs[i],us[j]);
+      if(lecs.some(function(l){return !isDone(l.id);})){chosenS=subs[i];chosenU=us[j];break;}
+    }
+    if(chosenU)break;
+  }
+  if(!chosenU&&chosenS)chosenU=(unitsOf(chosenS)[0]||'');
+  _sel[slotId]={subj:chosenS,unit:chosenU};
+  return _sel[slotId];
+}
+
+// ── Actions ───────────────────────────────────────────────────────────────────
+window.coachPickSubj=function(slotId,subj){
+  _sel[slotId]={subj:subj,unit:(unitsOf(subj)[0]||'')};
+  refresh(slotId);
+};
+window.coachPickUnit=function(slotId,unit){
+  if(!_sel[slotId])defaultSel(slotId);
+  _sel[slotId].unit=unit;
+  refresh(slotId);
+};
+
+// Log (or un-log) a single lecture. Logging = mark done + schedule revision.
+window.coachToggleLecture=function(slotId,lecId){
+  var task=null;
+  for(var i=0;i<ALL_TASKS.length;i++){if(ALL_TASKS[i].id===lecId){task=ALL_TASKS[i];break;}}
+  if(!task)return;
+  try{if(typeof pushUndo==='function')pushUndo();}catch(e){}
+  if(ST.done[lecId]){
+    // un-log
+    delete ST.done[lecId];
+    var lg=coachLog();for(var k=lg.length-1;k>=0;k--){if(lg[k].id===lecId){lg.splice(k,1);break;}}
+  } else {
+    ST.done[lecId]=1;
+    coachLog().push({id:lecId,subject:task.subject,unit:task.unit||'General',name:task.name,num:task.num||0,date:todayStr(),ts:Date.now()});
+    // schedule revision immediately (same call recorded lectures fire)
+    try{if(typeof revScheduleUnit==='function')revScheduleUnit(task);}catch(e){}
+  }
+  try{saveGateState();}catch(e){}
+  try{if(typeof buildSchedule==='function')buildSchedule();}catch(e){}
+  try{if(typeof haptic==='function')haptic([20]);}catch(e){}
+  // Refresh the whole UI cluster so revision/tests/today all reflect instantly
+  try{if(typeof renderGate==='function')renderGate();}catch(e){}
+  try{if(typeof renderRoutineFromTimetable==='function')renderRoutineFromTimetable();}catch(e){}
+  try{if(typeof renderTimetable==='function'&&document.getElementById('tab-timetable')&&document.getElementById('tab-timetable').classList.contains('active'))renderTimetable();}catch(e){}
+  refresh(slotId);
+};
+
+// Log the whole current unit at once (all un-logged lectures in it).
+window.coachLogWholeUnit=function(slotId){
+  var sel=defaultSel(slotId);
+  var lecs=lecturesOf(sel.subj,sel.unit).filter(function(l){return !isDone(l.id);});
+  if(!lecs.length){try{showT('Poora unit already logged','');}catch(e){}return;}
+  try{if(typeof pushUndo==='function')pushUndo();}catch(e){}
+  var last=null;
+  lecs.forEach(function(task){
+    ST.done[task.id]=1;
+    coachLog().push({id:task.id,subject:task.subject,unit:task.unit||'General',name:task.name,num:task.num||0,date:todayStr(),ts:Date.now()});
+    try{if(typeof revScheduleUnit==='function')revScheduleUnit(task);}catch(e){}
+    last=task;
+  });
+  try{saveGateState();}catch(e){}
+  try{if(typeof buildSchedule==='function')buildSchedule();}catch(e){}
+  try{if(typeof haptic==='function')haptic([30]);}catch(e){}
+  try{showT('✅ '+lecs.length+' lecture'+(lecs.length>1?'s':'')+' logged','Revision scheduled.');}catch(e){}
+  try{if(typeof renderGate==='function')renderGate();}catch(e){}
+  try{if(typeof renderRoutineFromTimetable==='function')renderRoutineFromTimetable();}catch(e){}
+  refresh(slotId);
+};
+
+// ── Renderers ─────────────────────────────────────────────────────────────────
+// Compact chip row of subjects (only ones with lectures).
+function subjChips(slotId,sel){
+  return subjectsWithLectures().map(function(s){
+    var lecs=ALL_TASKS.filter(function(t){return t.type==='lecture'&&t.subject===s;});
+    var doneN=lecs.filter(function(l){return isDone(l.id);}).length;
+    var totN=lecs.length;
+    var on=(s===sel.subj);
+    var complete=(doneN>=totN&&totN>0);
+    return '<button onclick="coachPickSubj(\''+slotId+'\',\''+s.replace(/'/g,"\\'")+'\')" style="position:relative;background:'+(on?cCol(s)+'26':'var(--sf2)')+';border:1px solid '+(on?cCol(s):'var(--bd2)')+';color:'+(on?cCol(s):'var(--mt2)')+';border-radius:8px;padding:5px 9px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--fn);white-space:nowrap;">'
+      +cEsc(cLbl(s))+' <span style="font-family:var(--mo);font-size:9px;opacity:.8;">'+doneN+'/'+totN+'</span>'+(complete?' ✓':'')+'</button>';
+  }).join('');
+}
+
+// Unit dropdown for the chosen subject.
+function unitSelect(slotId,sel){
+  var us=unitsOf(sel.subj);
+  if(!us.length)return '';
+  var opts=us.map(function(u){
+    var lecs=lecturesOf(sel.subj,u);
+    var doneN=lecs.filter(function(l){return isDone(l.id);}).length;
+    return '<option value="'+cEsc(u)+'"'+(u===sel.unit?' selected':'')+'>'+cEsc(u)+' ('+doneN+'/'+lecs.length+')</option>';
+  }).join('');
+  return '<select onchange="coachPickUnit(\''+slotId+'\',this.value)" style="width:100%;background:var(--sf2);border:1px solid var(--bd2);border-radius:9px;padding:8px 10px;font-family:var(--fn);font-size:12px;font-weight:700;color:var(--tx);margin-top:8px;outline:none;">'+opts+'</select>';
+}
+
+// Lecture checklist for the chosen subject+unit.
+function lecList(slotId,sel){
+  var lecs=lecturesOf(sel.subj,sel.unit);
+  if(!lecs.length)return '<div style="font-size:11px;color:var(--mt);padding:8px 2px;">No lectures in this unit.</div>';
+  var rows=lecs.map(function(l){
+    var d=isDone(l.id);
+    return '<div onclick="coachToggleLecture(\''+slotId+'\','+l.id+')" style="display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:9px;cursor:pointer;background:'+(d?'var(--s4b)':'var(--sf2)')+';border:1px solid '+(d?'var(--s4o)':'var(--bd)')+';margin-top:5px;">'
+      +'<div style="width:20px;height:20px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;background:'+(d?'var(--s4)':'transparent')+';border:1px solid '+(d?'var(--s4)':'var(--bd2)')+';color:#fff;">'+(d?'✓':'')+'</div>'
+      +'<div style="font-family:var(--mo);font-size:10px;color:var(--mt);flex-shrink:0;min-width:24px;">#'+(l.num||'?')+'</div>'
+      +'<div style="flex:1;font-size:12px;font-weight:600;color:'+(d?'var(--mt2)':'var(--tx)')+';'+(d?'text-decoration:line-through;':'')+'">'+cEsc(l.name)+'</div>'
+      +'</div>';
+  }).join('');
+  var pending=lecs.filter(function(l){return !isDone(l.id);}).length;
+  var bulk=pending>0?'<button onclick="coachLogWholeUnit(\''+slotId+'\')" style="width:100%;margin-top:8px;background:var(--s4b);border:1px solid var(--s4o);color:var(--s4);border-radius:9px;padding:8px;font-size:11px;font-weight:800;cursor:pointer;font-family:var(--fn);">＋ Log all '+pending+' remaining in this unit</button>':'';
+  return rows+bulk;
+}
+
+// Full form (used inside the timetable slot editor).
+window.coachRenderForm=function(slotId){
+  var sel=defaultSel(slotId);
+  if(!subjectsWithLectures().length){
+    return '<div class="tt-sub-section"><div class="tt-sub-title">🎓 Coaching Log</div><div style="font-size:11px;color:var(--mt);padding:6px 2px;">No lectures in the curriculum yet.</div></div>';
+  }
+  var h='<div class="tt-sub-section"><div class="tt-sub-title">🎓 Log Covered Lecture</div>';
+  h+='<div style="font-size:10px;color:var(--mt);line-height:1.5;margin-bottom:8px;">Jo aaj coaching me hua wo tick karo — turant revision me chala jaega.</div>';
+  h+='<div style="display:flex;flex-wrap:wrap;gap:5px;">'+subjChips(slotId,sel)+'</div>';
+  h+=unitSelect(slotId,sel);
+  h+='<div style="margin-top:8px;">'+lecList(slotId,sel)+'</div>';
+  h+='</div>';
+  return h;
+};
+
+// Compact body (used inside the Today-tab routine block).
+window.coachRenderRoutineBody=function(slotId){
+  var sel=defaultSel(slotId);
+  if(!subjectsWithLectures().length){
+    return '<div style="font-size:11px;color:var(--mt);padding:8px 2px;">Curriculum me abhi koi lecture nahi.</div>';
+  }
+  var n=coachLoggedTodayCount();
+  var h='<div style="padding:2px 0 4px;">';
+  h+='<div style="font-size:10px;color:var(--mt);margin-bottom:7px;">'+(n>0?('🎓 '+n+' lecture'+(n>1?'s':'')+' logged today'):'Jo coaching me hua, yahan tick karo →')+'</div>';
+  h+='<div style="display:flex;flex-wrap:wrap;gap:5px;">'+subjChips(slotId,sel)+'</div>';
+  h+=unitSelect(slotId,sel);
+  h+='<div style="margin-top:8px;">'+lecList(slotId,sel)+'</div>';
+  h+='</div>';
+  return h;
+};
+
+// Refresh just this slot's form in place (both timetable + routine contexts).
+function refresh(slotId){
+  // Timetable editor form
+  try{
+    var host=document.querySelector('#ttc_'+slotId+' .tt-sub-section');
+    // rerender whole timetable slot if open (safest)
+    if(typeof renderTimetable==='function'){
+      var tab=document.getElementById('tab-timetable');
+      if(tab&&tab.classList&&tab.classList.contains('active')){renderTimetable();return;}
+    }
+  }catch(e){}
+  // Today routine — rerender routine list
+  try{if(typeof renderRoutineFromTimetable==='function')renderRoutineFromTimetable();}catch(e){}
+}
+
+})();
+</script>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// ── ADD-SUBJECT WIZARD + AUTO-GROW MANAGER · v45 ─────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// A guided "+ Add Subject" flow: JSON or manual (lecture count + avg time), then
+// an optional "is this subject finished?" step. If NOT finished, you set how many
+// new lectures arrive per active day (e.g. Mon–Sat, 1/day) and until when (a date,
+// a total count, or open-ended "till I stop"). New placeholder lectures then get
+// added automatically over time by the early materializer. Config lives in
+// ST.subjGrowth and is mirrored to a plain key so it can be read before ALL_TASKS.
+(function(){
+'use strict';
+
+var WD=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+function gEsc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function gToday(){try{return getToday();}catch(e){return new Date().toISOString().slice(0,10);}}
+
+// ── Growth config store (ST + mirror) ─────────────────────────────────────────
+function growthAll(){if(!ST.subjGrowth||typeof ST.subjGrowth!=='object')ST.subjGrowth={};return ST.subjGrowth;}
+function growthMirror(){try{localStorage.setItem('v5_subj_growth',JSON.stringify(growthAll()));}catch(e){}}
+window.growthGet=function(subj){return growthAll()[subj]||null;};
+function growthSave(){try{saveGateState();}catch(e){}growthMirror();try{if(window._fb&&window._fb.ready&&typeof fbWrite==='function')fbWrite('v5_subj_growth',growthAll());}catch(e){}}
+window.growthSet=function(subj,cfg){growthAll()[subj]=cfg;growthSave();};
+window.growthStop=function(subj){
+  var g=growthAll()[subj];if(!g)return;
+  g.active=false;growthSave();
+  try{showT('⏹ Growth stopped','"'+subj+'" ab naye lecture nahi lega.');}catch(e){}
+  try{cmRenderSList();}catch(e){}
+};
+window.growthResume=function(subj){
+  var g=growthAll()[subj];if(!g)return;
+  g.active=true; if(!g.startDate)g.startDate=gToday();
+  growthSave();
+  try{showT('▶ Growth resumed','');}catch(e){}
+  try{cmRenderSList();}catch(e){}
+};
+
+// Small status line for the subject list (called from cmRenderSList).
+window.growthStatusHTML=function(subjName){
+  var g=growthGet(subjName);
+  if(!g)return '';
+  if(g.active===false){
+    return '<div style="font-size:9px;color:var(--mt);margin-top:2px;">⏹ growth paused · <span style="color:var(--s2);cursor:pointer;text-decoration:underline;" onclick="event.stopPropagation();growthResume(\''+String(subjName).replace(/'/g,"\\'")+'\')">resume</span></div>';
+  }
+  var per=g.perDay||1;
+  var daysTxt=(g.days&&g.days.length===6&&g.days.indexOf(0)<0)?'Mon–Sat':(g.days||[1,2,3,4,5,6]).map(function(d){return WD[d];}).join('');
+  var untilTxt=g.mode==='date'?('till '+(g.until||'?')):g.mode==='total'?('till '+g.until+' lecs'):'till you stop';
+  return '<div style="font-size:9px;color:var(--s4);margin-top:2px;">🌱 +'+per+'/day · '+gEsc(daysTxt)+' · '+gEsc(untilTxt)+' · <span style="cursor:pointer;text-decoration:underline;" onclick="event.stopPropagation();growthStop(\''+String(subjName).replace(/'/g,"\\'")+'\')">stop</span></div>';
+};
+
+// ── Wizard state ──────────────────────────────────────────────────────────────
+var W=null; // {step, name, count, avg, useAvg, complete, perDay, days, untilMode, untilDate, untilTotal}
+
+function palette(){return ['#89b4fa','#f38ba8','#a6e3a1','#f9e2af','#b4befe','#fab387','#cba6f7','#f5c2e7','#94e2d5','#eba0ac','#89dceb','#f2cdcd'];}
+function pickColor(){var used={};(_cm.subjects||[]).forEach(function(s){used[s.color]=1;});var pal=palette();for(var i=0;i<pal.length;i++)if(!used[pal[i]])return pal[i];return pal[Math.floor(Math.random()*pal.length)];}
+
+function ov(){return document.getElementById('subWizOv');}
+function closeWiz(){var o=ov();if(o)o.remove();W=null;}
+window.subWizCancel=closeWiz;
+
+window.openSubjectWizard=function(){
+  W={step:'method',name:'',count:30,avg:90,useAvg:true,complete:true,perDay:1,days:[1,2,3,4,5,6],untilMode:'open',untilDate:'',untilTotal:''};
+  var o=document.createElement('div');o.id='subWizOv';
+  o.style.cssText='position:fixed;inset:0;z-index:100050;display:flex;align-items:center;justify-content:center;padding:18px;';
+  o.innerHTML='<div style="position:absolute;inset:0;background:rgba(8,10,12,.82);backdrop-filter:blur(6px);" onclick="subWizCancel()"></div>'
+    +'<div id="subWizCard" style="position:relative;z-index:1;background:var(--sf);border:1px solid var(--bd2);border-radius:18px;width:min(440px,96vw);max-height:90vh;overflow-y:auto;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.5);"></div>';
+  document.body.appendChild(o);
+  drawWiz();
+};
+
+function fieldLabel(t){return '<div style="font-family:var(--mo);font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--mt);margin:14px 0 7px;">'+t+'</div>';}
+function bigBtn(txt,onclick,accent){return '<button onclick="'+onclick+'" style="width:100%;background:'+(accent?'var(--s4)':'var(--s1)')+';border:none;color:#fff;border-radius:12px;padding:13px;font-size:13px;font-weight:800;cursor:pointer;font-family:var(--fn);margin-top:6px;">'+txt+'</button>';}
+function ghostBtn(txt,onclick){return '<button onclick="'+onclick+'" style="width:100%;background:var(--sf2);border:1px solid var(--bd2);color:var(--mt2);border-radius:12px;padding:11px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fn);margin-top:8px;">'+txt+'</button>';}
+
+function drawWiz(){
+  var c=document.getElementById('subWizCard');if(!c)return;
+  var h='';
+  // Title
+  h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">'
+    +'<div style="font-size:16px;font-weight:800;color:var(--tx);">➕ Add Subject</div>'
+    +'<button onclick="subWizCancel()" style="background:none;border:none;color:var(--mt);font-size:20px;cursor:pointer;line-height:1;">×</button>'
+    +'</div>';
+
+  if(W.step==='method'){
+    h+='<div style="font-size:12px;color:var(--mt);line-height:1.5;margin-bottom:6px;">Subject kaise banana hai?</div>';
+    h+=fieldLabel('Subject name');
+    h+='<input id="wizName" value="'+gEsc(W.name)+'" placeholder="e.g. Engineering Maths" oninput="subWizField(\'name\',this.value)" style="width:100%;background:var(--sf2);border:1px solid var(--bd2);border-radius:10px;padding:11px;font-family:var(--fn);font-size:14px;font-weight:700;color:var(--tx);outline:none;">';
+    h+=fieldLabel('Add lectures via');
+    h+=bigBtn('✍️ Manual — lecture count set karo','subWizGo(\'manual\')');
+    h+=ghostBtn('📄 JSON paste karo','subWizGo(\'json\')');
+  }
+  else if(W.step==='manual'){
+    h+=fieldLabel('Kitne lectures?');
+    h+='<div style="display:flex;align-items:center;gap:8px;">'
+      +'<button onclick="subWizBump(-5)" style="width:40px;height:44px;border-radius:10px;background:var(--sf2);border:1px solid var(--bd2);color:var(--tx);font-size:16px;font-weight:800;cursor:pointer;">−</button>'
+      +'<input id="wizCount" type="number" min="0" value="'+W.count+'" oninput="subWizField(\'count\',this.value)" style="flex:1;text-align:center;background:var(--sf2);border:1px solid var(--bd2);border-radius:10px;padding:12px;font-family:var(--mo);font-size:20px;font-weight:800;color:var(--tx);outline:none;">'
+      +'<button onclick="subWizBump(5)" style="width:40px;height:44px;border-radius:10px;background:var(--sf2);border:1px solid var(--bd2);color:var(--tx);font-size:16px;font-weight:800;cursor:pointer;">+</button>'
+      +'</div>';
+    h+='<div style="font-size:10px;color:var(--mt);margin-top:5px;">"Lecture 01 … Lecture '+(W.count>0?String(W.count).padStart(2,'0'):'00')+'" ban jayenge.</div>';
+    h+=fieldLabel('Average time per lecture?');
+    h+='<div style="display:flex;gap:7px;">'
+      +'<button onclick="subWizField(\'useAvg\',true)" style="flex:1;padding:9px;border-radius:9px;font-size:11px;font-weight:700;font-family:var(--fn);cursor:pointer;background:'+(W.useAvg?'var(--s1b)':'var(--sf2)')+';border:1px solid '+(W.useAvg?'var(--s1o)':'var(--bd2)')+';color:'+(W.useAvg?'var(--s1)':'var(--mt2)')+';">Set average</button>'
+      +'<button onclick="subWizField(\'useAvg\',false)" style="flex:1;padding:9px;border-radius:9px;font-size:11px;font-weight:700;font-family:var(--fn);cursor:pointer;background:'+(!W.useAvg?'var(--s1b)':'var(--sf2)')+';border:1px solid '+(!W.useAvg?'var(--s1o)':'var(--bd2)')+';color:'+(!W.useAvg?'var(--s1)':'var(--mt2)')+';">Skip (0 min)</button>'
+      +'</div>';
+    if(W.useAvg){
+      h+='<div style="display:flex;align-items:center;gap:8px;margin-top:8px;">'
+        +'<input id="wizAvgH" type="number" step="0.25" min="0" value="'+(Math.round(W.avg/60*100)/100)+'" oninput="subWizAvgHours(this.value)" style="flex:1;background:var(--sf2);border:1px solid var(--bd2);border-radius:10px;padding:11px;font-family:var(--mo);font-size:15px;font-weight:700;color:var(--tx);outline:none;">'
+        +'<span style="font-size:12px;color:var(--mt2);font-weight:700;">hours each</span>'
+        +'</div>';
+      h+='<div style="font-size:10px;color:var(--mt);margin-top:4px;">= '+W.avg+' min per lecture (sabme yahi likha jaega).</div>';
+    }
+    h+=bigBtn('Next →','subWizGo(\'complete\')');
+    h+=ghostBtn('← Back','subWizGo(\'method\')');
+  }
+  else if(W.step==='json'){
+    h+=fieldLabel('Paste JSON');
+    h+='<div style="font-size:10px;color:var(--mt);line-height:1.5;margin-bottom:6px;">Array of names, ya [{name,dur}]. Example:<br><code style="font-family:var(--mo);font-size:9px;color:var(--mt2);">["Intro","FA basics"]</code> ya <code style="font-family:var(--mo);font-size:9px;color:var(--mt2);">[{"name":"Intro","dur":90}]</code></div>';
+    h+='<textarea id="wizJson" placeholder=\'["Lecture 1","Lecture 2"]\' style="width:100%;height:130px;background:var(--sf2);border:1px solid var(--bd2);border-radius:10px;padding:11px;font-family:var(--mo);font-size:12px;color:var(--tx);outline:none;resize:vertical;"></textarea>';
+    h+='<div id="wizJsonErr" style="font-size:11px;color:var(--s3);margin-top:6px;min-height:14px;"></div>';
+    h+=bigBtn('Parse → Next','subWizParseJson()');
+    h+=ghostBtn('← Back','subWizGo(\'method\')');
+  }
+  else if(W.step==='complete'){
+    h+=fieldLabel('Ye subject complete hai?');
+    h+='<div style="font-size:11px;color:var(--mt);line-height:1.5;margin-bottom:8px;">Agar abhi coaching me chal raha hai aur naye lecture aate rahenge, "Nahi" choose karo.</div>';
+    h+='<div style="display:flex;gap:7px;">'
+      +'<button onclick="subWizField(\'complete\',true)" style="flex:1;padding:12px;border-radius:10px;font-size:12px;font-weight:800;font-family:var(--fn);cursor:pointer;background:'+(W.complete?'var(--s2b)':'var(--sf2)')+';border:1px solid '+(W.complete?'var(--s2o)':'var(--bd2)')+';color:'+(W.complete?'var(--s2)':'var(--mt2)')+';">✓ Haan, poora hai</button>'
+      +'<button onclick="subWizField(\'complete\',false)" style="flex:1;padding:12px;border-radius:10px;font-size:12px;font-weight:800;font-family:var(--fn);cursor:pointer;background:'+(!W.complete?'var(--s4b)':'var(--sf2)')+';border:1px solid '+(!W.complete?'var(--s4o)':'var(--bd2)')+';color:'+(!W.complete?'var(--s4)':'var(--mt2)')+';">🌱 Nahi, badhega</button>'
+      +'</div>';
+    if(!W.complete){
+      h+=fieldLabel('Roz kitne naye lecture?');
+      h+='<div style="display:flex;align-items:center;gap:8px;">'
+        +'<button onclick="subWizPerDay(-1)" style="width:38px;height:40px;border-radius:9px;background:var(--sf2);border:1px solid var(--bd2);color:var(--tx);font-size:15px;font-weight:800;cursor:pointer;">−</button>'
+        +'<div style="flex:1;text-align:center;font-family:var(--mo);font-size:18px;font-weight:800;color:var(--s4);">'+W.perDay+' / day</div>'
+        +'<button onclick="subWizPerDay(1)" style="width:38px;height:40px;border-radius:9px;background:var(--sf2);border:1px solid var(--bd2);color:var(--tx);font-size:15px;font-weight:800;cursor:pointer;">+</button>'
+        +'</div>';
+      h+=fieldLabel('Kin dino? (tap to toggle)');
+      h+='<div style="display:flex;gap:4px;">';
+      for(var d=0;d<7;d++){
+        var on=W.days.indexOf(d)>=0;
+        h+='<button onclick="subWizToggleDay('+d+')" style="flex:1;padding:8px 0;border-radius:8px;font-size:10px;font-weight:800;font-family:var(--fn);cursor:pointer;background:'+(on?'var(--s4b)':'var(--sf2)')+';border:1px solid '+(on?'var(--s4o)':'var(--bd2)')+';color:'+(on?'var(--s4)':'var(--mt)')+';">'+WD[d]+'</button>';
+      }
+      h+='</div>';
+      h+=fieldLabel('Kab tak?');
+      h+='<div style="display:flex;gap:6px;flex-wrap:wrap;">'
+        +'<button onclick="subWizField(\'untilMode\',\'open\')" style="flex:1;min-width:90px;padding:9px;border-radius:9px;font-size:11px;font-weight:700;font-family:var(--fn);cursor:pointer;background:'+(W.untilMode==='open'?'var(--s4b)':'var(--sf2)')+';border:1px solid '+(W.untilMode==='open'?'var(--s4o)':'var(--bd2)')+';color:'+(W.untilMode==='open'?'var(--s4)':'var(--mt2)')+';">Till I stop</button>'
+        +'<button onclick="subWizField(\'untilMode\',\'date\')" style="flex:1;min-width:90px;padding:9px;border-radius:9px;font-size:11px;font-weight:700;font-family:var(--fn);cursor:pointer;background:'+(W.untilMode==='date'?'var(--s4b)':'var(--sf2)')+';border:1px solid '+(W.untilMode==='date'?'var(--s4o)':'var(--bd2)')+';color:'+(W.untilMode==='date'?'var(--s4)':'var(--mt2)')+';">A date</button>'
+        +'<button onclick="subWizField(\'untilMode\',\'total\')" style="flex:1;min-width:90px;padding:9px;border-radius:9px;font-size:11px;font-weight:700;font-family:var(--fn);cursor:pointer;background:'+(W.untilMode==='total'?'var(--s4b)':'var(--sf2)')+';border:1px solid '+(W.untilMode==='total'?'var(--s4o)':'var(--bd2)')+';color:'+(W.untilMode==='total'?'var(--s4)':'var(--mt2)')+';">Total count</button>'
+        +'</div>';
+      if(W.untilMode==='date'){
+        h+='<input type="date" value="'+gEsc(W.untilDate)+'" oninput="subWizField(\'untilDate\',this.value)" style="width:100%;margin-top:8px;background:var(--sf2);border:1px solid var(--bd2);border-radius:10px;padding:10px;font-family:var(--fn);font-size:13px;font-weight:700;color:var(--tx);outline:none;">';
+      } else if(W.untilMode==='total'){
+        h+='<input type="number" min="1" placeholder="e.g. 42 total lectures" value="'+gEsc(W.untilTotal)+'" oninput="subWizField(\'untilTotal\',this.value)" style="width:100%;margin-top:8px;background:var(--sf2);border:1px solid var(--bd2);border-radius:10px;padding:10px;font-family:var(--mo);font-size:14px;font-weight:700;color:var(--tx);outline:none;">';
+      }
+    }
+    h+=bigBtn('✓ Create Subject','subWizCreate()',!W.complete);
+    h+=ghostBtn('← Back','subWizGo(\''+(W._from==='json'?'json':'manual')+'\')');
+  }
+
+  c.innerHTML=h;
+}
+
+// ── Wizard actions ────────────────────────────────────────────────────────────
+window.subWizField=function(k,v){
+  if(k==='count'||k==='untilTotal'){W[k]=v;}
+  else W[k]=v;
+  // re-render for toggles that change layout
+  if(k==='useAvg'||k==='complete'||k==='untilMode')drawWiz();
+};
+window.subWizBump=function(n){W.count=Math.max(0,(parseInt(W.count,10)||0)+n);drawWiz();};
+window.subWizPerDay=function(n){W.perDay=Math.max(1,Math.min(10,(W.perDay||1)+n));drawWiz();};
+window.subWizAvgHours=function(v){var hh=parseFloat(v);if(isNaN(hh)||hh<0)hh=0;W.avg=Math.round(hh*60*10)/10;};
+window.subWizToggleDay=function(d){var i=W.days.indexOf(d);if(i>=0)W.days.splice(i,1);else W.days.push(d);W.days.sort();drawWiz();};
+window.subWizGo=function(step){
+  // capture name from input before leaving method step
+  var ni=document.getElementById('wizName');if(ni)W.name=ni.value;
+  if(step==='complete'){W._from=(W.step==='json')?'json':'manual';}
+  W.step=step;drawWiz();
+};
+window.subWizParseJson=function(){
+  var ta=document.getElementById('wizJson');var err=document.getElementById('wizJsonErr');
+  if(!ta){return;}
+  var raw=ta.value.trim();
+  try{
+    var arr=JSON.parse(raw);
+    if(!Array.isArray(arr))throw new Error('JSON ek array hona chahiye');
+    var lecs=arr.map(function(x,i){
+      if(typeof x==='string')return {name:x||('Lecture '+String(i+1).padStart(2,'0')),duration:0};
+      if(x&&typeof x==='object')return {name:String(x.name||('Lecture '+String(i+1).padStart(2,'0'))),duration:parseFloat(x.dur||x.duration||0)||0};
+      return {name:'Lecture '+String(i+1).padStart(2,'0'),duration:0};
+    });
+    if(!lecs.length)throw new Error('Koi lecture nahi mila');
+    W._jsonLecs=lecs;W.count=lecs.length;
+    W.step='complete';W._from='json';drawWiz();
+  }catch(e){ if(err)err.textContent='⚠️ '+e.message; }
+};
+
+window.subWizCreate=function(){
+  var ni=document.getElementById('wizName');if(ni)W.name=ni.value;
+  var name=(W.name||'').trim();
+  if(!name){try{showT('⚠️ Naam daalo','Subject ka naam zaroori hai.');}catch(e){}return;}
+  // duplicate guard
+  if((_cm.subjects||[]).some(function(s){return s.name.toLowerCase()===name.toLowerCase();})){
+    try{showT('⚠️ Already exists','Is naam ka subject already hai.');}catch(e){}return;
+  }
+  // build lectures
+  var lecs;
+  if(W._from==='json'&&W._jsonLecs){ lecs=W._jsonLecs; }
+  else {
+    var n=Math.max(0,parseInt(W.count,10)||0);
+    var dur=W.useAvg?(parseFloat(W.avg)||0):0;
+    lecs=[];for(var i=1;i<=n;i++)lecs.push({name:'Lecture '+String(i).padStart(2,'0'),duration:dur});
+  }
+  var subj={name:name,color:pickColor(),label:name.slice(0,4),units:[{name:'General',lectures:lecs}],pyq:null};
+  _cm.subjects.push(subj);
+  _cm.selIdx=_cm.subjects.length-1;
+  _cm.dirty=true;
+
+  // growth config (if not complete)
+  if(!W.complete){
+    var days=(W.days&&W.days.length)?W.days.slice():[1,2,3,4,5,6];
+    var cfg={active:true,startDate:gToday(),perDay:Math.max(1,W.perDay||1),days:days,avgDur:(W.useAvg?(parseFloat(W.avg)||0):0),baseCount:lecs.length,mode:W.untilMode||'open'};
+    if(cfg.mode==='date')cfg.until=W.untilDate||'';
+    else if(cfg.mode==='total')cfg.until=Math.max(lecs.length,parseInt(W.untilTotal,10)||lecs.length);
+    else cfg.until=null;
+    // store keyed by subject name (growth engine reads live v5_curriculum by name)
+    growthAll()[name]=cfg; growthSave();
+  }
+
+  closeWiz();
+  try{_cmShowPane('edit');}catch(e){}
+  try{cmRender();}catch(e){}
+  try{showT('✅ "'+name+'" added','Ab ✓ Apply dabao curriculum save karne ke liye.'+(!W.complete?' 🌱 Auto-grow ON.':''));}catch(e){}
+};
+
+// Re-point the existing "+ Add Subject" button to the wizard.
+window.cmAddSubj=function(){ openSubjectWizard(); };
+
+})();
+</script>
+
 
 <script>
 // ═══════════════════════════════════════════════════════════════════════════
